@@ -1,0 +1,44 @@
+
+ 3 agent
+JSON-min         1273B gzip:    473 parse:0.008
+YAML             1226B gzip:    453 parse:3.04
+Markdown          785B gzip:    386 parse:None
+i-r3              520B gzip:    331 parse:0.035
+NEMA1             506B gzip:    333 parse:0.039
+NEMA2-r0          463B gzip:    299 parse:None
+NEMA2-r1          455B gzip:    304 parse:None
+NEMA2-r2          463B gzip:    299 parse:None
+NEMA2-r3          455B gzip:    304 parse:0.039
+
+ 300 mixed
+JSON-min        84630B gzip:  15866 parse:0.329
+YAML            82275B gzip:  15800 parse:114.29
+Markdown        54931B gzip:  15493 parse:None
+i-r3            48209B gzip:  15584 parse:4.191
+NEMA1           45948B gzip:  15001 parse:4.234
+NEMA2-r0        48784B gzip:  14667 parse:None
+NEMA2-r1        46885B gzip:  15009 parse:None
+NEMA2-r2        46029B gzip:  14648 parse:None
+NEMA2-r3        44130B gzip:  14992 parse:3.491
+
+ 300 random
+JSON-min        96775B gzip:  39571 parse:0.32
+YAML            93490B gzip:  39517 parse:111.683
+Markdown        66926B gzip:  37461 parse:None
+i-r3            62103B gzip:  37400 parse:1.872
+NEMA1           60015B gzip:  36440 parse:2.039
+NEMA2-r0        60929B gzip:  36544 parse:None
+NEMA2-r1        60929B gzip:  36544 parse:None
+NEMA2-r2        58174B gzip:  36495 parse:None
+NEMA2-r3        58174B gzip:  36495 parse:2.2
+
+ 1000 agent
+JSON-min       206644B gzip:  11999 parse:0.955
+YAML           195729B gzip:  11901 parse:377.064
+Markdown       107495B gzip:  11212 parse:None
+i-r3            58944B gzip:  11424 parse:6.478
+NEMA1           50177B gzip:   9701 parse:7.781
+NEMA2-r0        88163B gzip:   9266 parse:None
+NEMA2-r1        55180B gzip:   9603 parse:None
+NEMA2-r2        78898B gzip:   9241 parse:None
+NEMA2-r3        45915B gzip:   9451 parse:8.651
