@@ -2,7 +2,7 @@
 CheckSession
 AuthGateway
 Ready
-	Tbig 1
+	\1
 \\ Agent Status Note Module
 Agent000 ^2 ^0 ^1
 Agent001 ^2 ^0 ^1

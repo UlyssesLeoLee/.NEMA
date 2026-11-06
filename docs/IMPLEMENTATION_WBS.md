@@ -1,10 +1,10 @@
-# NEMA v1.4 · 后续实现 WBS（可分派给 Agent）
+# NEMA v1.5 · 后续实现 WBS（可分派给 Agent）
 
 | WBS | 事项 | 交付物 | 依赖 | 完成标准 |
 |---|---|---|---|---|
-| 01 | Rust `nema-codec` crate，v1.4 原生 AST | Rust API、UT | 规范 v1.4 | 与 Python 参考数据对齐 |
+| 01 | Rust `nema-codec` crate，v1.5 原生 AST | Rust API、UT | 规范 v1.5 | 与 Python 参考数据对齐 |
 | 02 | 原生 Table/5W1H/Graph 无损语法测试 | JSON golden、property tests | 01 | 不丢表格首行、Graph 方向正确 |
-| 03 | `.nemat` 字典/RLE/数字前缀转换 | Rust codec + fuzz | 01 | byte-exact 往返，溢出安全 |
+| 03 | `.nemat` 字典/RLE转换 | Rust codec + fuzz | 01 | byte-exact 往返，溢出安全 |
 | 04 | 多 tokenizer 成本选择与回退 | scorer 插件 | 03 | 全部结构成本计入 |
 | 05 | IDE1.0 原生视图、手动按钮、Undo | UI + IPC | 02–04 | 默认不自动抢写 |
 | 06 | IME1.0 composition commit 自动转换 | Rust pime-core Adapter | 02–04 | 非 NEMA 文件不改写 |

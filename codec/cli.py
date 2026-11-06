@@ -4,7 +4,7 @@ from .core import parse, render
 from .transport import encode, decode
 
 def main():
-    p=argparse.ArgumentParser(description='NEMA v1.4 native/transport utilities')
+    p=argparse.ArgumentParser(description='NEMA v1.5 native/transport utilities')
     p.add_argument('command',choices=['render','check','encode','decode'])
     p.add_argument('input')
     p.add_argument('--output');p.add_argument('--cost',choices=['bytes','bpe','unigram'],default='bytes')

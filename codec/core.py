@@ -1,4 +1,4 @@
-"""NEMA v1.4 table-first native parser; horizontal ASCII space, vertical LF.
+"""NEMA v1.5 numeric-domain table-first native parser; horizontal ASCII space, vertical LF.
 
 Invariants:
   - Leading TAB marks a domain header or initial dictionary manifest, never a field.
@@ -10,12 +10,12 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 import re
 
-HEADER = re.compile(r'^\t([?>]?)([A-Za-z][A-Za-z0-9_.-]*) ([1-9][0-9]*)$')
+HEADER = re.compile(r'^\t([\\?>])([1-9][0-9]*)(?: ([1-9][0-9]*))?$')
 DICT = re.compile(r'^\t\$([0-9]+)$')
 EDGE = re.compile(r'^([A-Za-z][A-Za-z0-9_.-]*)([><=])([A-Za-z][A-Za-z0-9_.-]*)([><=])([A-Za-z][A-Za-z0-9_.-]*)$')
 REF = re.compile(r'\^([0-9]+)')
 ENGLISH = re.compile(r'[A-Z]+(?=[A-Z][a-z]|$)|[A-Z][a-z]+|[A-Z]+|[a-z]+|[0-9]+|[^A-Za-z0-9]+')
-MODES = {'':'table', '?':'5w1h', '>':'graph'}
+MODES = {'\\':'table', '?':'5w1h', '>':'graph'}
 AXES = ['What','Why','How','Who','When','Where']
 MAX_BYTES = 16 * 1024 * 1024
 
@@ -141,7 +141,7 @@ def parse(source: str) -> Document:
     for line in lines[i:]:
         h = HEADER.fullmatch(line)
         if h:
-            current = Domain(h.group(2),int(h.group(3)),MODES[h.group(1)])
+            current = Domain(h.group(2),int(h.group(3) or '1'),MODES[h.group(1)])
             if current.mode == '5w1h': current.columns = AXES.copy()
             if current.mode == 'graph': current.columns = ['Element','Relation','Description']
             if any(d.id==current.id for d in doc.domains): raise ValueError('duplicate domain ID')
@@ -187,6 +187,23 @@ def parse(source: str) -> Document:
         if current.mode=='5w1h' and len(current.records[-1].cells)>6:
             raise ValueError('5w1h maximum six fields')
     if not doc.domains: raise ValueError('no domains')
+    for domain in doc.domains:
+        if domain.mode != 'graph': continue
+        nodes = set(); edges = set(); endpoints = []
+        for rec in domain.records:
+            spec = rec.cells[0][0]
+            match = EDGE.fullmatch(spec)
+            if match:
+                edge_id = match.group(3)
+                if edge_id in edges: raise ValueError(f'duplicate edge ID: {edge_id}')
+                edges.add(edge_id)
+                endpoints.append((match.group(1), match.group(5)))
+            else:
+                if spec in nodes: raise ValueError(f'duplicate node ID: {spec}')
+                nodes.add(spec)
+        for src, dst in endpoints:
+            if src not in nodes or dst not in nodes:
+                raise ValueError(f'undefined graph node reference: {src} / {dst}')
     # Native correctness also requires every inline dictionary reference to resolve.
     for domain in doc.domains:
         for record in domain.records:

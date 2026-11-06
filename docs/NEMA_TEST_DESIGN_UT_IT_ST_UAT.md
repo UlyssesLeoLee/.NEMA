@@ -1,8 +1,8 @@
-# NEMA v1.4 · UT / IT / ST / UAT 测试设计
+# NEMA v1.5 · UT / IT / ST / UAT 测试设计
 
 | 编号 | 层级 | 输入 | 预期结果 |
 |---|---|---|---|
-| UT-01 | UT | `\tT1 1` 下一行 `Claude Ready` | Table，无显式表头，columns=column1,column2 |
+| UT-01 | UT | `\t\\1` 下一行 `Claude Ready` | Table，无显式表头，columns=column1,column2 |
 | UT-02 | UT | `\\ Agent Status` 首行 | 显式表头，第一行不当数据 |
 | UT-03 | UT | Table 首行 `\\^0` | 不会错认表头；按原文字典规则解释 |
 | UT-04 | UT | 行首 3 空格续写 | X2 原意群继续，当前表格行数量不变 |
@@ -24,3 +24,16 @@
 | UAT-03 | UAT | 用户源代码编辑 | NEMA 插件不得自动修改 .rs/.ts/.py 本文 |
 
 **当前已自动执行的范围**：包内 Python 原生解析器、可逆编码器、训练语料静态校验、字节往返与本地 Token 计算。Windows TSF、实际 Tauri / VS Code 宿主 UAT、真实模型生成误码率尚未执行，不应标记为 PASS。
+
+## v1.5 补充验收
+
+| 编号 | 内容 | 预期 |
+|---|---|---|
+| UT-15 | `Tab+\1`、`Tab+?2`、`Tab+>3` 解析 | 三模式正确、默认版本 1 |
+| UT-16 | `Tab+\1 2` 和第二列纵向续写 | 分出独立领域，续写不误认 |
+| UT-17 | Graph 缺失节点 / 重复 Edge ID | 拒绝非法输入 |
+| IT-15 | `B<Z<C` | from=C / to=B；SVG 箭头在 B |
+| IT-16 | 同一节点对多重 Edge | 独立路径与 ID |
+| IT-17 | 自循环 + 无向边 | 自环有箭头，无向边无 marker-end |
+| UAT-15 | Graph Edge 点击与方向文本 | 详情面板文本与解码方向一致 |
+| UAT-16 | 中日英网站 / Token 页 / 手机 | 页面可用且无横向溢出 |

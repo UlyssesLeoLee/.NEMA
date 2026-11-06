@@ -1,12 +1,24 @@
-"""Deterministic synthetic benchmarks and explicit examples for NEMA v1.4.
+"""Deterministic synthetic benchmarks and explicit examples for NEMA v1.5.
 These are synthetically repetitive, NOT production traffic.
 """
 import pathlib,random,string,json
 BASE=pathlib.Path(__file__).resolve().parents[1]
 EX=BASE/'examples';EX.mkdir(exist_ok=True)
 
+def upgrade(txt):
+    from collections import OrderedDict
+    import re
+    known=OrderedDict()
+    def rewrite(m):
+        k=(m.group(1),m.group(2))
+        if k not in known: known[k]=str(len(known)+1)
+        sign={'':'\\','?':'?','>':'>'}[m.group(1)]
+        rev=m.group(3)
+        return '\t'+sign+known[k]+((' '+rev) if rev!='1' else '')
+    return re.sub(r'^\t([?>]?)([A-Za-z][A-Za-z0-9_.-]*) ([1-9][0-9]*)$',rewrite,txt,flags=re.M)
+
 def write(name,rows):
-    (EX/name).write_text('\n'.join(rows)+'\n\n\n',encoding='utf-8')
+    (EX/name).write_text(upgrade('\n'.join(rows)+'\n\n\n'),encoding='utf-8')
 
 write('00_default_table_no_header.nema',[
  '\tT1 1',
@@ -43,7 +55,8 @@ write('03_graph_complex.nema',[
  'C>V>D Dispatches AuditJob',
  'A=U=C Shares SecurityPolicy',
  'A>P>A Retry AtMost3Times',
- 'D>W>A Reports CompletionStatus'
+ 'D>W>A Reports CompletionStatus',
+ 'B<R<A Responds HTTP200'
 ])
 write('04_inline_shared_dictionary.nema',[
  '\t$3', 'APIKey','HTTPStatus','PasswordHash',

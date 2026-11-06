@@ -16,8 +16,8 @@ def main():
             n+=1
         items.append((file.name,n));print(file.name,n,'validated')
     assert sum(n for _,n in items)>300
-    train=(ROOT/'training/nema_v1.4_train.jsonl').read_text(encoding='utf-8')
-    hold=(ROOT/'training/nema_v1.4_holdout.jsonl').read_text(encoding='utf-8')
+    train=(ROOT/'training/nema_v1.5_train.jsonl').read_text(encoding='utf-8')
+    hold=(ROOT/'training/nema_v1.5_holdout.jsonl').read_text(encoding='utf-8')
     t={json.loads(s)['messages'][2]['content'] for s in train.splitlines()}
     h={json.loads(s)['messages'][2]['content'] for s in hold.splitlines()}
     assert t.isdisjoint(h),'training/evaluation corpus overlap'

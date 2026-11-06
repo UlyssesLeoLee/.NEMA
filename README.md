@@ -1,88 +1,72 @@
-# NEMA v1.4 · Full Project Package
+# NEMA v1.5 · 当前可覆盖发布包
 
-NEMA 是一种 **AI 原生的纵向不规则二维数据格式**：表格为默认；正文中 ASCII 空格分列、LF 承载纵向意群；特殊领域头有 5W1H (`?`) 和 Graph (`>`)；共享字典与 `.nemat` 传输压缩可由 IDE1.0 / IME1.0 自动应用。
+NEMA 是面向多 Agent 的**纵向不规则二维文本格式**：正文以 ASCII 空格分列、LF 续写意群，Table 默认，另有显式 5W1H 和带内容的 Graph。`.nema` 原生可编辑；`.nemat` 可选无损传输压缩。**本次的重点是纯数字领域头和 Graph 真箭头。**
 
-**2026-11-06 · v1.4 RC**。此包以 `docs/NEMA_SPEC_v1.4_zh.md` 为唯一权威规范。`archive/` 全部是旧版本历史文件，不可当作 v1.4 训练素材。
+本目录包含最新的**三语静态网站、Token 实测专页、品牌素材、解析器、无损编解码器、300/80/6 AI 语料、IDE1.0 和 IME1.0 设计、测试、迁移脚本及可复现基准**。唯一权威语法文件：`docs/NEMA_SPEC_v1.5_zh.md`。
 
-## 最重要的 v1.4 更新：默认 Table 表头**可选**
+## 最新语法速览
 
-**真实 `.nema` 原文**（下例 `⇥` 仅为显示真正 Tab 的图形替身）：
-
-有表头：
+以下 `⇥` 是说明用符号，真实 `.nema` 里是一个 Tab：
 
 ```text
-⇥T1 1
-\ Agent State Note
-Claude Ready CheckSession
-   AccessGranted
+⇥\1
+\ Agent Status Note
+Claude Ready CheckHTTPStatus
+   BeforeRelease.
+⇥?2
+ValidateLogin PreventAbuse Rust .
+⇥>3
+A LoginAPI
+B TokenStore
+C AuditService
+A>X>B Reads ValidateSession
+   WhenTokenIsValid
+B<Z<C Notifies TokenExpired
+A=U=C Shares AuthPolicy
 ```
 
-无表头：
+- `⇥\1`：默认 Table，数字领域 ID=1，revision 默认 1。
+- `⇥?2`：5W1H（What / Why / How / Who / When / Where）。
+- `⇥>3`：Graph。`A>X>B` 是 A→B；`B<Z<C` 是 C→B；`A=U=C` 无向。Edge 自带独立 ID、标签、说明及纵向续写。
+- `⇥\1 2`：领域 1 的版本 2。旧 `⇥T1 1`、`⇥?T2 1`、`⇥>G3 1` 已废止。
+- 表格首条正文 `\ ` 声明显式表头；不写则首行就是数据，列名自动为 `column1`…`columnN`。
+- 行首 1 / 2 / 3 个空格分别续写上一行第 1 / 2 / 3 列。末尾 ` .` 表示剩余列显式为空。
+- `Tab+$N` 文档共享字典，`^N` 内联原子引用。`\^` 是字面 `^`；中日文可以连写，英文优先 PascalCase。真实机密必须使用 SecretRef。
+- `.nemat` 当前选择字典、RLE 或回退原文。**数字域头已使字母域名前缀压缩过时，旧式 Tab+数字前缀选择器本版不再生成。**
 
-```text
-⇥T1 1
-Claude Ready CheckSession
-Codex Blocked InvalidToken
-```
+## 覆盖与本地运行
 
-后一种输出字段名 `column1`、`column2`、`column3`。只有默认 Table 的**第一个内容行**以精确 `\ ` 起始才声明表头，其他以反斜杠开头的原文（例如 `\^`）绝不触发表头。
-
-- 默认 Table；显式 `\t?ID REV` = 5W1H，顺序 **What / Why / How / Who / When / Where**；` .` 标识后续明确为空。
-- `\t>ID REV` = Graph。`A>X>B` 表示 Edge X 的 A→B；`A<X<B` 表示 B→A，关系也有独立名称、属性与纵向说明。
-- 正文列之间使用**一个 ASCII 空格**；行首 N 个空格延伸 X(N−1) 列，没有任何必要时不用强制换行。英文优先 PascalCase，中日文可直接连接；`HTTPItIs` → HTTP It Is。
-- `\t$N` 声明文档共享字典；`^N` 是可嵌入英文意群的原子引用。`Validate^0BeforeAccess` 保留 `APIKey` 不拆分；字面 `^` 用 `\^` 逃逸。
-- `.nemat` 压缩层：字典提炼、可发现的数字前缀、RLE，前端无损恢复。格式选择须计入所有控制符与词典 Token，无收益原文回退。真实机密用 SecretRef。
-- IDE1.0 与 IME1.0 同时存在时，**IME1.0 默认在 composition commit 后自动转换**，IDE1.0 仅在手工点击“转换”后临时接管。两个产品未来共享同一 Rust codec，当前仍是待实现设计。
-
-## 文件目录
-
-| 路径 | 内容 |
-|---|---|
-| `index.html` / `website/` | 离线三语品牌网站、Graph 箭头视图与独立 `token-bench.html` 实测专页 |
-| `docs/` | v1.4 语法、IPA 风格要件/基本/详细设计、UT/IT/ST/UAT、迁移及 WBS；英文/日文入门指南 |
-| `docs/IDE1.0/` | IDE Rust Codec、Web/Shell、手动转换按钮、租约仲裁与测试设计 |
-| `docs/IME1.0/` | IME Rust/TSF/VS Code composition、自动字典提炼、默认转换与测试设计 |
-| `codec/` | Python v1.4 原生解析／渲染、无损 `.nemat` 自适应压缩与 CLI |
-| `examples/` | 15 组真实 `.nema`（含无表头/有表头）以及渲染 JSON |
-| `tests/` | Python 回归、无损往返、非法控制输入及 Graph 方向用例 |
-| `bench/` | 2 个本地 SentencePiece 模型、BPE+Unigram 实测 JSON/CSV、原文/压缩/YAML 对照、复现脚本 |
-| `training/` | 300 条 SFT、80 条不重叠留出、6 条 codec 示范、生成与静态验证脚本 |
-| `brand/` | NEMA Logo、SVG、PNG、Graph 设计资产 |
-| `archive/` | 单独隔离的 v1.0 完整历史资料 |
-
-## 命令（从项目根目录执行）
+直接将此包解压到你的 NEMA 项目根目录，按目录覆盖 `website/`、`docs/`、`codec/`、`training/`、`bench/`、`examples/`、`tests/`、`brand/`、`scripts/` 和根 `index.html`；建议先备份并删除仓库中旧版 `v1.4` 文件，避免将历史训练集混用。`website/index.html` 是主页，`website/token-bench.html` 是独立 Token 基准页面。
 
 ```bash
-# Python 3.11+；核心 Codec 不依赖外部包
 python -m unittest discover -s tests -v
+node tests/graph_renderer.test.js
 python training/validate_corpus.py
-python -m codec.cli render examples/01_explicit_table_header.nema
-python -m codec.cli render examples/00_default_table_no_header.nema
-python -m codec.cli check examples/03_graph_complex.nema
-python -m codec.cli encode examples/bench_en_60.nema --cost bpe --output demo.nemat
-python -m codec.cli decode demo.nemat --output restored.nema
-
-# benchmark 需 pip install sentencepiece；本包已经提供 BPE/Unigram 模型文件
-python bench/reproduce.py
+python scripts/release_check.py
+python bench/reproduce.py  # 需 pip install sentencepiece
+# 可选：本地已安装 Playwright 和 Chromium 时
+python tests/browser_smoke.py
+# 迁移旧单文件（会生成旧 ID 到新数字 ID 的映射）
+python scripts/migrate_v14_to_v15.py old.nema migrated.nema
 ```
 
-⚠️ `encode` **可能自动回退到原生 `.nema`**，因此不能无条件把输出命名 `.nemat`：脚本会打印实际 `format`，正式调用端应以 MIME/format 决定扩展名。以上示范的重复英文 60 领域在当前本地 BPE 测试会选择 `.nemat`。网站主页可直接打开根 `index.html`，性能专页 `website/token-bench.html`。
+旧 `.nemat` 缓存必须重新生成；不要把此覆盖包当作自动修改 IDE1.0 / IME1.0 仓库的工具。两者的 Rust 产品集成仍需开发，设计资料分别在 `docs/IDE1.0/` 与 `docs/IME1.0/`。两者共用时**IME1.0 默认自动转换，IDE1.0 手动点击才接管**。
 
-## 当前可核实的实测结果
+## 本地 BPE 实测（重跑）
 
-在**本地 SentencePiece BPE（保留 Tab/空格/LF）** 下，同一 `.nema` 源与其最优无损传输候选：
-
-| 数据 | 原生 Token | 最优 Token | 节省率 |
+| 场景 | 原生 NEMA | 最优无损传输 | 节省 |
 |---|---:|---:|---:|
-| 英文 60 领域 | 3909 | 1818 | 53.49% |
-| 中文 60 领域 | 5402 | 2652 | 50.91% |
-| 日文 60 领域 | 7922 | 1930 | 75.64% |
-| 表格 300 行 | 4712 | 3833 | 18.65% |
-| Graph 120 Node + 600 Edge | 15655 | 12560 | 19.77% |
-| 高熵随机表 120 行 | 5279 | 5279 | 0%（原文回退） |
+| 英文 60 领域 | 3789 | 1813 | **52.15%** |
+| 中文 60 领域 | 5282 | 2647 | **49.89%** |
+| 日文 60 领域 | 7802 | 1925 | **75.33%** |
+| 表格 300 行 | 4709 | 3830 | **18.67%** |
+| 120 Node / 600 Edge | 15651 | 12556 | **19.78%** |
+| 高熵表格 | 5275 | 5275 | **0%（原文回退）** |
 
-这是重复程度较高的**合成数据**测试，只证明该本地 tokenizer 下的**文本压缩候选成本**，**不等于实际模型 API 的账单节省率**。真实模型是否能自己准确生成 `.nemat`、训练开销、提示词成本及纠错开销尚未测试。
+计数来自随包的本地 SentencePiece BPE，包含候选头部和字典成本，**不等于实际 GPT/Claude/Gemini 账单或经过训练后模型的正确生成率**。数据为合成样例，部分高度重复。重跑脚本、JSON/CSV 与完整原文在 `bench/`。
 
-## 实际完成与未完成
+## 图渲染修复和验证
 
-完成：Python v1.4 参考核心、回归测试、合成基准、三语网站、训练数据生成/验证、IDE/IME 接入文档。未完成：真正 Rust crate、IME TSF/Windows 实机运行、IDE/IME 源码集成、商业模型训练及官方 tokenizer 的完整端到端测量。该包不直接修改远程 GitHub 仓库。
+当前 SVG 箭头以解析器 `edge.from`、`edge.to` 为唯一依据，锚在目标节点边界，支持反向边、平行边、无向边、自循环和点击查看说明。具体算法在 `website/graph.js`；验收见 `tests/graph_renderer.test.js`、`tests/browser_smoke.py`、`docs/NEMA_GRAPH_RENDER_DESIGN_v1.5.md`。Node/Edge 的源语义没有任何布局依赖。
+
+当前参考实现为 Python + 静态 HTML/CSS/JS；未把 Rust Codec 或 Windows TSF/IDE 集成宣称为已交付生产代码。

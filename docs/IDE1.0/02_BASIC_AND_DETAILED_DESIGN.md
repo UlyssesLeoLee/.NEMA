@@ -1,4 +1,4 @@
-# IDE1.0 × NEMA v1.4 · 基本设计／详细设计
+# IDE1.0 × NEMA v1.5 · 基本设计／详细设计
 
 ## 技术落点
 在 IDE1.0 Rust workspace 中建议增加 `crates/nema-codec`（与 IME1.0 的同源 crate 共享版本），暴露以下 trait：

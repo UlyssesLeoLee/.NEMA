@@ -1,4 +1,4 @@
-# IDE1.0 × NEMA v1.4 · UT / IT / ST
+# IDE1.0 × NEMA v1.5 · UT / IT / ST
 
 | ID | 层级 | 条件 | 预期 |
 |---|---|---|---|

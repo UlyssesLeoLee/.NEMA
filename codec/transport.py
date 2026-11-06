@@ -3,8 +3,8 @@
 Transport is opt-in by MIME/extension; never attempt autodetection on native .nema.
 Dictionary manifest: first line TAB+$N, followed by N literal dictionary entries;
 inline reference ^N, native literal caret \\^, slash \\\\; RLE \\8A or \\8\\7.
-Known ID prefix groups: first full domain header defines a prefix, TAB+number selects
-an observed group, TAB+suffix version is a shortened header.
+Numeric native IDs supersede alphabetic-prefix encoding; selector codes remain reserved
+for future version negotiation, but are not emitted by the v1.5 reference encoder.
 """
 from __future__ import annotations
 from collections import Counter
@@ -13,9 +13,8 @@ import re
 from .core import parse, HEADER, MAX_BYTES
 
 DICT_START = re.compile(r'^\t\$([0-9]+)$')
-PREFIX = re.compile(r'^([?>]?)([A-Za-z][A-Za-z0-9_.-]*?)([0-9]+)$')
-SHORT = re.compile(r'^\t([0-9]+) ([1-9][0-9]*)$')
-SELECTOR = re.compile(r'^\t([0-9]+)$')
+# Numeric domain headers have no reusable alphabetic prefix.
+# TAB+digits remains reserved for negotiated future compressed selector groups.
 ATOM = re.compile(r'[A-Za-z][A-Za-z0-9_]{3,}|[\u3400-\u9fff\u3040-\u30ff]{4,}')
 
 @dataclass
@@ -110,31 +109,7 @@ def _decode_row(row,words):
     return ''.join(out)
 
 
-def _prefix_encode(lines):
-    groups=[]; out=[]; active=None
-    for row in lines:
-        m=HEADER.fullmatch(row)
-        if not m:
-            out.append(row);continue
-        pre=(m.group(1) or '') + m.group(2)
-        k=PREFIX.fullmatch(pre)
-        if not k:
-            out.append(row);continue
-        root=k.group(1)+k.group(2); suffix=k.group(3)
-        if root not in groups:
-            groups.append(root); out.append(row); continue
-        idx=groups.index(root)
-        coded='\t'+suffix+' '+m.group(3)
-        extra=('\t'+str(idx)+'\n') if active!=idx else ''
-        if len(extra)+len(coded) < len(row):
-            if active!=idx: out.append('\t'+str(idx));active=idx
-            out.append(coded)
-        else:
-            out.append(row)
-    return out
-
-
-def _build(source, words, *, use_rle=True, use_prefix=True):
+def _build(source, words, *, use_rle=True):
     rows=source[:-3].split('\n')
     encoded=[]
     for row in rows:
@@ -143,7 +118,6 @@ def _build(source, words, *, use_rle=True, use_prefix=True):
             # In native .nema the original dictionary manifest is a control line too;
             # it must survive byte-for-byte after transport decode.
             encoded.append(_encode_row(row,words,rle=use_rle))
-    if use_prefix: encoded=_prefix_encode(encoded)
     manifest=['\t$'+str(len(words)), *[_esc(w) for w in words]]
     return '\n'.join(manifest+encoded)+'\n\n\n'
 
@@ -153,10 +127,9 @@ def encode(source, token_cost=None, *, max_entries=48) -> Choice:
     baseline=_units(source,token_cost)
     rows=source[:-3].split('\n')
     words=_candidate_dict(rows,max_entries)
-    candidates=[('dictionary+rle+prefix',_build(source,words)),
-                ('dictionary+prefix',_build(source,words,use_rle=False)),
-                ('rle+prefix',_build(source,[],use_rle=True)),
-                ('prefix',_build(source,[],use_rle=False))]
+    candidates=[('dictionary+rle',_build(source,words)),
+                ('dictionary',_build(source,words,use_rle=False)),
+                ('rle',_build(source,[],use_rle=True))]
     best=Choice('native',source,baseline,baseline,'nema')
     for method,text in candidates:
         try: decoded=decode(text)
@@ -179,30 +152,15 @@ def decode(text: str) -> str:
     if n>2048 or len(rows)<n+2: raise ValueError('bad dictionary size')
     values=[_decode_row(v,[]) for v in rows[1:n+1]]
     if any(not v or '\n' in v or '\t' in v for v in values): raise ValueError('invalid dictionary value')
-    out=[]; roots=[];active=None
+    out=[]
     for row in rows[n+1:]:
-        m=SELECTOR.fullmatch(row)
-        if m:
-            idx=int(m.group(1))
-            if idx>=len(roots): raise ValueError('unknown prefix group')
-            active=idx;continue
-        m=SHORT.fullmatch(row)
-        if m:
-            if active is None: raise ValueError('prefix reference without selection')
-            expanded='\t'+roots[active]+m.group(1)+' '+m.group(2)
-            if not HEADER.fullmatch(expanded): raise ValueError('invalid reconstructed header')
-            out.append(expanded); continue
-        h=HEADER.fullmatch(row)
-        if h:
-            full=(h.group(1) or '') + h.group(2)
-            k=PREFIX.fullmatch(full)
-            if k:
-                root=k.group(1)+k.group(2)
-                if root not in roots: roots.append(root)
-            out.append(row);continue
+        if HEADER.fullmatch(row):
+            out.append(row)
+            continue
+        if re.fullmatch(r'\t[0-9]+(?: [0-9]+)?',row):
+            raise ValueError('unsupported legacy prefix selector; v1.5 uses numeric domain headers')
         v=_decode_row(row,values)
         if v.startswith('\t') and HEADER.fullmatch(v):
-            # Native headers are consumed in the header branch above; encoded headers may not materialize here.
             raise ValueError('encoded domain header not permitted')
         out.append(v)
     expanded='\n'.join(out)+'\n\n\n'

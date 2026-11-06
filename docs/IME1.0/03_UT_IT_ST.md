@@ -1,4 +1,4 @@
-# IME1.0 × NEMA v1.4 · UT / IT / ST
+# IME1.0 × NEMA v1.5 · UT / IT / ST
 
 | ID | 层级 | 输入/事件 | 期望 |
 |---|---|---|---|

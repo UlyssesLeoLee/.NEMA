@@ -1,5 +1,5 @@
 domains:
-  - id: Gbig
+  - id: 1
     revision: 1
     mode: graph
     columns: ["Element","Relation","Description"]

@@ -25,10 +25,12 @@ results=json.loads((root/'bench/results.json').read_text())['results']
 assert len(results)==16
 assert any(r['fixture']=='bench_high_entropy_120.nema' and r['method']=='native' for r in results)
 for expected in ['website/index.html','website/token-bench.html','website/bench.js','website/app.js',
-                 'website/benchmark_data.js','docs/NEMA_SPEC_v1.4_zh.md',
+                 'website/benchmark_data.js','website/graph.js','tests/graph_renderer.test.js','docs/NEMA_SPEC_v1.5_zh.md',
                  'docs/IDE1.0/02_BASIC_AND_DETAILED_DESIGN.md',
                  'docs/IME1.0/02_BASIC_AND_DETAILED_DESIGN.md',
-                 'training/nema_v1.4_train.jsonl','training/nema_v1.4_holdout.jsonl']:
+                 'training/nema_v1.5_train.jsonl','training/nema_v1.5_holdout.jsonl']:
  assert (root/expected).is_file(),expected
 assert (root/'website/benchmark_data.js').read_text().count('bench_high_entropy_120.nema')>=2
-print('PROJECT RELEASE CHECK: PASS; 15 fixtures; 16 tokenizer scenarios; 2 table-header branches; graph direction; dictionary; all required files')
+assert [d['id'] for d in render('\t\\1\nA B\n\t?2\nHello\n\t>3\nA Node\n\n\n')['domains']]==['1','2','3']
+assert any(r['edge']['from']=='C' and r['edge']['to']=='B' for r in g['rows'] if r.get('edge'))
+print('PROJECT RELEASE CHECK: PASS; 15 fixtures; 16 tokenizer scenarios; numeric domain heads; graph direction; dictionary; all required files')

@@ -4,7 +4,7 @@
   ],
   "domains": [
     {
-      "id": "CN1",
+      "id": "1",
       "revision": 1,
       "mode": "5w1h",
       "columns": [
@@ -39,7 +39,7 @@
       ]
     },
     {
-      "id": "JA1",
+      "id": "2",
       "revision": 1,
       "mode": "5w1h",
       "columns": [
@@ -74,7 +74,7 @@
       ]
     },
     {
-      "id": "EN1",
+      "id": "3",
       "revision": 1,
       "mode": "5w1h",
       "columns": [

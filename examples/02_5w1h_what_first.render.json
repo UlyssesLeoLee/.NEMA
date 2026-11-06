@@ -2,7 +2,7 @@
   "dictionary": [],
   "domains": [
     {
-      "id": "Task1",
+      "id": "1",
       "revision": 1,
       "mode": "5w1h",
       "columns": [
@@ -49,7 +49,7 @@
       ]
     },
     {
-      "id": "Task2",
+      "id": "2",
       "revision": 1,
       "mode": "5w1h",
       "columns": [

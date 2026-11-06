@@ -2,7 +2,7 @@
 CheckSession
 Calls
 Architecture
-	>Gbig 1
+	>1
 N000 ServiceNode000 ^2
 N001 ServiceNode001 ^2
 N002 ServiceNode002 ^2

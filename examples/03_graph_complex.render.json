@@ -2,7 +2,7 @@
   "dictionary": [],
   "domains": [
     {
-      "id": "G1",
+      "id": "1",
       "revision": 1,
       "mode": "graph",
       "columns": [
@@ -273,6 +273,31 @@
             "id": "W",
             "from": "D",
             "to": "A",
+            "direction": "directed"
+          }
+        },
+        {
+          "cells": [
+            "B<R<A",
+            "Responds",
+            "HTTP200"
+          ],
+          "groups": [
+            [
+              "B<R<A"
+            ],
+            [
+              "Responds"
+            ],
+            [
+              "HTTP200"
+            ]
+          ],
+          "tail_empty": false,
+          "edge": {
+            "id": "R",
+            "from": "A",
+            "to": "B",
             "direction": "directed"
           }
         }

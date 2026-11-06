@@ -1,4 +1,4 @@
-# IDE1.0 × NEMA v1.4 · 要件定义（仅项目接入设计）
+# IDE1.0 × NEMA v1.5 · 要件定义（仅项目接入设计）
 
 ## 实际集成基准
 IDE1.0 仓库：`https://github.com/UlyssesLeoLee/IDE1.0`。已查阅仓库根 `Cargo.toml`、`crates/` 结构：存在 Rust 内核、CLI、Shell、Web/Desktop Shell。本文建议新增独立 `nema-codec` Rust crate，不假设现有项目已集成 NEMA。

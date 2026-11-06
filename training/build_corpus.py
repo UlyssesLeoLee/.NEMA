@@ -1,10 +1,10 @@
-"""Generate deterministic NEMA v1.4 SFT and evaluation data (synthetic)."""
+"""Generate deterministic NEMA v1.5 SFT and evaluation data (synthetic)."""
 import json, pathlib, sys
 ROOT=pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT))
 from codec import parse,render,encode,decode
 OUT=ROOT/'training'
-SYSTEM=('Follow NEMA v1.4 exactly. Table is default: only the first body line prefixed '
+SYSTEM=('Follow NEMA v1.5 exactly. Domain headers are TAB+backslash+decimal ID (Table), TAB+?+ID (5W1H), TAB+>+ID (Graph); optional revision defaults to 1. Table is default: only the first body line prefixed '
         'by a backslash followed by one space is an explicit table header; otherwise '
         'the first body row is data with generated column1...columnN. '
         '5W1H uses ? and What Why How Who When Where; Graph uses > and A>X>B. '
@@ -13,6 +13,17 @@ SYSTEM=('Follow NEMA v1.4 exactly. Table is default: only the first body line pr
         'All NEMA output ends with two empty physical lines.')
 
 atoms=['APIKey','HTTPStatus','AuthService','TokenStore','PermissionGrant']
+
+def new_header(src, base):
+    import re
+    found=[]
+    def change(m):
+        k=(m.group(1),m.group(2))
+        if k not in found: found.append(k)
+        sign={'':'\\','?':'?','>':'>'}[m.group(1)]
+        rev=m.group(3)
+        return '\t'+sign+str(base+found.index(k))+((' '+rev) if rev!='1' else '')
+    return re.sub(r'^\t([?>]?)([A-Za-z][A-Za-z0-9_.-]*) ([1-9][0-9]*)$',change,src,flags=re.M)
 
 def example(i):
     kind=i%6
@@ -44,6 +55,8 @@ def example(i):
         name=f'J{i:04d}'
         src=f'\t{name} {version}\n\\ Name State Note\nAgent{i} Ready HTTPItIs\n   CheckStatus\n\n\n'
         task=f'Generate a headed NEMA table domain {name} rev {version}: Name State Note header, Agent{i} Ready HTTPItIs, then continue Note with CheckStatus.'
+    src=new_header(src,i+1)
+    task=task.replace(name,str(1))
     parse(src)
     return {'type':'native_generate','messages':[{'role':'system','content':SYSTEM},{'role':'user','content':task},{'role':'assistant','content':src}]}
 
@@ -54,18 +67,18 @@ def write_jsonl(path,items):
 def main():
     train=[example(i) for i in range(300)]
     holdout=[example(i) for i in range(1000,1080)]
-    write_jsonl(OUT/'nema_v1.4_train.jsonl',train)
-    write_jsonl(OUT/'nema_v1.4_holdout.jsonl',holdout)
+    write_jsonl(OUT/'nema_v1.5_train.jsonl',train)
+    write_jsonl(OUT/'nema_v1.5_holdout.jsonl',holdout)
     compressed=[]
     for f in ['bench_en_60.nema','bench_zh_60.nema','bench_ja_60.nema','bench_table_300.nema','bench_graph_120_600.nema','bench_high_entropy_120.nema']:
         source=(ROOT/'examples'/f).read_text(encoding='utf-8')
         choice=encode(source)
         result=choice.text
         if choice.format=='nemat':assert decode(result)==source
-        instruction=(f'Encode the following NEMA source with the v1.4 lossless transport codec. '
+        instruction=(f'Encode the following NEMA source with the v1.5 lossless transport codec. '
                      f'If compression does not reduce the total UTF-8 size, retain native NEMA. '
                      f'Provide the exact content only.\nSOURCE:\n{source}')
         compressed.append({'type':'transport_encode','format':choice.format,'messages':[{'role':'system','content':SYSTEM},{'role':'user','content':instruction},{'role':'assistant','content':result}]})
-    write_jsonl(OUT/'nema_v1.4_transport_examples.jsonl',compressed)
+    write_jsonl(OUT/'nema_v1.5_transport_examples.jsonl',compressed)
     print('wrote',len(train),'native train;',len(holdout),'holdout;',len(compressed),'codec demonstrations')
 if __name__=='__main__':main()

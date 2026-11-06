@@ -1,4 +1,4 @@
-# IME1.0 × NEMA v1.4 · 基本／详细设计
+# IME1.0 × NEMA v1.5 · 基本／详细设计
 
 ## 结构
 `TSF composition` / `VS Code bridge` → `NEMA scope gate` → `pime-core` 中共用的 Rust NEMA Codec → `dictionary proposer` → `token-profile chooser` → `immutable mirror (.nemat or .nema)`。
