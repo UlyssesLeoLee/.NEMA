@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0a1424">
+<meta name="description" content="NEMA · Ariadne's Thread. AI-first positional collaboration format for multiple agents. Read, write and render .nema with stable domain IDs.">
+<meta property="og:title" content="NEMA · Ariadne's Thread for AI Agents">
+<meta property="og:image" content="assets/social-cover.png">
+<title>NEMA — Ariadne's Thread for AI Agents</title>
+<link rel="icon" href="assets/nema-app-icon.svg" type="image/svg+xml">
+<!-- Open-source OFL fonts, loaded only when online; fallback fonts keep the site functional offline. No font binaries are distributed. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<script defer src="app.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#main" data-t="skip">跳转到正文</a>
+<header class="header">
+  <div class="container header-inner">
+    <a class="brand" href="#top" aria-label="NEMA Home"><img src="assets/nema-logo.svg" alt=""><span>NEMA<small>ARIADNE'S THREAD</small></span></a>
+    <button class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="nav" aria-label="Toggle navigation">☰</button>
+    <nav id="nav" class="nav" aria-label="Primary"><a href="#principles" data-t="navIdea">理念</a><a href="#render" data-t="navRender">可视化</a><a href="#syntax" data-t="navSyntax">语法</a><a href="#collab" data-t="navCollab">协作</a><a href="#downloads" data-t="navDocs">文档</a></nav>
+    <div class="head-actions"><div class="languages" role="group" aria-label="Language"><button data-lang="zh" class="lang is-active" aria-pressed="true">中</button><button data-lang="ja" class="lang" aria-pressed="false">日</button><button data-lang="en" class="lang" aria-pressed="false">EN</button></div><a href="#downloads" class="button button-small gold" data-t="navGet">获取 NEMA</a></div>
+  </div>
+</header>
+<main id="main">
+<section class="hero" id="top">
+ <div class="container hero-grid">
+  <div class="hero-text">
+   <div class="kicker"><span class="point"></span> ARIADNE'S THREAD · AI-NATIVE FORMAT</div>
+   <h1>NEMA<span class="dot">.</span></h1>
+   <h2 data-t="heroTitle">让无数 Agent，沿同一根线穿过迷宫。</h2>
+   <p data-t="heroDesc">以稳定领域号定位，以横向列和纵向位置编码 5W1H。让机器使用紧凑数据，让 IDE1.0 为人类还原含义。</p>
+   <div class="cta"><a class="button gold" href="#render"><span data-t="try">查看人类视图</span><span aria-hidden="true">↗</span></a><a class="button ghost" href="#syntax"><span data-t="learn">学习书写规范</span><span aria-hidden="true">→</span></a></div>
+   <div class="hero-meta"><span data-t="meta1">一段 = 一个 Agent 作业领域</span><i></i><span data-t="meta2">二维位置编码</span><i></i><span data-t="meta3">版本化协作</span></div>
+  </div>
+  <div class="hero-image"><img src="assets/ariadne-maze.webp" alt="Ariadne holding a luminous thread above a winding stone maze"/><div class="image-chip"><span class="chip-dot"></span><span data-t="chip">稳定领域号 · 不依赖行号</span></div></div>
+ </div>
+</section>
+<section class="strip"><div class="container strip-grid">
+ <div><span class="strip-icon">⌘</span><div><strong data-t="f1">领域独立</strong><p data-t="f1d">一个领域，一个协作边界</p></div></div>
+ <div><span class="strip-icon">⇥</span><div><strong data-t="f2">二维表达</strong><p data-t="f2d">横向列、纵向角色</p></div></div>
+ <div><span class="strip-icon">◇</span><div><strong data-t="f3">并行提交</strong><p data-t="f3d">按版本验证与冲突拒绝</p></div></div>
+ <div><span class="strip-icon">◎</span><div><strong data-t="f4">IDE1.0 渲染</strong><p data-t="f4d">机器紧凑，人类直观</p></div></div>
+</div></section>
+<section class="section" id="principles"><div class="container">
+ <div class="section-label" data-t="ideaLabel">01 / DESIGN PHILOSOPHY</div><div class="section-intro"><h2 data-t="ideaTitle">去掉重复符号，不丢掉语义边界。</h2><p data-t="ideaDesc">NEMA 借鉴 YAML 以位置表达结构的思想，却把段定义为可独立分配的 Agent 作业领域。字段顺序和缩进宽度承载明确语义，而不是留给模型猜测。</p></div>
+ <div class="principles"><article><div class="number">01</div><h3 data-t="p1">一段一领域</h3><p data-t="p1d">顶格头标识领域号与版本。整个段是最小的 Agent 分配和提交单位。</p><code>T/a7 1</code></article><article><div class="number">02</div><h3 data-t="p2">用位置代替重复标签</h3><p data-t="p2d">只定义一次 Schema，后续以 Tab 列位置映射 5W1H；缩进承载关系类别。</p><code>who ⇥ what ⇥ when ⇥ where ⇥ why ⇥ how</code></article><article><div class="number">03</div><h3 data-t="p3">压缩与正确性并重</h3><p data-t="p3d">变更绑定 Schema 指纹和领域版本。压缩不允许造成字段串位或静默覆盖。</p><code>schema hash + rev + CAS</code></article></div>
+ </div></section>
+<section class="section render-section" id="render"><div class="container">
+ <div class="section-label" data-t="renderLabel">02 / MACHINE → HUMAN</div><div class="section-intro"><h2 data-t="renderTitle">一段 NEMA，两种阅读方式。</h2><p data-t="renderDesc">左侧是真实的紧凑源文件。选择一个领域，右侧便按 Schema 展开为 IDE1.0 风格视图，显示 5W1H 与读取、写入、依赖和验收关系。</p></div>
+ <div class="workspace">
+  <div class="workspace-bar"><div class="traffic"><i></i><i></i><i></i></div><span>example/login-coordination.nema</span><button class="mini" id="copyBtn" data-t="copy">复制源文件</button></div>
+  <div class="workspace-head"><div class="view-tabs" role="tablist" aria-label="Data representation"><button class="tab active" data-view="raw" role="tab" aria-selected="true" data-t="tabRaw">.nema 源文件</button><button class="tab" data-view="json" role="tab" aria-selected="false">JSON</button><button class="tab" data-view="help" role="tab" aria-selected="false" data-t="tabPos">位置映射</button></div><div class="workspace-hint" data-t="tabHint">选中领域可查看结构化含义</div></div>
+  <div class="workspace-body"><div class="source-side"><div class="source-head"><span data-t="source">紧凑数据</span><span class="file-pill">NEMA/2 · v0.3</span></div><pre id="sourceText" aria-label="NEMA example"></pre></div>
+  <div class="inspector"><div class="inspector-top"><div><div class="caption" data-t="inspector">IDE1.0 · 语义渲染</div><h3 id="domainHeading">T/a7</h3></div><span class="rev" id="domainRev">rev 1</span></div><div id="domainChooser" class="domain-chooser"></div><div id="inspectorView"><div class="label-small" data-t="schemaFields">按横向位置还原字段</div><div id="fieldCards" class="field-grid"></div><div class="label-small relations-label" data-t="relations">按纵向位置还原关系</div><div id="relations" class="relations"></div></div></div></div>
+  <div class="workspace-footer"><span><span class="chip-dot"></span><span data-t="footerValid">原始 Tab 分隔 · 固定空格层级 · 无猜测解析</span></span><span data-t="footerDemo">本页为解释型交互演示</span></div>
+ </div>
+ </div></section>
+<section class="section" id="syntax"><div class="container">
+ <div class="section-label" data-t="syntaxLabel">03 / HUMAN AUTHORING</div><div class="section-intro"><h2 data-t="syntaxTitle">人类只需掌握六条书写规则。</h2><p data-t="syntaxDesc">NEMA 首先为 AI 设计；人工手写时应只操作少量稳定规则，其余交给 IDE1.0 的可视化编辑器与规范化序列化器。</p></div>
+ <div class="syntax-layout"><div class="rules" id="rules"></div><div class="syntax-help"><div class="syntax-h-title" data-t="legendTitle">纵向位置语义</div><div id="indentLegend" class="indent-legend"></div><div class="notice"><strong data-t="warningTitle">必须遵守</strong><p data-t="warningBody">字段之间使用 U+0009 Tab；关系行前方使用精确数量的 U+0020 空格。二者不可互换，且不要让编辑器自动重排。</p></div><a class="inline-link" href="docs/HUMAN_GUIDE_zh.md" id="guideLink" data-t="fullGuide">阅读完整人工书写指南 ↗</a></div></div>
+ </div></section>
+<section class="section collab-section" id="collab"><div class="container">
+ <div class="section-label" data-t="collabLabel">04 / AGENT COORDINATION</div><div class="section-intro"><h2 data-t="collabTitle">让协作像沿着一根线传递坐标。</h2><p data-t="collabDesc">不同 Agent 可以并行准备不同领域的补丁，提交时由存储层做原子版本校验；即便领域不同，触碰同一实际文件也必须额外检查资源冲突。</p></div>
+ <div class="route"><div class="route-step"><span>01</span><strong data-t="route1">读取领域</strong><small>T/a7 · revision 1</small></div><span class="route-arrow">⟶</span><div class="route-step"><span>02</span><strong data-t="route2">分派 Agent</strong><small>argo / claude</small></div><span class="route-arrow">⟶</span><div class="route-step"><span>03</span><strong data-t="route3">提交增量补丁</strong><small>.npatch · schema hash</small></div><span class="route-arrow">⟶</span><div class="route-step"><span>04</span><strong data-t="route4">原子验证</strong><small>CAS · revision check</small></div></div><p class="fineprint" data-t="collabNote">注意：NEMA 是一种数据协作协议，不会自行运行命令；验收行是声明，不是脚本执行授权。</p>
+ </div></section>
+<section class="section results-section"><div class="container stats-grid"><div><div class="section-label" data-t="benchLabel">05 / EXPERIMENTAL BENCHMARK</div><h2 data-t="benchTitle">为紧凑性设计，以实际测量为准。</h2><div class="metric">45,915 <span>bytes</span></div><p data-t="benchDesc">1,000 节点合成协作负载中，NEMA/2 的原始文本大小。与本次对照的紧凑 JSON 相比缩小约 77.8%。</p><p class="fineprint" data-t="benchCaveat">这不是 LLM Token 基准，也不代表所有数据集、tokenizer 或 gzip 场景都优于其他格式。</p></div><div class="bars" id="bars"><div><label>JSON</label><div class="track"><span style="width:100%"></span></div><em>206,644 B</em></div><div><label>YAML</label><div class="track"><span style="width:94.7%"></span></div><em>195,729 B</em></div><div><label>Markdown</label><div class="track"><span style="width:52%"></span></div><em>107,495 B</em></div><div class="highlight"><label>NEMA/2</label><div class="track"><span style="width:22.2%"></span></div><em>45,915 B</em></div></div></div></section>
+<section class="section downloads-section" id="downloads"><div class="container download-grid"><div><div class="section-label" data-t="downloadLabel">06 / COMPLETE PACKAGE</div><h2 data-t="downloadTitle">拿起线团，理解它、编写它、验证它。</h2><p data-t="downloadDesc">本包包含三语宣传主页、人工书写指南、AI 训练文件、NEMA v0.3 原型解析器、样品与性能测试报告，以及完整品牌资源。</p><p class="fineprint" data-t="versionNote">v0.3 为经过参考测试的实验性规范，尚非生产级标准。</p></div><div class="download-actions"><a class="button gold" href="downloads/NEMA_v0.3_positional_verified.zip"><span data-t="getProto">下载 NEMA v0.3 原型</span><span>↓</span></a><a class="button ghost" id="trainingLink" href="training/NEMA_AI_TRAINING.md"><span data-t="getTraining">AI 专项训练资料</span><span>↗</span></a><a class="button ghost" id="specLink" href="docs/NEMA_SPEC_v0.3.md"><span data-t="getSpec">语言规范</span><span>↗</span></a><a class="button ghost" href="downloads/NEMA_Logo_All_Sizes.zip"><span data-t="getLogo">Logo / SVG / PNG</span><span>↓</span></a></div></div></section>
+</main>
+<footer class="footer"><div class="container footer-inner"><div class="footer-brand"><img src="assets/nema-logo.svg" alt=""><span>NEMA</span></div><div><p data-t="footDesc">阿里阿德涅的线团 · 为 AI 协作留下可追溯的路径</p><p class="foot-credits" data-t="fontCredit">字体：Inter · Noto Sans SC · Noto Sans JP（SIL OFL 1.1，免费商用）</p></div><a href="#top" data-t="backTop">回到顶部 ↑</a></div></footer>
+</body>
+</html>

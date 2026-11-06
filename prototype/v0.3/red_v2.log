@@ -1,0 +1,36 @@
+test_3_rounds_lossless (test_nema2.Nema2Tests.test_3_rounds_lossless) ... ok
+test_all_escapes (test_nema2.Nema2Tests.test_all_escapes) ... ok
+test_bad_ref_rejected (test_nema2.Nema2Tests.test_bad_ref_rejected) ... ok
+test_dup_domain_rejected (test_nema2.Nema2Tests.test_dup_domain_rejected) ... ok
+test_duplicate_patch_slot_rejected (test_nema2.Nema2Tests.test_duplicate_patch_slot_rejected) ... ok
+test_empty_terminal_field (test_nema2.Nema2Tests.test_empty_terminal_field) ... ok
+test_invalid_alias_rejected (test_nema2.Nema2Tests.test_invalid_alias_rejected) ... ok
+test_leading_space_and_trailing_space (test_nema2.Nema2Tests.test_leading_space_and_trailing_space) ... ok
+test_one_block_one_domain (test_nema2.Nema2Tests.test_one_block_one_domain) ... ok
+test_parallel_domains_and_conflict (test_nema2.Nema2Tests.test_parallel_domains_and_conflict) ... ok
+test_patch_atomicity_invalid_ref (test_nema2.Nema2Tests.test_patch_atomicity_invalid_ref) ... ok
+test_patch_update_by_column (test_nema2.Nema2Tests.test_patch_update_by_column) ... ERROR
+test_roundtrip_canonical (test_nema2.Nema2Tests.test_roundtrip_canonical) ... ok
+test_schema_reorder_attack_rejected (test_nema2.Nema2Tests.test_schema_reorder_attack_rejected) ... ok
+test_tab_to_spaces_breaks_schema (test_nema2.Nema2Tests.test_tab_to_spaces_breaks_schema) ... ok
+test_unicode_separator_not_newline (test_nema2.Nema2Tests.test_unicode_separator_not_newline) ... ok
+test_unknown_indent_rejected (test_nema2.Nema2Tests.test_unknown_indent_rejected) ... ok
+
+======================================================================
+ERROR: test_patch_update_by_column (test_nema2.Nema2Tests.test_patch_update_by_column)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/data/nema_v0_3/test_nema2.py", line 52, in test_patch_update_by_column
+    patched=apply_patch(d,s)
+  File "/mnt/data/nema_v0_3/nema2_patch.py", line 52, in apply_patch
+    def apply_patch(doc,source):return apply(doc,parse_patch(doc,source))
+                                                 ~~~~~~~~~~~^^^^^^^^^^^^
+  File "/mnt/data/nema_v0_3/nema2_patch.py", line 49, in parse_patch
+    c.fields={doc.schemas[group][i][0]:v for i,v in c.fields.items()}
+                                                    ^^^^^^^^
+AttributeError: 'EditDomain' object has no attribute 'fields'
+
+----------------------------------------------------------------------
+Ran 17 tests in 0.209s
+
+FAILED (errors=1)

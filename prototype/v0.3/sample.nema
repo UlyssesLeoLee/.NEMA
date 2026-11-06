@@ -1,0 +1,17 @@
+n2
+%T	who	what	when	where	why	how
+%I	method	path	req	res	auth:b
+%F	path	lang	owner
+T/a7 1
+ argo	limit	now	I/login	abuse	60/min/ip
+  I/login
+   F/auth
+    T/design
+     cargo test
+T/design 1
+ claude	design	now	I/login	contract	review
+I/login 1
+ POST	/v1/login	credentials	token	1
+  F/auth
+F/auth 1
+ src/auth.rs	rust	argo
