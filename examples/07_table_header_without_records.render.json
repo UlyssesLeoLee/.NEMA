@@ -1,0 +1,16 @@
+{
+  "dictionary": [],
+  "domains": [
+    {
+      "id": "Tempty",
+      "revision": 1,
+      "mode": "table",
+      "columns": [
+        "Name",
+        "State"
+      ],
+      "explicit_header": true,
+      "rows": []
+    }
+  ]
+}

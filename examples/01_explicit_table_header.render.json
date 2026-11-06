@@ -1,0 +1,58 @@
+{
+  "dictionary": [],
+  "domains": [
+    {
+      "id": "T2",
+      "revision": 1,
+      "mode": "table",
+      "columns": [
+        "Agent",
+        "Status",
+        "Note"
+      ],
+      "explicit_header": true,
+      "rows": [
+        {
+          "cells": [
+            "Claude",
+            "Ready",
+            "Check Session Access Granted."
+          ],
+          "groups": [
+            [
+              "Claude"
+            ],
+            [
+              "Ready"
+            ],
+            [
+              "CheckSession",
+              "AccessGranted."
+            ]
+          ],
+          "tail_empty": false
+        },
+        {
+          "cells": [
+            "Codex",
+            "Failed",
+            "HTTP/2 Token Expired."
+          ],
+          "groups": [
+            [
+              "Codex"
+            ],
+            [
+              "Failed"
+            ],
+            [
+              "HTTP/2",
+              "TokenExpired."
+            ]
+          ],
+          "tail_empty": false
+        }
+      ]
+    }
+  ]
+}

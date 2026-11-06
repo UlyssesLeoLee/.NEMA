@@ -1,0 +1,10 @@
+	$1
+APIKey
+	?CN1 1
+请检查APIKey是否有效 确保安全
+	?JA1 1
+APIKeyを確認してください セキュリティ確認
+	?EN1 1
+Validate^0BeforeAccess PreventUnauthorizedUse
+
+

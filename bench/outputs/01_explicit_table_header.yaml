@@ -1,0 +1,8 @@
+domains:
+  - id: T2
+    revision: 1
+    mode: table
+    columns: ["Agent","Status","Note"]
+    rows:
+      - ["Claude","Ready",["CheckSession","AccessGranted."]]
+      - ["Codex","Failed",["HTTP/2","TokenExpired."]]

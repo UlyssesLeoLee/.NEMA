@@ -1,0 +1,112 @@
+{
+  "dictionary": [
+    "APIKey"
+  ],
+  "domains": [
+    {
+      "id": "CN1",
+      "revision": 1,
+      "mode": "5w1h",
+      "columns": [
+        "What",
+        "Why",
+        "How",
+        "Who",
+        "When",
+        "Where"
+      ],
+      "explicit_header": false,
+      "rows": [
+        {
+          "cells": [
+            "请检查APIKey是否有效",
+            "确保安全",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "groups": [
+            [
+              "请检查APIKey是否有效"
+            ],
+            [
+              "确保安全"
+            ]
+          ],
+          "tail_empty": false
+        }
+      ]
+    },
+    {
+      "id": "JA1",
+      "revision": 1,
+      "mode": "5w1h",
+      "columns": [
+        "What",
+        "Why",
+        "How",
+        "Who",
+        "When",
+        "Where"
+      ],
+      "explicit_header": false,
+      "rows": [
+        {
+          "cells": [
+            "APIKeyを確認してください",
+            "セキュリティ確認",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "groups": [
+            [
+              "APIKeyを確認してください"
+            ],
+            [
+              "セキュリティ確認"
+            ]
+          ],
+          "tail_empty": false
+        }
+      ]
+    },
+    {
+      "id": "EN1",
+      "revision": 1,
+      "mode": "5w1h",
+      "columns": [
+        "What",
+        "Why",
+        "How",
+        "Who",
+        "When",
+        "Where"
+      ],
+      "explicit_header": false,
+      "rows": [
+        {
+          "cells": [
+            "Validate APIKey Before Access",
+            "Prevent Unauthorized Use",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "groups": [
+            [
+              "Validate^0BeforeAccess"
+            ],
+            [
+              "PreventUnauthorizedUse"
+            ]
+          ],
+          "tail_empty": false
+        }
+      ]
+    }
+  ]
+}

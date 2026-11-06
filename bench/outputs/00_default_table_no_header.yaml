@@ -1,0 +1,8 @@
+domains:
+  - id: T1
+    revision: 1
+    mode: table
+    rows:
+      - ["Claude","Ready",["CheckSession","HTTPItIs"]]
+      - ["Codex","Failed","InvalidToken"]
+      - ["Gemini","Ready","RenewToken"]

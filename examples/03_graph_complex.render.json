@@ -1,0 +1,282 @@
+{
+  "dictionary": [],
+  "domains": [
+    {
+      "id": "G1",
+      "revision": 1,
+      "mode": "graph",
+      "columns": [
+        "Element",
+        "Relation",
+        "Description"
+      ],
+      "explicit_header": false,
+      "rows": [
+        {
+          "cells": [
+            "A",
+            "Login API",
+            "Authentication"
+          ],
+          "groups": [
+            [
+              "A"
+            ],
+            [
+              "LoginAPI"
+            ],
+            [
+              "Authentication"
+            ]
+          ],
+          "tail_empty": false,
+          "node": {
+            "id": "A"
+          }
+        },
+        {
+          "cells": [
+            "B",
+            "Token Store",
+            "Redis"
+          ],
+          "groups": [
+            [
+              "B"
+            ],
+            [
+              "TokenStore"
+            ],
+            [
+              "Redis"
+            ]
+          ],
+          "tail_empty": false,
+          "node": {
+            "id": "B"
+          }
+        },
+        {
+          "cells": [
+            "C",
+            "Audit Service",
+            "Events"
+          ],
+          "groups": [
+            [
+              "C"
+            ],
+            [
+              "AuditService"
+            ],
+            [
+              "Events"
+            ]
+          ],
+          "tail_empty": false,
+          "node": {
+            "id": "C"
+          }
+        },
+        {
+          "cells": [
+            "D",
+            "Background Worker",
+            "Queue"
+          ],
+          "groups": [
+            [
+              "D"
+            ],
+            [
+              "BackgroundWorker"
+            ],
+            [
+              "Queue"
+            ]
+          ],
+          "tail_empty": false,
+          "node": {
+            "id": "D"
+          }
+        },
+        {
+          "cells": [
+            "A>X>B",
+            "Reads",
+            "Validate Session When Token Is Valid"
+          ],
+          "groups": [
+            [
+              "A>X>B"
+            ],
+            [
+              "Reads"
+            ],
+            [
+              "ValidateSession",
+              "WhenTokenIsValid"
+            ]
+          ],
+          "tail_empty": false,
+          "edge": {
+            "id": "X",
+            "from": "A",
+            "to": "B",
+            "direction": "directed"
+          }
+        },
+        {
+          "cells": [
+            "A>Y>B",
+            "Writes",
+            "Refresh TTL"
+          ],
+          "groups": [
+            [
+              "A>Y>B"
+            ],
+            [
+              "Writes"
+            ],
+            [
+              "RefreshTTL"
+            ]
+          ],
+          "tail_empty": false,
+          "edge": {
+            "id": "Y",
+            "from": "A",
+            "to": "B",
+            "direction": "directed"
+          }
+        },
+        {
+          "cells": [
+            "B<Z<C",
+            "Notifies",
+            "Token Expired"
+          ],
+          "groups": [
+            [
+              "B<Z<C"
+            ],
+            [
+              "Notifies"
+            ],
+            [
+              "TokenExpired"
+            ]
+          ],
+          "tail_empty": false,
+          "edge": {
+            "id": "Z",
+            "from": "C",
+            "to": "B",
+            "direction": "directed"
+          }
+        },
+        {
+          "cells": [
+            "C>V>D",
+            "Dispatches",
+            "Audit Job"
+          ],
+          "groups": [
+            [
+              "C>V>D"
+            ],
+            [
+              "Dispatches"
+            ],
+            [
+              "AuditJob"
+            ]
+          ],
+          "tail_empty": false,
+          "edge": {
+            "id": "V",
+            "from": "C",
+            "to": "D",
+            "direction": "directed"
+          }
+        },
+        {
+          "cells": [
+            "A=U=C",
+            "Shares",
+            "Security Policy"
+          ],
+          "groups": [
+            [
+              "A=U=C"
+            ],
+            [
+              "Shares"
+            ],
+            [
+              "SecurityPolicy"
+            ]
+          ],
+          "tail_empty": false,
+          "edge": {
+            "id": "U",
+            "from": "A",
+            "to": "C",
+            "direction": "undirected"
+          }
+        },
+        {
+          "cells": [
+            "A>P>A",
+            "Retry",
+            "At Most3Times"
+          ],
+          "groups": [
+            [
+              "A>P>A"
+            ],
+            [
+              "Retry"
+            ],
+            [
+              "AtMost3Times"
+            ]
+          ],
+          "tail_empty": false,
+          "edge": {
+            "id": "P",
+            "from": "A",
+            "to": "A",
+            "direction": "directed"
+          }
+        },
+        {
+          "cells": [
+            "D>W>A",
+            "Reports",
+            "Completion Status"
+          ],
+          "groups": [
+            [
+              "D>W>A"
+            ],
+            [
+              "Reports"
+            ],
+            [
+              "CompletionStatus"
+            ]
+          ],
+          "tail_empty": false,
+          "edge": {
+            "id": "W",
+            "from": "D",
+            "to": "A",
+            "direction": "directed"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,361 @@
+domains:
+  - id: Task001
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["APIKeyの有効性を検証する","不正アクセスを防止する","認証ゲートウェイを利用","Claude","今日","セキュリティサービス"]
+  - id: Task002
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["APIKeyの有効性を検証する","不正アクセスを防止する","認証ゲートウェイを利用","Claude","今日","セキュリティサービス"]
+  - id: Task003
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["APIKeyの有効性を検証する","不正アクセスを防止する","認証ゲートウェイを利用","Claude","今日","セキュリティサービス"]
+  - id: Task004
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["APIKeyの有効性を検証する","不正アクセスを防止する","認証ゲートウェイを利用","Claude","今日","セキュリティサービス"]
+  - id: Task005
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["APIKeyの有効性を検証する","不正アクセスを防止する","認証ゲートウェイを利用","Claude","今日","セキュリティサービス"]
+  - id: Task006
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["APIKeyの有効性を検証する","不正アクセスを防止する","認証ゲートウェイを利用","Claude","今日","セキュリティサービス"]
+  - id: Task007
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["APIKeyの有効性を検証する","不正アクセスを防止する","認証ゲートウェイを利用","Claude","今日","セキュリティサービス"]
+  - id: Task008
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["APIKeyの有効性を検証する","不正アクセスを防止する","認証ゲートウェイを利用","Claude","今日","セキュリティサービス"]
+  - id: Task009
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["APIKeyの有効性を検証する","不正アクセスを防止する","認証ゲートウェイを利用","Claude","今日","セキュリティサービス"]
+  - id: Task010
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["APIKeyの有効性を検証する","不正アクセスを防止する","認証ゲートウェイを利用","Claude","今日","セキュリティサービス"]
+  - id: Task011
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["APIKeyの有効性を検証する","不正アクセスを防止する","認証ゲートウェイを利用","Claude","今日","セキュリティサービス"]
+  - id: Task012
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["APIKeyの有効性を検証する","不正アクセスを防止する","認証ゲートウェイを利用","Claude","今日","セキュリティサービス"]
+  - id: Task013
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["APIKeyの有効性を検証する","不正アクセスを防止する","認証ゲートウェイを利用","Claude","今日","セキュリティサービス"]
+  - id: Task014
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["APIKeyの有効性を検証する","不正アクセスを防止する","認証ゲートウェイを利用","Claude","今日","セキュリティサービス"]
+  - id: Task015
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["APIKeyの有効性を検証する","不正アクセスを防止する","認証ゲートウェイを利用","Claude","今日","セキュリティサービス"]
+  - id: Task016
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["APIKeyの有効性を検証する","不正アクセスを防止する","認証ゲートウェイを利用","Claude","今日","セキュリティサービス"]
+  - id: Task017
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["APIKeyの有効性を検証する","不正アクセスを防止する","認証ゲートウェイを利用","Claude","今日","セキュリティサービス"]
+  - id: Task018
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["APIKeyの有効性を検証する","不正アクセスを防止する","認証ゲートウェイを利用","Claude","今日","セキュリティサービス"]
+  - id: Task019
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["APIKeyの有効性を検証する","不正アクセスを防止する","認証ゲートウェイを利用","Claude","今日","セキュリティサービス"]
+  - id: Task020
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["APIKeyの有効性を検証する","不正アクセスを防止する","認証ゲートウェイを利用","Claude","今日","セキュリティサービス"]
+  - id: Task021
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["APIKeyの有効性を検証する","不正アクセスを防止する","認証ゲートウェイを利用","Claude","今日","セキュリティサービス"]
+  - id: Task022
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["APIKeyの有効性を検証する","不正アクセスを防止する","認証ゲートウェイを利用","Claude","今日","セキュリティサービス"]
+  - id: Task023
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["APIKeyの有効性を検証する","不正アクセスを防止する","認証ゲートウェイを利用","Claude","今日","セキュリティサービス"]
+  - id: Task024
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["APIKeyの有効性を検証する","不正アクセスを防止する","認証ゲートウェイを利用","Claude","今日","セキュリティサービス"]
+  - id: Task025
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["APIKeyの有効性を検証する","不正アクセスを防止する","認証ゲートウェイを利用","Claude","今日","セキュリティサービス"]
+  - id: Task026
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["APIKeyの有効性を検証する","不正アクセスを防止する","認証ゲートウェイを利用","Claude","今日","セキュリティサービス"]
+  - id: Task027
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["APIKeyの有効性を検証する","不正アクセスを防止する","認証ゲートウェイを利用","Claude","今日","セキュリティサービス"]
+  - id: Task028
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["APIKeyの有効性を検証する","不正アクセスを防止する","認証ゲートウェイを利用","Claude","今日","セキュリティサービス"]
+  - id: Task029
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["APIKeyの有効性を検証する","不正アクセスを防止する","認証ゲートウェイを利用","Claude","今日","セキュリティサービス"]
+  - id: Task030
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["APIKeyの有効性を検証する","不正アクセスを防止する","認証ゲートウェイを利用","Claude","今日","セキュリティサービス"]
+  - id: Task031
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["APIKeyの有効性を検証する","不正アクセスを防止する","認証ゲートウェイを利用","Claude","今日","セキュリティサービス"]
+  - id: Task032
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["APIKeyの有効性を検証する","不正アクセスを防止する","認証ゲートウェイを利用","Claude","今日","セキュリティサービス"]
+  - id: Task033
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["APIKeyの有効性を検証する","不正アクセスを防止する","認証ゲートウェイを利用","Claude","今日","セキュリティサービス"]
+  - id: Task034
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["APIKeyの有効性を検証する","不正アクセスを防止する","認証ゲートウェイを利用","Claude","今日","セキュリティサービス"]
+  - id: Task035
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["APIKeyの有効性を検証する","不正アクセスを防止する","認証ゲートウェイを利用","Claude","今日","セキュリティサービス"]
+  - id: Task036
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["APIKeyの有効性を検証する","不正アクセスを防止する","認証ゲートウェイを利用","Claude","今日","セキュリティサービス"]
+  - id: Task037
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["APIKeyの有効性を検証する","不正アクセスを防止する","認証ゲートウェイを利用","Claude","今日","セキュリティサービス"]
+  - id: Task038
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["APIKeyの有効性を検証する","不正アクセスを防止する","認証ゲートウェイを利用","Claude","今日","セキュリティサービス"]
+  - id: Task039
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["APIKeyの有効性を検証する","不正アクセスを防止する","認証ゲートウェイを利用","Claude","今日","セキュリティサービス"]
+  - id: Task040
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["APIKeyの有効性を検証する","不正アクセスを防止する","認証ゲートウェイを利用","Claude","今日","セキュリティサービス"]
+  - id: Task041
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["APIKeyの有効性を検証する","不正アクセスを防止する","認証ゲートウェイを利用","Claude","今日","セキュリティサービス"]
+  - id: Task042
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["APIKeyの有効性を検証する","不正アクセスを防止する","認証ゲートウェイを利用","Claude","今日","セキュリティサービス"]
+  - id: Task043
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["APIKeyの有効性を検証する","不正アクセスを防止する","認証ゲートウェイを利用","Claude","今日","セキュリティサービス"]
+  - id: Task044
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["APIKeyの有効性を検証する","不正アクセスを防止する","認証ゲートウェイを利用","Claude","今日","セキュリティサービス"]
+  - id: Task045
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["APIKeyの有効性を検証する","不正アクセスを防止する","認証ゲートウェイを利用","Claude","今日","セキュリティサービス"]
+  - id: Task046
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["APIKeyの有効性を検証する","不正アクセスを防止する","認証ゲートウェイを利用","Claude","今日","セキュリティサービス"]
+  - id: Task047
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["APIKeyの有効性を検証する","不正アクセスを防止する","認証ゲートウェイを利用","Claude","今日","セキュリティサービス"]
+  - id: Task048
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["APIKeyの有効性を検証する","不正アクセスを防止する","認証ゲートウェイを利用","Claude","今日","セキュリティサービス"]
+  - id: Task049
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["APIKeyの有効性を検証する","不正アクセスを防止する","認証ゲートウェイを利用","Claude","今日","セキュリティサービス"]
+  - id: Task050
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["APIKeyの有効性を検証する","不正アクセスを防止する","認証ゲートウェイを利用","Claude","今日","セキュリティサービス"]
+  - id: Task051
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["APIKeyの有効性を検証する","不正アクセスを防止する","認証ゲートウェイを利用","Claude","今日","セキュリティサービス"]
+  - id: Task052
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["APIKeyの有効性を検証する","不正アクセスを防止する","認証ゲートウェイを利用","Claude","今日","セキュリティサービス"]
+  - id: Task053
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["APIKeyの有効性を検証する","不正アクセスを防止する","認証ゲートウェイを利用","Claude","今日","セキュリティサービス"]
+  - id: Task054
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["APIKeyの有効性を検証する","不正アクセスを防止する","認証ゲートウェイを利用","Claude","今日","セキュリティサービス"]
+  - id: Task055
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["APIKeyの有効性を検証する","不正アクセスを防止する","認証ゲートウェイを利用","Claude","今日","セキュリティサービス"]
+  - id: Task056
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["APIKeyの有効性を検証する","不正アクセスを防止する","認証ゲートウェイを利用","Claude","今日","セキュリティサービス"]
+  - id: Task057
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["APIKeyの有効性を検証する","不正アクセスを防止する","認証ゲートウェイを利用","Claude","今日","セキュリティサービス"]
+  - id: Task058
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["APIKeyの有効性を検証する","不正アクセスを防止する","認証ゲートウェイを利用","Claude","今日","セキュリティサービス"]
+  - id: Task059
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["APIKeyの有効性を検証する","不正アクセスを防止する","認証ゲートウェイを利用","Claude","今日","セキュリティサービス"]
+  - id: Task060
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["APIKeyの有効性を検証する","不正アクセスを防止する","認証ゲートウェイを利用","Claude","今日","セキュリティサービス"]

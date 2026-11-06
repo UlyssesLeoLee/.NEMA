@@ -1,0 +1,53 @@
+{
+  "dictionary": [],
+  "domains": [
+    {
+      "id": "Tgrow",
+      "revision": 1,
+      "mode": "table",
+      "columns": [
+        "column1",
+        "column2",
+        "column3"
+      ],
+      "explicit_header": false,
+      "rows": [
+        {
+          "cells": [
+            "Alpha",
+            "One"
+          ],
+          "groups": [
+            [
+              "Alpha"
+            ],
+            [
+              "One"
+            ]
+          ],
+          "tail_empty": false
+        },
+        {
+          "cells": [
+            "Beta",
+            "Two Continued Second Column",
+            "Three"
+          ],
+          "groups": [
+            [
+              "Beta"
+            ],
+            [
+              "Two",
+              "ContinuedSecondColumn"
+            ],
+            [
+              "Three"
+            ]
+          ],
+          "tail_empty": false
+        }
+      ]
+    }
+  ]
+}

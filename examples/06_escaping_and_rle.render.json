@@ -1,0 +1,92 @@
+{
+  "dictionary": [],
+  "domains": [
+    {
+      "id": "Tescape",
+      "revision": 1,
+      "mode": "table",
+      "columns": [
+        "Symbol",
+        "Value"
+      ],
+      "explicit_header": true,
+      "rows": [
+        {
+          "cells": [
+            "Caret",
+            "^"
+          ],
+          "groups": [
+            [
+              "Caret"
+            ],
+            [
+              "\\^"
+            ]
+          ],
+          "tail_empty": false
+        },
+        {
+          "cells": [
+            "Backslash",
+            "\\"
+          ],
+          "groups": [
+            [
+              "Backslash"
+            ],
+            [
+              "\\\\"
+            ]
+          ],
+          "tail_empty": false
+        },
+        {
+          "cells": [
+            "Dot",
+            "."
+          ],
+          "groups": [
+            [
+              "Dot"
+            ],
+            [
+              "\\."
+            ]
+          ],
+          "tail_empty": false
+        },
+        {
+          "cells": [
+            "Repeated",
+            "AAAAAAAAAAAAAAAA"
+          ],
+          "groups": [
+            [
+              "Repeated"
+            ],
+            [
+              "AAAAAAAAAAAAAAAA"
+            ]
+          ],
+          "tail_empty": false
+        },
+        {
+          "cells": [
+            "Password Ref",
+            "Secret Manager Ref"
+          ],
+          "groups": [
+            [
+              "PasswordRef"
+            ],
+            [
+              "SecretManagerRef"
+            ]
+          ],
+          "tail_empty": false
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,76 @@
+{
+  "dictionary": [],
+  "domains": [
+    {
+      "id": "T1",
+      "revision": 1,
+      "mode": "table",
+      "columns": [
+        "column1",
+        "column2",
+        "column3"
+      ],
+      "explicit_header": false,
+      "rows": [
+        {
+          "cells": [
+            "Claude",
+            "Ready",
+            "Check Session HTTP It Is"
+          ],
+          "groups": [
+            [
+              "Claude"
+            ],
+            [
+              "Ready"
+            ],
+            [
+              "CheckSession",
+              "HTTPItIs"
+            ]
+          ],
+          "tail_empty": false
+        },
+        {
+          "cells": [
+            "Codex",
+            "Failed",
+            "Invalid Token"
+          ],
+          "groups": [
+            [
+              "Codex"
+            ],
+            [
+              "Failed"
+            ],
+            [
+              "InvalidToken"
+            ]
+          ],
+          "tail_empty": false
+        },
+        {
+          "cells": [
+            "Gemini",
+            "Ready",
+            "Renew Token"
+          ],
+          "groups": [
+            [
+              "Gemini"
+            ],
+            [
+              "Ready"
+            ],
+            [
+              "RenewToken"
+            ]
+          ],
+          "tail_empty": false
+        }
+      ]
+    }
+  ]
+}

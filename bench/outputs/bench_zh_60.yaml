@@ -1,0 +1,361 @@
+domains:
+  - id: Task001
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["验证APIKey有效性","防止越权访问","使用认证网关","Claude","今天","安全服务"]
+  - id: Task002
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["验证APIKey有效性","防止越权访问","使用认证网关","Claude","今天","安全服务"]
+  - id: Task003
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["验证APIKey有效性","防止越权访问","使用认证网关","Claude","今天","安全服务"]
+  - id: Task004
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["验证APIKey有效性","防止越权访问","使用认证网关","Claude","今天","安全服务"]
+  - id: Task005
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["验证APIKey有效性","防止越权访问","使用认证网关","Claude","今天","安全服务"]
+  - id: Task006
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["验证APIKey有效性","防止越权访问","使用认证网关","Claude","今天","安全服务"]
+  - id: Task007
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["验证APIKey有效性","防止越权访问","使用认证网关","Claude","今天","安全服务"]
+  - id: Task008
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["验证APIKey有效性","防止越权访问","使用认证网关","Claude","今天","安全服务"]
+  - id: Task009
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["验证APIKey有效性","防止越权访问","使用认证网关","Claude","今天","安全服务"]
+  - id: Task010
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["验证APIKey有效性","防止越权访问","使用认证网关","Claude","今天","安全服务"]
+  - id: Task011
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["验证APIKey有效性","防止越权访问","使用认证网关","Claude","今天","安全服务"]
+  - id: Task012
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["验证APIKey有效性","防止越权访问","使用认证网关","Claude","今天","安全服务"]
+  - id: Task013
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["验证APIKey有效性","防止越权访问","使用认证网关","Claude","今天","安全服务"]
+  - id: Task014
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["验证APIKey有效性","防止越权访问","使用认证网关","Claude","今天","安全服务"]
+  - id: Task015
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["验证APIKey有效性","防止越权访问","使用认证网关","Claude","今天","安全服务"]
+  - id: Task016
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["验证APIKey有效性","防止越权访问","使用认证网关","Claude","今天","安全服务"]
+  - id: Task017
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["验证APIKey有效性","防止越权访问","使用认证网关","Claude","今天","安全服务"]
+  - id: Task018
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["验证APIKey有效性","防止越权访问","使用认证网关","Claude","今天","安全服务"]
+  - id: Task019
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["验证APIKey有效性","防止越权访问","使用认证网关","Claude","今天","安全服务"]
+  - id: Task020
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["验证APIKey有效性","防止越权访问","使用认证网关","Claude","今天","安全服务"]
+  - id: Task021
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["验证APIKey有效性","防止越权访问","使用认证网关","Claude","今天","安全服务"]
+  - id: Task022
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["验证APIKey有效性","防止越权访问","使用认证网关","Claude","今天","安全服务"]
+  - id: Task023
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["验证APIKey有效性","防止越权访问","使用认证网关","Claude","今天","安全服务"]
+  - id: Task024
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["验证APIKey有效性","防止越权访问","使用认证网关","Claude","今天","安全服务"]
+  - id: Task025
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["验证APIKey有效性","防止越权访问","使用认证网关","Claude","今天","安全服务"]
+  - id: Task026
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["验证APIKey有效性","防止越权访问","使用认证网关","Claude","今天","安全服务"]
+  - id: Task027
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["验证APIKey有效性","防止越权访问","使用认证网关","Claude","今天","安全服务"]
+  - id: Task028
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["验证APIKey有效性","防止越权访问","使用认证网关","Claude","今天","安全服务"]
+  - id: Task029
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["验证APIKey有效性","防止越权访问","使用认证网关","Claude","今天","安全服务"]
+  - id: Task030
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["验证APIKey有效性","防止越权访问","使用认证网关","Claude","今天","安全服务"]
+  - id: Task031
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["验证APIKey有效性","防止越权访问","使用认证网关","Claude","今天","安全服务"]
+  - id: Task032
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["验证APIKey有效性","防止越权访问","使用认证网关","Claude","今天","安全服务"]
+  - id: Task033
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["验证APIKey有效性","防止越权访问","使用认证网关","Claude","今天","安全服务"]
+  - id: Task034
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["验证APIKey有效性","防止越权访问","使用认证网关","Claude","今天","安全服务"]
+  - id: Task035
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["验证APIKey有效性","防止越权访问","使用认证网关","Claude","今天","安全服务"]
+  - id: Task036
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["验证APIKey有效性","防止越权访问","使用认证网关","Claude","今天","安全服务"]
+  - id: Task037
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["验证APIKey有效性","防止越权访问","使用认证网关","Claude","今天","安全服务"]
+  - id: Task038
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["验证APIKey有效性","防止越权访问","使用认证网关","Claude","今天","安全服务"]
+  - id: Task039
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["验证APIKey有效性","防止越权访问","使用认证网关","Claude","今天","安全服务"]
+  - id: Task040
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["验证APIKey有效性","防止越权访问","使用认证网关","Claude","今天","安全服务"]
+  - id: Task041
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["验证APIKey有效性","防止越权访问","使用认证网关","Claude","今天","安全服务"]
+  - id: Task042
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["验证APIKey有效性","防止越权访问","使用认证网关","Claude","今天","安全服务"]
+  - id: Task043
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["验证APIKey有效性","防止越权访问","使用认证网关","Claude","今天","安全服务"]
+  - id: Task044
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["验证APIKey有效性","防止越权访问","使用认证网关","Claude","今天","安全服务"]
+  - id: Task045
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["验证APIKey有效性","防止越权访问","使用认证网关","Claude","今天","安全服务"]
+  - id: Task046
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["验证APIKey有效性","防止越权访问","使用认证网关","Claude","今天","安全服务"]
+  - id: Task047
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["验证APIKey有效性","防止越权访问","使用认证网关","Claude","今天","安全服务"]
+  - id: Task048
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["验证APIKey有效性","防止越权访问","使用认证网关","Claude","今天","安全服务"]
+  - id: Task049
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["验证APIKey有效性","防止越权访问","使用认证网关","Claude","今天","安全服务"]
+  - id: Task050
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["验证APIKey有效性","防止越权访问","使用认证网关","Claude","今天","安全服务"]
+  - id: Task051
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["验证APIKey有效性","防止越权访问","使用认证网关","Claude","今天","安全服务"]
+  - id: Task052
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["验证APIKey有效性","防止越权访问","使用认证网关","Claude","今天","安全服务"]
+  - id: Task053
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["验证APIKey有效性","防止越权访问","使用认证网关","Claude","今天","安全服务"]
+  - id: Task054
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["验证APIKey有效性","防止越权访问","使用认证网关","Claude","今天","安全服务"]
+  - id: Task055
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["验证APIKey有效性","防止越权访问","使用认证网关","Claude","今天","安全服务"]
+  - id: Task056
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["验证APIKey有效性","防止越权访问","使用认证网关","Claude","今天","安全服务"]
+  - id: Task057
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["验证APIKey有效性","防止越权访问","使用认证网关","Claude","今天","安全服务"]
+  - id: Task058
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["验证APIKey有效性","防止越权访问","使用认证网关","Claude","今天","安全服务"]
+  - id: Task059
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["验证APIKey有效性","防止越权访问","使用认证网关","Claude","今天","安全服务"]
+  - id: Task060
+    revision: 1
+    mode: 5w1h
+    columns: ["What","Why","How","Who","When","Where"]
+    rows:
+      - ["验证APIKey有效性","防止越权访问","使用认证网关","Claude","今天","安全服务"]
