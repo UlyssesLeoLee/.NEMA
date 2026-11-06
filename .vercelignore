@@ -1,0 +1,4 @@
+# The v1.0 IDE/IME bundle (63 MB) is a release artifact, not a website resource.
+# The v1.4 site never links to it, and uploading it makes every deploy fail.
+# GitHub Pages still serves it at /archive/ for anyone who wants the bundle.
+archive/
