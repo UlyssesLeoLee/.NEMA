@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NEMA v1.4</title>
+<script>
+// GitHub Pages serves this file for every path it cannot match. It exists for
+// exactly one reason: the repository is named ".NEMA", so Pages publishes the
+// site under /.NEMA/, while the canonical extension spelling ".nema" is
+// lower-case. Rewrite that one prefix; leave every other 404 untouched.
+//
+// The host check is load-bearing. On Vercel the site root is "/", not
+// "/.NEMA/", so rewriting the prefix there would bounce the visitor between
+// two paths that both 404.
+(function () {
+  var p = window.location.pathname;
+  if (!/(^|\.)github\.io$/i.test(window.location.hostname)) return;
+  if (!/^\/\.nema(\/|$)/i.test(p)) return;
+  var target = p.replace(/^\/\.nema/i, '/.NEMA');
+  if (target === p) return; // already canonical - never redirect onto itself
+  window.location.replace(target + window.location.search + window.location.hash);
+})();
+</script>
+<style>
+  :root { color-scheme: dark; }
+  body {
+    margin: 0; min-height: 100vh; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 12px;
+    background: #0b0d12; color: #e8e6e1;
+    font: 16px/1.6 "Iowan Old Style", "Songti SC", Georgia, serif;
+  }
+  h1 { margin: 0; font-size: 28px; letter-spacing: .08em; font-weight: 500; }
+  .mark { color: #c9a227; letter-spacing: .3em; font-size: 13px; }
+  a { color: #c9a227; }
+  p { margin: 0; color: #9b968c; }
+</style>
+</head>
+<body>
+<p class="mark">· N · E · M · A ·</p>
+<h1>NEMA v1.4</h1>
+<p id="hint">正在前往 NEMA v1.4 主页…</p>
+<p><a id="home" href="https://ulyssesleolee.github.io/.NEMA/website/index.html">返回首页</a></p>
+<script>
+  document.getElementById('home').href = /(^|\.)github\.io$/i.test(window.location.hostname)
+    ? '/.NEMA/website/index.html'
+    : '/website/index.html';
+</script>
+<noscript>
+<p>请直接访问 <a href="https://ulyssesleolee.github.io/.NEMA/website/index.html">NEMA v1.4 主页</a>。</p>
+</noscript>
+</body>
+</html>
