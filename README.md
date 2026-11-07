@@ -1,6 +1,8 @@
 # NEMA v1.5 · 当前可覆盖发布包
 
-**全生态链产品禁止实体清单内企业使用。**
+**全生态链产品禁止实体清单内企业使用。实体清单随各发布包根目录一并提供，作者保留随时修改实体清单的权利。**
+
+**All products across the NEMA ecosystem prohibit use by enterprises on the entity list. The entity list ships in the root of each release package, and the author reserves the right to modify the list at any time.**
 
 NEMA 是面向多 Agent 的**纵向不规则二维文本格式**：正文以 ASCII 空格分列、LF 续写意群，Table 默认，另有显式 5W1H 和带内容的 Graph。`.nema` 原生可编辑；`.nemat` 可选无损传输压缩。**本次的重点是纯数字领域头和 Graph 真箭头。**
 
