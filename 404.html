@@ -3,25 +3,20 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>NEMA v1.4</title>
-<script>
-// GitHub Pages serves this file for every path it cannot match. It exists for
-// exactly one reason: the repository is named ".NEMA", so Pages publishes the
-// site under /.NEMA/, while the canonical extension spelling ".nema" is
-// lower-case. Rewrite that one prefix; leave every other 404 untouched.
-//
-// The host check is load-bearing. On Vercel the site root is "/", not
-// "/.NEMA/", so rewriting the prefix there would bounce the visitor between
-// two paths that both 404.
-(function () {
-  var p = window.location.pathname;
-  if (!/(^|\.)github\.io$/i.test(window.location.hostname)) return;
-  if (!/^\/\.nema(\/|$)/i.test(p)) return;
-  var target = p.replace(/^\/\.nema/i, '/.NEMA');
-  if (target === p) return; // already canonical - never redirect onto itself
-  window.location.replace(target + window.location.search + window.location.hash);
-})();
-</script>
+<title>NEMA</title>
+<!--
+  The site's own 404 page, served for any path under this site root that does
+  not resolve to a file.
+
+  Note on the case of the site path. GitHub Pages resolves the *site prefix*
+  case-sensitively at the user-site level, before a request ever reaches this
+  site root. A request for /.nema/ therefore never loads this file - GitHub
+  answers "Site not found" on its own. Measured against the live site on
+  2026-11-07: /.nema/ -> GitHub "Site not found", while
+  /.NEMA/definitely-missing-page -> this page. So a lower-case alias for the
+  site root cannot be implemented from here; it has to live in the hosting
+  configuration instead.
+-->
 <style>
   :root { color-scheme: dark; }
   body {
@@ -38,16 +33,13 @@
 </head>
 <body>
 <p class="mark">· N · E · M · A ·</p>
-<h1>NEMA v1.4</h1>
-<p id="hint">正在前往 NEMA v1.4 主页…</p>
+<h1>NEMA</h1>
+<p>这里没有这一页。</p>
 <p><a id="home" href="https://ulyssesleolee.github.io/.NEMA/website/index.html">返回首页</a></p>
 <script>
   document.getElementById('home').href = /(^|\.)github\.io$/i.test(window.location.hostname)
     ? '/.NEMA/website/index.html'
     : '/website/index.html';
 </script>
-<noscript>
-<p>请直接访问 <a href="https://ulyssesleolee.github.io/.NEMA/website/index.html">NEMA v1.4 主页</a>。</p>
-</noscript>
 </body>
 </html>
