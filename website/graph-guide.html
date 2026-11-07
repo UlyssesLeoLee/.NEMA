@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#0a101b">
+<meta name="description" content="NEMA Graph: explicit Node and Edge columns, optional descriptions, directed links, and lossless literal identifiers.">
+<title>NEMA · Graph 语义与箭头</title><link rel="icon" type="image/svg+xml" href="assets/nema-app-icon.svg"><link rel="stylesheet" href="styles.css">
+<style>
+.graph-page{max-width:1150px;margin:auto;padding:34px 28px 105px}.gp-nav{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}.gp-nav a{color:#f1c98d;font-size:13px}.gp-lang{display:flex;gap:6px}.gp-lang button{background:#172338;border:1px solid #97a7b852;padding:8px 12px;border-radius:8px;color:#d9e0e7}.gp-lang button[aria-pressed=true]{background:#4c3924;border-color:#f1c98d;color:#f7d29c}.gp-hero{max-width:900px;padding:78px 0 28px}.gp-hero h1{font-size:clamp(36px,5vw,65px);line-height:1.18;letter-spacing:-.026em;margin:20px 0}.gp-hero p{font-size:16px;color:#c1cad8;line-height:1.9}.gp-section{margin-top:52px}.gp-section h2{font-size:24px;margin:0 0 19px;font-weight:650}.gp-section>p{color:#b4c2d1;line-height:1.9}.gp-code{white-space:pre;overflow:auto;border:1px solid #bea47868;border-radius:12px;background:#0a131e;color:#eed7b1;padding:20px 23px;font-size:clamp(13px,1.5vw,16px);line-height:1.75;tab-size:3;margin:16px 0}.gp-note{font-size:12px;color:#aab9c8}.gp-table{width:100%;border-collapse:collapse;border:1px solid #ffffff20;margin:14px 0 24px;font-size:13px}.gp-table th{background:#e0b46d18;color:#f0cf9a;font-weight:700}.gp-table th,.gp-table td{text-align:left;border-bottom:1px solid #ffffff22;padding:13px 15px;vertical-align:top}.gp-table td{color:#d0dbe6}.gp-table code{font-size:12px;color:#f1d29d}.gp-example-pair{display:grid;grid-template-columns:1fr 1fr;gap:16px}.gp-panel{border:1px solid #8194a259;background:#111c2b;border-radius:12px;padding:23px;min-width:0}.gp-panel h3{font-size:16px;margin:0 0 13px}.gp-panel p{font-size:13px;line-height:1.9;color:#c0cbd7}.gp-panel .gp-code{font-size:12px;padding:15px}.gp-showcase{border:1px solid #e4bf8259;border-radius:13px;background:linear-gradient(135deg,#172333,#22283a);padding:22px 25px;display:flex;gap:20px;align-items:center;flex-wrap:wrap}.gp-node{min-width:128px;border:1.5px solid #d2ac72;border-radius:12px;padding:16px;text-align:center;background:#2b3542}.gp-node strong{display:block;font-size:16px}.gp-node small{display:block;color:#e0b97c;font-size:12px}.gp-node em{display:block;font-size:12px;color:#c7d4df;font-style:normal}.gp-link{flex:1;min-width:75px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px}.gp-link strong{font-size:13px;color:#f3cb8a}.gp-link>span{position:relative;height:2px;width:100%;background:#e4b978}.gp-link>span:after{content:'';position:absolute;right:0;top:-5px;width:0;height:0;border-left:11px solid #e4b978;border-top:6px solid transparent;border-bottom:6px solid transparent}.gp-link small{font-size:11px;color:#b9c6d4}.gp-caveat{padding:16px 21px;border-left:3px solid #cba56d;background:#1d2530;color:#c7d0db;font-size:13px;line-height:1.9;margin:19px 0}.gp-foot{margin-top:70px;border-top:1px solid #ffffff2a;padding-top:24px;display:flex;flex-wrap:wrap;gap:18px;font-size:13px;color:#ddba80}.gp-foot a{border-bottom:1px solid #bd965b}.gp-a11y:focus-visible{outline:2px solid #ecc17d;outline-offset:4px}@media(max-width:730px){.graph-page{padding:23px 17px 70px}.gp-hero{padding:45px 0 15px}.gp-example-pair{grid-template-columns:1fr}.gp-table{font-size:11px}.gp-table th,.gp-table td{padding:10px 8px}.gp-showcase{gap:10px;justify-content:space-between}.gp-node{min-width:102px;padding:11px}.gp-link{min-width:36px}}@media(max-width:370px){.gp-node{min-width:90px;padding:8px}.gp-link{min-width:20px}.gp-node strong{font-size:13px}}
+
+/* R3: Graph descriptions shown on hover, focus and tap */
+.gp-showcase{position:relative;isolation:isolate}
+.gp-showcase .gp-node,.gp-showcase .gp-link{appearance:none;font-family:inherit;color:inherit;cursor:pointer}
+.gp-showcase .gp-node:hover,.gp-showcase .gp-node:focus-visible,.gp-showcase .gp-link:hover,.gp-showcase .gp-link:focus-visible,.gp-showcase [data-graph-item].is-active{border-color:#fae0b4;background:#394151}
+.gp-showcase .gp-link{border:1px solid transparent;border-radius:9px;background:transparent;padding:12px 8px}
+.gp-showcase .gp-link>span{display:block}
+.gp-showcase .gp-link:hover strong{color:#ffe0a8}
+.gp-popover{position:absolute;z-index:10;max-width:min(268px,calc(100% - 12px));min-width:min(185px,calc(100% - 12px));padding:13px 15px;border:1px solid #f0c485;border-radius:10px;box-shadow:0 14px 33px #000b;background:#0d1b2b;pointer-events:none;overflow-wrap:anywhere;line-height:1.6}
+.gp-popover[hidden]{display:none!important}
+.gp-pop-kind{display:block;font-size:10px;font-weight:700;color:#efc888;letter-spacing:.07em}
+.gp-popover strong{display:block;font-size:14px;color:#fff0d3;margin-top:4px}
+.gp-popover span[id=guidePopRoute]{display:block;font-size:11px;color:#b3c9dd}
+.gp-popover p{font-size:12px;color:#e2e8ef;line-height:1.65;margin:8px 0 0}
+@media(max-width:730px){.gp-showcase:has(.gp-popover:not([hidden])){padding-bottom:140px}.gp-popover{left:12px!important;top:auto!important;bottom:12px!important;width:calc(100% - 24px);max-width:none;min-width:0}}
+.gp-inter-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}.gp-inter-grid .gp-panel{padding:20px}.gp-inter-grid .gp-panel p{margin-bottom:0}@media(max-width:740px){.gp-inter-grid{grid-template-columns:1fr}}
+</style>
+<script src="graph-guide.js" defer></script>
+<link rel="stylesheet" href="comic.css">
+</head>
+<body>
+<main class="graph-page">
+<header class="gp-nav"><a href="index.html" data-t="back">← NEMA 首页</a><div class="gp-lang" role="group" aria-label="Languages"><button data-lang="zh" aria-pressed="true">中</button><button data-lang="ja" aria-pressed="false">日</button><button data-lang="en" aria-pressed="false">EN</button></div></header>
+<section class="gp-hero"><div class="overline">NEMA v1.1 / GRAPH SEMANTICS · HOVER</div><h1 data-t="title">节点有身份，边有方向，说明是可选内容。</h1><p data-t="lead">Graph 是 NEMA 三模式之一。X0 定义 Node 或 Edge 身份，X1 是名称，X2 是职责或行为说明。点击展示不需要猜测“Authentication”是什么。</p></section>
+<section class="gp-section" id="node"><div class="section-marker">01 / NODE</div><h2 data-t="nodeTitle">为什么写 Authentication？</h2>
+<pre class="gp-code" id="nodeSnippet">⇥>G1 1
+A \=LoginAPI Authentication</pre>
+<p class="gp-note" data-t="tabNote">⇥ 代表领域头前的一个真实 Tab。实际 .nema 文件使用 Tab；示例为了便于阅读使用 ⇥。</p>
+<table class="gp-table"><thead><tr><th data-t="column">列</th><th data-t="value">原文</th><th data-t="meaning">语义</th></tr></thead><tbody>
+<tr><td>X0</td><td><code>A</code></td><td data-t="x0node">Node ID，图内引用节点 A</td></tr>
+<tr><td>X1</td><td><code>\=LoginAPI</code></td><td data-t="x1node">Node 名称。\= 表示精确保留 LoginAPI 的大小写</td></tr>
+<tr><td>X2</td><td><code>Authentication</code></td><td data-t="x2node">可选说明：身份认证。供 AI 理解、搜索和详情展示</td></tr>
+<tr><td>X3+</td><td><code>…</code></td><td data-t="x3">可选扩展属性；不参与箭头语法判断</td></tr>
+</tbody></table>
+<div class="gp-example-pair"><div class="gp-panel"><h3 data-t="nodeMinimal">最短合法 Node</h3><pre class="gp-code">A \=LoginAPI</pre><p data-t="nodeMinimalNote">不写 X2 也合法。名称已经足够明确时，省略说明更省 Token。</p></div><div class="gp-panel"><h3 data-t="nodeWithNote">带职责说明的 Node</h3><pre class="gp-code">A \=LoginAPI Authentication</pre><p data-t="nodeNote">Authentication 只是说明，不等于 Edge，也不会令系统自动连接某个“认证服务”。</p></div></div>
+<div class="gp-caveat" data-t="nameCaveat">注意：A LoginAPI Authentication 也是合法的三列原文；但原生 PascalCase 语义渲染可能把 X1 展示为 “Login API”。如需要保持精确标识符 LoginAPI，请写作 \=LoginAPI。</div>
+</section>
+<section class="gp-section" id="edge"><div class="section-marker">02 / EDGE</div><h2 data-t="edgeTitle">Edge 的 X2 是独立关系的说明</h2>
+<pre class="gp-code">A&gt;X&gt;B Reads VerifySession
+  CacheExpiredRetryOnce</pre>
+<table class="gp-table"><thead><tr><th data-t="column2">列</th><th data-t="value2">原文</th><th data-t="meaning2">语义</th></tr></thead><tbody>
+<tr><td>X0</td><td><code>A&gt;X&gt;B</code></td><td data-t="x0edge">A → B，X 是独立 Edge ID</td></tr>
+<tr><td>X1</td><td><code>Reads</code></td><td data-t="x1edge">关系名称</td></tr>
+<tr><td>X2</td><td><code>VerifySession</code></td><td data-t="x2edge">关系说明：校验会话；下一行两个前置空格继续 X2</td></tr>
+</tbody></table>
+<p class="gp-note" data-t="hoverGuide">将鼠标移到节点或连线上即可查看它的 X2 描述；Tab 聚焦也可查看。点击可保持预览，触屏使用点击。</p>
+<div class="gp-showcase" id="graphShowcase" aria-label="Interactive Node and Edge descriptions">
+ <button type="button" class="gp-node gp-a11y" data-graph-item="A"><strong>A</strong><small>LoginAPI</small></button>
+ <button type="button" class="gp-link gp-a11y" data-graph-item="X"><strong>X · Reads</strong><span aria-hidden="true"></span></button>
+ <button type="button" class="gp-node gp-a11y" data-graph-item="B"><strong>B</strong><small>TokenStore</small></button>
+ <div class="gp-popover" id="guideGraphTooltip" role="tooltip" aria-hidden="true" hidden><span class="gp-pop-kind" id="guidePopKind"></span><strong id="guidePopTitle"></strong><span id="guidePopRoute"></span><p id="guidePopDescription"></p></div>
+</div><div class="gp-caveat" data-t="edgeCaveat">线的方向由 X0 唯一决定；X1、X2 和纵向续写都只是这条 Edge 的内容，不会修改源节点和目标节点。</div>
+</section>
+<section class="gp-section" id="direction"><div class="section-marker">03 / DIRECTIONS</div><h2 data-t="directionsTitle">箭头、平行边、自循环</h2>
+<table class="gp-table"><thead><tr><th data-t="syntax">原文</th><th data-t="render">渲染</th><th data-t="rule">规则</th></tr></thead><tbody>
+<tr><td><code>A&gt;X&gt;B</code></td><td>A → B</td><td data-t="forward">正向</td></tr>
+<tr><td><code>A&lt;Y&lt;B</code></td><td>B → A</td><td data-t="reverse">反向，不是 A → B</td></tr>
+<tr><td><code>A=U=B</code></td><td>A — B</td><td data-t="undirected">无向关联，无箭头</td></tr>
+<tr><td><code>A&gt;P&gt;A</code></td><td>A ↻ A</td><td data-t="loop">自循环</td></tr>
+<tr><td><code>A&gt;X&gt;B</code> + <code>A&gt;Y&gt;B</code></td><td>A ⇉ B</td><td data-t="parallel">相同节点之间两条不同 ID 的边</td></tr>
+<tr><td><code>A&gt;X&gt;B</code> + <code>B&gt;Y&gt;A</code></td><td>A ⇄ B</td><td data-t="bidirectional">两个独立 Edge，各自具有内容与身份</td></tr>
+</tbody></table>
+<p class="gp-note" data-t="shorthand">正式 Graph 领域头是 ⇥>G1 1（ID 加版本）。单独的 ⇥>1 仅为不完整速记，不符合当前 v1.1 解析器语法。</p>
+</section>
+<section class="gp-section" id="interactions"><div class="section-marker">04 / HOVER · FOCUS · TAP</div><h2 data-t="interTitle">悬停只读，点击才选中。</h2><p data-t="interIntro">Node 与 Edge 的说明都来自 X2。悬停不会添加连线、改变方向、保存文件或请求 AI。</p>
+<div class="gp-inter-grid">
+ <article class="gp-panel"><h3 data-t="intPointer">鼠标悬停</h3><p data-t="intPointerDesc">移动到节点矩形、关系连线或名称标签，立即显示名称、真实方向与说明；移走后消失。</p></article>
+ <article class="gp-panel"><h3 data-t="intKeyboard">键盘与辅助功能</h3><p data-t="intKeyboardDesc">Tab 聚焦同样预览；Escape 关闭；Enter / 空格选择，并在常驻字段检查器中显示完整内容。</p></article>
+ <article class="gp-panel"><h3 data-t="intTouch">触屏</h3><p data-t="intTouchDesc">首页点击即可选中并查看详情；本说明页轻触固定说明，重复点击关闭，卡片在小屏的图下方展示。</p></article>
+</div><div class="gp-caveat" data-t="intInvariant">X2 为空时不生成虚构说明；说明只影响可读性，不影响图结构，也不改变 NEMA 的 Token 基准。</div>
+<p class="gp-note"><a href="../docs/GRAPH_HOVER_RENDERER_DESIGN.md" data-t="document">Graph 设计文档</a></p></section>
+<footer class="gp-foot"><a href="index.html" data-t="home">主页 / 交互图</a><a href="token-benchmark.html" data-t="token">Token 实测</a><a href="../docs/GRAPH_FIELD_GUIDE_zh.md" id="guideDoc" data-t="document">Graph 设计文档</a><a href="codec.html">Codec</a></footer>
+</main></body></html>

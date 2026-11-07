@@ -1,0 +1,63 @@
+{
+  "1440": {
+    "bodyWidth": 1440,
+    "viewWidth": 1440,
+    "errors": [],
+    "title": "NEMA · Ariadne's Thread"
+  },
+  "mode_table": {
+    "source": "\tTtable1 1\n\tAgent Status Note\nClaude Ready 认证检查已完成\n  下一轮验证权限\nCodex Review 准备输出审核结果\n\n\n",
+    "render": "Ttable1\nAgent\tStatus\tNote\nClaude\tReady\t认证检查已完成下一轮验证权限\nCodex\tReview\t准备输出审核结果"
+  },
+  "mode_graph": {
+    "source": "\t>Gauth1 1\nA \\=LoginAPI Authentication\nB \\=TokenStore SessionStorage\nC \\=AuditService RecordsSecurityEvents\nA>X>B Reads ",
+    "render": "X · Reads\nY · Notifies\nU · Shares\nP · Retry\nA\nLoginAPI\nB\nTokenStore\nC\nAuditService\n\n悬停查看 X2 说明 · 点击固定完整字段 · Tab 聚焦，Enter 查看详情 · 触屏点击查看\n\n节点\nA · LoginAPI\nB · TokenStore\nC · AuditServ"
+  },
+  "nodeHover": {
+    "visible": true,
+    "text": "节点说明 · X2\nA · LoginAPI\nA\n\nAuthentication\n\n点击查看完整字段"
+  },
+  "edgeHover": {
+    "visible": true,
+    "text": "关系说明 · X2\nX · Reads\nA → B\n\nVerify session cache expired retry once\n\n点击查看完整字段"
+  },
+  "lang_ja": "多数の AI エージェントが、一本の糸で迷宮を進む。",
+  "lang_en": "Many AI agents. One thread through the labyrinth.",
+  "lang_zh": "让多个智能体，沿着同一根线穿过迷宫。",
+  "1024": {
+    "bodyWidth": 1024,
+    "viewWidth": 1024,
+    "errors": [],
+    "title": "NEMA · Ariadne's Thread"
+  },
+  "390": {
+    "bodyWidth": 390,
+    "viewWidth": 390,
+    "errors": [],
+    "title": "NEMA · Ariadne's Thread"
+  },
+  "graph-guide": {
+    "title": "NEMA · Graph 语义与箭头",
+    "bodyWidth": 1280,
+    "errors": []
+  },
+  "guideHover": {
+    "visible": true,
+    "text": "关系说明 · X2\nX · Reads\nA → B\n\nVerify session"
+  },
+  "token-benchmark": {
+    "title": "NEMA · Token Laboratory",
+    "bodyWidth": 1280,
+    "errors": []
+  },
+  "codec": {
+    "title": "NEMA · Codec 1.1",
+    "bodyWidth": 1280,
+    "errors": []
+  },
+  "review": {
+    "title": "NEMA · Five-Round Review",
+    "bodyWidth": 1280,
+    "errors": []
+  }
+}

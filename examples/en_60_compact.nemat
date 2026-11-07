@@ -1,0 +1,135 @@
+	$12
+ExplainUnexpectedFailure
+AnalyzeGraphEdges
+ImproveSharedContext
+AvoidExpiredSessions
+DocumentReleasePlan
+PreventInvalidDirections
+PrepareAgentHandoff
+ReduceTokenWaste
+VerifyTopology
+Today
+Tomorrow
+Claude
+	Task001 1
+BuildLoginFlow PreventDataLeak ValidateAPI Codex ^9 AuthService
+	002 1
+ReviewHTTPStatus ^0 AuditLogs ^11 ^10 Gateway
+	003 1
+FixTokenCache ^3 AddTests Argo ^9 Redis
+	004 1
+^4 ^2 ReviewChanges Codex Friday Repository
+	005 1
+^1 ^5 ^8 ^11 ^9 IDE
+	006 1
+^6 ^7 ReviewDependencies Argo ^10 Project
+	007 1
+BuildLoginFlow PreventDataLeak ValidateAPI Codex ^9 AuthService
+	008 1
+ReviewHTTPStatus ^0 AuditLogs ^11 ^10 Gateway
+	009 1
+FixTokenCache ^3 AddTests Argo ^9 Redis
+	010 1
+^4 ^2 ReviewChanges Codex Friday Repository
+	011 1
+^1 ^5 ^8 ^11 ^9 IDE
+	012 1
+^6 ^7 ReviewDependencies Argo ^10 Project
+	013 1
+BuildLoginFlow PreventDataLeak ValidateAPI Codex ^9 AuthService
+	014 1
+ReviewHTTPStatus ^0 AuditLogs ^11 ^10 Gateway
+	015 1
+FixTokenCache ^3 AddTests Argo ^9 Redis
+	016 1
+^4 ^2 ReviewChanges Codex Friday Repository
+	017 1
+^1 ^5 ^8 ^11 ^9 IDE
+	018 1
+^6 ^7 ReviewDependencies Argo ^10 Project
+	019 1
+BuildLoginFlow PreventDataLeak ValidateAPI Codex ^9 AuthService
+	020 1
+ReviewHTTPStatus ^0 AuditLogs ^11 ^10 Gateway
+	021 1
+FixTokenCache ^3 AddTests Argo ^9 Redis
+	022 1
+^4 ^2 ReviewChanges Codex Friday Repository
+	023 1
+^1 ^5 ^8 ^11 ^9 IDE
+	024 1
+^6 ^7 ReviewDependencies Argo ^10 Project
+	025 1
+BuildLoginFlow PreventDataLeak ValidateAPI Codex ^9 AuthService
+	026 1
+ReviewHTTPStatus ^0 AuditLogs ^11 ^10 Gateway
+	027 1
+FixTokenCache ^3 AddTests Argo ^9 Redis
+	028 1
+^4 ^2 ReviewChanges Codex Friday Repository
+	029 1
+^1 ^5 ^8 ^11 ^9 IDE
+	030 1
+^6 ^7 ReviewDependencies Argo ^10 Project
+	031 1
+BuildLoginFlow PreventDataLeak ValidateAPI Codex ^9 AuthService
+	032 1
+ReviewHTTPStatus ^0 AuditLogs ^11 ^10 Gateway
+	033 1
+FixTokenCache ^3 AddTests Argo ^9 Redis
+	034 1
+^4 ^2 ReviewChanges Codex Friday Repository
+	035 1
+^1 ^5 ^8 ^11 ^9 IDE
+	036 1
+^6 ^7 ReviewDependencies Argo ^10 Project
+	037 1
+BuildLoginFlow PreventDataLeak ValidateAPI Codex ^9 AuthService
+	038 1
+ReviewHTTPStatus ^0 AuditLogs ^11 ^10 Gateway
+	039 1
+FixTokenCache ^3 AddTests Argo ^9 Redis
+	040 1
+^4 ^2 ReviewChanges Codex Friday Repository
+	041 1
+^1 ^5 ^8 ^11 ^9 IDE
+	042 1
+^6 ^7 ReviewDependencies Argo ^10 Project
+	043 1
+BuildLoginFlow PreventDataLeak ValidateAPI Codex ^9 AuthService
+	044 1
+ReviewHTTPStatus ^0 AuditLogs ^11 ^10 Gateway
+	045 1
+FixTokenCache ^3 AddTests Argo ^9 Redis
+	046 1
+^4 ^2 ReviewChanges Codex Friday Repository
+	047 1
+^1 ^5 ^8 ^11 ^9 IDE
+	048 1
+^6 ^7 ReviewDependencies Argo ^10 Project
+	049 1
+BuildLoginFlow PreventDataLeak ValidateAPI Codex ^9 AuthService
+	050 1
+ReviewHTTPStatus ^0 AuditLogs ^11 ^10 Gateway
+	051 1
+FixTokenCache ^3 AddTests Argo ^9 Redis
+	052 1
+^4 ^2 ReviewChanges Codex Friday Repository
+	053 1
+^1 ^5 ^8 ^11 ^9 IDE
+	054 1
+^6 ^7 ReviewDependencies Argo ^10 Project
+	055 1
+BuildLoginFlow PreventDataLeak ValidateAPI Codex ^9 AuthService
+	056 1
+ReviewHTTPStatus ^0 AuditLogs ^11 ^10 Gateway
+	057 1
+FixTokenCache ^3 AddTests Argo ^9 Redis
+	058 1
+^4 ^2 ReviewChanges Codex Friday Repository
+	059 1
+^1 ^5 ^8 ^11 ^9 IDE
+	060 1
+^6 ^7 ReviewDependencies Argo ^10 Project
+
+

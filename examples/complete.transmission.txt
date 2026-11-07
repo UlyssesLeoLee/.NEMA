@@ -1,0 +1,25 @@
+	Tplain1 1
+今天的测试已经完成。
+	Ten1 1
+What
+HTTPItIs
+	Tzh1 1
+处理登录流程 防止数据泄露 验证访问令牌 智能体甲 今天 认证服务
+	Tja1 1
+ログイン処理を確認する 情報漏洩を防ぐ 認証トークンを検証する 担当エージェント 今日 認証サービス
+	Tb1 1
+	Agent Status Note
+Claude Ready 已完成认证
+  正在复核权限
+Codex Review 待审核结果
+	>G1 1
+A \=LoginAPI 接收请求
+B \=TokenStore 存储令牌
+C \=AuditService 记录审计
+A>X>B Reads 验证令牌
+  失败时重试
+B<Y<C Notifies 报告给存储服务
+A=U=C Shares 共用策略
+A>P>A Retry 最多三次
+
+
