@@ -1,0 +1,82 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark"><title>当前语法规范 v1.5 · .NEMA</title><link rel="stylesheet" href="../docs/docs.css"><link rel="icon" href="../assets/nema-app-icon.svg"><link rel="stylesheet" href="../art-unified-v16.css"></head><body><header><div class="wrap"><a class="logo" href="../index.html">.NEMA</a><nav><a href="../index.html">首页</a><a href="../syntax.html">语法清单</a><a href="../docs/index.html">文档中心</a><a href="../download.html">解释器</a></nav></div></header><main class="wrap"><div id="doc-top" class="eyebrow">DOCUMENTATION / SPEC_v1.5_zh</div><figure class="doc-cover-figure"><img src="../assets/thread-maze-detail.webp" loading="lazy" alt="金线细部：从文本到关系"><figcaption>ARIADNE’S THREAD · 金线细部：从文本到关系</figcaption></figure><div class="reading"><aside><div class="eyebrow">CONTENTS / 目录</div><a href="#doc-top">返回顶部</a><a href="#sec-0">1. 统一字符规则</a><a href="#sec-1">2. 三种领域头</a><a href="#sec-2">3. 5W1H 模式</a><a href="#sec-3">4. Table 模式——显式表头</a><a href="#sec-4">5. Table 模式——无表头自动列</a><a href="#sec-5">6. Node–Edge 模式</a><a href="#sec-6">7. 共通字典</a><a href="#sec-7">8. 转义、准确性和限制</a><a href="#sec-8">9. 版本迁移与兼容</a><a href="#sec-9">10. 测试与部署</a></aside><article class="article"><h1>当前语法规范 v1.5</h1><h1>.NEMA v1.5 — 正式语法规范（当前版）</h1>
+<blockquote>
+<p>2026-11-07。此为项目协议规范，不代表国际/行业标准。编辑层是 <code>.nema</code>，可逆传输层 <code>.nemat</code> 须独立协商。旧版文档保留为历史版本。</p>
+</blockquote>
+<h2 id="sec-0">1. 统一字符规则</h2>
+<p>所有领域头<strong>恰好一个半角 ASCII 空格 U+0020</strong>，不再使用 Tab：5W1H <code> ?Ttask1 1</code>、Table <code> Ttable1 1</code>、Graph <code> &gt;Gauth1 1</code>。修订号是正整数。领域之间无空行。字段分隔为 U+0020 单个半角空格；列的意群可在后续行延伸。原生正文不能包含未转义的 Tab；<strong>拒绝 U+3000 全角空格</strong>。整份 <code>.nema</code> 文件必须使用 LF 并以三个 LF 结束（最后两行为空）。</p>
+<p>模式来自领域头，而不是根据正文猜测：<code> ?</code> 是 5W1H、<code> </code> 后直接 ID 是 Table、<code> &gt;</code> 是 Graph。表格是否有自定义表头，由它的第一条正文是否以真实 ASCII Tab 开始决定；此处 Tab 是<strong>显式表格表头的既有正文标记</strong>，不是领域头前缀。没有表头，则产生 <code>column1</code> 到 <code>columnN</code>。</p>
+<h2 id="sec-1">2. 三种领域头</h2>
+<table>
+<thead>
+<tr>
+<th>写法</th>
+<th>简明描述</th>
+<th>例子</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code> ?ID REV</code></td>
+<td>5W1H 领域，首个字符是半角空格</td>
+<td><code> ?Ttask1 1</code></td>
+</tr>
+<tr>
+<td><code> ID REV</code></td>
+<td>表格领域，支持显式或自动表头</td>
+<td><code> Ttable1 1</code></td>
+</tr>
+<tr>
+<td><code> &gt;ID REV</code></td>
+<td>Graph / Node–Edge 领域</td>
+<td><code> &gt;Gauth1 1</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="sec-2">3. 5W1H 模式</h2>
+<p>字段从左到右固定为 What、Why、How、Who、When、Where；不强求写满六列，纵向续写按列坐标添加语义片段。<strong>问号只在领域头 <code> ?ID REV</code>，不是正文前缀。</strong></p>
+<pre><code class="language-text"> ?Ttask1 1
+BuildLoginFlow PreventLeak VerifyToken Owner Today AuthService
+ SecondDetail
+
+
+</code></pre>
+<h2 id="sec-3">4. Table 模式——显式表头</h2>
+<p>领域头是单个半角空格 + ID，第一条正文使用<strong>一个真实 Tab</strong>开头，后面是半角空格分隔的列名。Tab 只作用于表头正文第一行。数据行 X0 非空创建新行、X0 为空续写上一条记录。</p>
+<pre><code class="language-text"> Ttable1 1
+	Agent Status Note
+Claude Ready CheckComplete
+Codex Blocked HTTP401
+
+
+</code></pre>
+<h2 id="sec-4">5. Table 模式——无表头自动列</h2>
+<p>第一条正文直接给出数据，不需要任何列名行；解释器自动生成 <code>column1</code>、<code>column2</code> ……，如果后续出现更多列则扩展。行首 X0 为空表示续写上一行；多空格不是装饰，而是列坐标。</p>
+<pre><code class="language-text"> Tauto1 1
+A Ready First
+B Blocked Second
+  MoreDetail
+C Done
+
+
+</code></pre>
+<h2 id="sec-5">6. Node–Edge 模式</h2>
+<p>Graph 中 Node 和 Edge 都从 X0 顶格。Node 的 X0 是稳定 ID，X1 名称，X2 描述；Edge 的 <code>A&gt;X&gt;B</code> 表示从 A 经关系 X 指向 B，<code>A&lt;Y&lt;B</code> 反向，<code>A=Z=B</code> 无向。同一 Graph 内 Node ID、Edge ID 不得碰撞；不能引用不存在的端点。以关系符判别 Edge，并严格拒绝畸形 Edge，不能降级为 Node。</p>
+<pre><code class="language-text"> &gt;Gauth1 1
+A LoginAPI Authentication
+B TokenStore SessionStorage
+A&gt;X&gt;B Reads VerifySession
+ CacheExpiredRetryOnce
+A=U=B Shares SecurityPolicy
+
+
+</code></pre>
+<p>X2 纵向续写用一个半角空格；X3 用两个半角空格。Edge 和 Node 的 X1 保留机器命名标识，X2 正常语义化；X3+ 保留精确扩展数据。</p>
+<h2 id="sec-6">7. 共通字典</h2>
+<p>共通字典是<strong>传输层 <code>.nemat</code></strong> 的可选机制，不是原生 <code>.nema</code> 的新领域类型。发送端与接收端必须使用一致的字典和协议版本；字典入口可复用常见字段片段以降低传输体积，但必须保持原文逐字节可逆。参见 <a href="COMMON_DICTIONARY_v1.5.html">共通字典完整案例</a>：包含 <code>.nema</code> 原文、真实 <code>.nemat</code> 传输流、<code>^0</code>/<code>^1</code> 字典指令与数字前缀重建。请通过随包提供的 <code>codec/nemat.py</code>、<code>codec/cli.py</code> 和测试验证实际支持的字典控制形式。不得把字典符号写入普通 <code>.nema</code> 并误认为原生语法，也不得假定压缩一定节省 Token。</p>
+<h2 id="sec-7">8. 转义、准确性和限制</h2>
+<p>正文 ASCII 空格承担分列作用；字面空格可写 <code>\ </code>；字面反斜线 <code>\\</code>；原生字面 Tab <code>\t</code>；需要保持显式精确标识可用 <code>\=</code>。具体取决于所在字段的语义；不要把自然语言语义还原当作字节无损过程。<code>.nemat</code> 的端到端往返另行校验。</p>
+<h2 id="sec-8">9. 版本迁移与兼容</h2>
+<p>v1.3 的 Tab 领域头、未显式区分 5W1H 的写法均不直接兼容；通过 <code>python -m tools.migrate_v13_to_v15 input.nema output.nema</code> 显式转换。历史基准不得改名成为新版本的真实 Token 结果；需重新以目标模型 tokenizer、完整提示词与解析消耗计费口径实测。</p>
+<h2 id="sec-9">10. 测试与部署</h2>
+<p>参考解释器：<code>codec/native.py</code>；可逆传输 Codec：<code>codec/nemat.py</code>；最小示例：<code>examples/</code>；网站首页：<code>website/index.html</code>；语法列表：<code>website/syntax.html</code>；统一文档中心：<code>website/docs/index.html</code>。生产环境须对超长输入设置大小上限，并针对错误域头、全角空格、孤立续写、重复 ID、悬空边做负例测试。</p>
+<p><a class="button" href="../../docs/SPEC_v1.5_zh.md">查看原始 Markdown ↗</a></p></article></div></main><footer><div class="wrap">.NEMA · ARIADNE’S THREAD · ASCII SPACE / LF · v1.5</div></footer></body></html>

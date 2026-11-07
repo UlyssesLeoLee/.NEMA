@@ -1,12 +1,7 @@
-# .NEMA Interpreter v1.2 — reference implementation
+# .NEMA v1.5 Reference Parser
 
-Unzip and run commands from this directory. Python 3.10+ standard library for parse/render/encode/decode; optional `sentencepiece` only for local BPE/Unigram cost selection.
+半角空格领域头：` ?T1 1` 5W1H、` T1 1` Table、` >G1 1` Graph。显式 Table 表头正文首行用一个半角 ASCII 空格；无表头自动 `column1…columnN`。
 
-```powershell
-python -m codec.cli render examples/complete_v12.nema
-python -m codec.cli encode examples/graph_3n_4e.nema --output graph.nemat
-python -m codec.cli decode graph.nemat --output roundtrip.nema
-python -m codec.cli inspect examples/graph_3n_4e.nema
-```
+请从解压包根目录运行：`python -m codec.cli --help`（按 CLI 实际参数为准）。
 
-`--cost bpe`/`--cost unigram` require `pip install sentencepiece`. These bundled tokenizer models are locally trained reference models, NOT model provider tokenizers. Graph v1.2 Node = a single leading ASCII space; Edge = no leading space; the native and wire encodings are different. This is source code, not a Windows .exe or installed IDE/IME plugin.
+具体参见 `docs/SPEC_v1.5_zh.md`。

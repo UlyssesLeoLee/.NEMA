@@ -1,0 +1,124 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark"><title>语法清单 · .NEMA</title><link rel="stylesheet" href="docs/docs.css"><link rel="icon" href="assets/nema-app-icon.svg"><link rel="stylesheet" href="art-unified-v16.css"></head><body><header><div class="wrap"><a class="logo" href="index.html">.NEMA</a><nav><a href="index.html">首页</a><a href="syntax.html">语法清单</a><a href="docs/index.html">文档中心</a><a href="download.html">解释器</a></nav></div></header><main class="wrap"><div class="eyebrow">REFERENCE / GRAMMAR INVENTORY</div><h1>语法清单</h1><p class="muted">三个字段一目了然：写法、简要说明与具体例子。点击任意一行查看完整语义渲染和可复制示例；保留真实 ASCII 空格与 Tab 字符。</p><div class="art-banner" aria-label="语法图鉴"><div class="art-banner-copy"><span class="art-mini">GRAMMAR / VISUAL ATLAS</span><strong>一眼识别写法，一次展开完整语义。</strong><p>逐行浏览三列语法清单。点击任意条目进入示例和结构化预览，按 Esc、点击遮罩或 × 即可关闭。代码空格保持原始半角字符。</p></div><img class="art-banner-picture" src="assets/thread-maze-detail.webp" alt="以金线表达语义路径的美漫插画"></div><div class="panel"><table class="syntax-list"><thead><tr><th style="width:26%">写法</th><th style="width:38%">简明说明</th><th>具体例子</th></tr></thead><tbody><tr tabindex="0" role="button" data-index="0" aria-label="展开 领域头 / 5W1H"><td><div>领域头 / 5W1H</div><code> ?ID REV</code></td><td>5W1H 领域；首字符恰好一个半角空格，随后 ? 标记模式。</td><td><code> ?Task1 1
+BuildLoginFlow PreventLeak VerifyToken Owner Today AuthService
+
+
+</code></td></tr><tr tabindex="0" role="button" data-index="1" aria-label="展开 领域头 / Table"><td><div>领域头 / Table</div><code> ID REV</code></td><td>表格领域；以单个半角空格起始，后面直接接 ID。</td><td><code> Table1 1
+Alpha Ready
+Beta Blocked
+
+
+</code></td></tr><tr tabindex="0" role="button" data-index="2" aria-label="展开 领域头 / Graph"><td><div>领域头 / Graph</div><code> &gt;ID REV</code></td><td>图领域；半角空格后紧跟 &gt;，再写领域 ID 和修订号。</td><td><code> &gt;Gauth1 1
+A LoginAPI Authentication
+B TokenStore SessionStorage
+A&gt;X&gt;B Reads VerifySession
+
+
+</code></td></tr><tr tabindex="0" role="button" data-index="3" aria-label="展开 5W1H 六列"><td><div>5W1H 六列</div><code>What Why How Who When Where</code></td><td>六列固定语义；以一个半角空格横向分隔，多余列报错。</td><td><code> ?Task1 1
+BuildLoginFlow PreventLeak VerifyToken Owner Today AuthService
+
+
+</code></td></tr><tr tabindex="0" role="button" data-index="4" aria-label="展开 5W1H 纵向续写"><td><div>5W1H 纵向续写</div><code> X1Text</code></td><td>行首一个半角空格表示续写 X1（Why）。</td><td><code> ?Task1 1
+BuildLoginFlow PreventLeak
+ SecondReason
+
+
+</code></td></tr><tr tabindex="0" role="button" data-index="5" aria-label="展开 显式表格表头"><td><div>显式表格表头</div><code>	ColA ColB</code></td><td>Table 领域首条正文使用一个前导半角空格，后接自定义列名。</td><td><code> Table1 1
+	Agent Status Note
+Claude Ready CheckComplete
+
+
+</code></td></tr><tr tabindex="0" role="button" data-index="6" aria-label="展开 隐式表格 / 自动列"><td><div>隐式表格 / 自动列</div><code>Value1 Value2</code></td><td>Table 首正文直接是数据，自动生成 column1、column2…</td><td><code> Tauto1 1
+A Ready First
+B Blocked Second
+
+
+</code></td></tr><tr tabindex="0" role="button" data-index="7" aria-label="展开 表格纵向续写"><td><div>表格纵向续写</div><code>  Detail</code></td><td>首列为空续写前一记录；前导两个半角空格定位第三列。</td><td><code> Tauto1 1
+A Ready First
+  MoreDetail
+B Done Last
+
+
+</code></td></tr><tr tabindex="0" role="button" data-index="8" aria-label="展开 Node 声明"><td><div>Node 声明</div><code>A Name Description</code></td><td>Graph X0 的节点 ID 顶格；X1 名称、X2 描述。</td><td><code> &gt;Gauth1 1
+A LoginAPI Authentication
+B TokenStore SessionStorage
+
+
+</code></td></tr><tr tabindex="0" role="button" data-index="9" aria-label="展开 Edge 正向"><td><div>Edge 正向</div><code>A&gt;X&gt;B Label Detail</code></td><td>从 A 指向 B，X 是关系 ID；由 &gt; 识别 Edge。</td><td><code> &gt;Gauth1 1
+A LoginAPI
+B TokenStore
+A&gt;X&gt;B Reads VerifySession
+
+
+</code></td></tr><tr tabindex="0" role="button" data-index="10" aria-label="展开 Edge 反向"><td><div>Edge 反向</div><code>A&lt;Y&lt;B Label Detail</code></td><td>从 B 指向 A；Y 是独立 Edge ID。</td><td><code> &gt;Gauth1 1
+A LoginAPI
+B TokenStore
+A&lt;Y&lt;B Responds SessionReady
+
+
+</code></td></tr><tr tabindex="0" role="button" data-index="11" aria-label="展开 Edge 无向"><td><div>Edge 无向</div><code>A=U=B Label Detail</code></td><td>A 与 B 的无向关系；U 是独立 Edge ID。</td><td><code> &gt;Gauth1 1
+A LoginAPI
+B TokenStore
+A=U=B Shares SecurityPolicy
+
+
+</code></td></tr><tr tabindex="0" role="button" data-index="12" aria-label="展开 Graph X2 续写"><td><div>Graph X2 续写</div><code> Detail</code></td><td>一个半角空格将描述追加到前一个 Node/Edge 的 X2。</td><td><code> &gt;Gauth1 1
+A LoginAPI Authentication
+ MoreDetails
+
+
+</code></td></tr><tr tabindex="0" role="button" data-index="13" aria-label="展开 Graph X3+ 扩展"><td><div>Graph X3+ 扩展</div><code>  APIKey</code></td><td>前导两个半角空格定位 X3；多一个前导空格定位下一列。</td><td><code> &gt;Gauth1 1
+A LoginAPI Authentication
+  APIKey
+
+
+</code></td></tr><tr tabindex="0" role="button" data-index="14" aria-label="展开 字面空格转义"><td><div>字面空格转义</div><code>\ </code></td><td>表示单元格内部字面半角空格，不触发分列。</td><td><code> ?Task1 1
+Build\ Login\ Flow
+
+
+</code></td></tr><tr tabindex="0" role="button" data-index="15" aria-label="展开 字面反斜线"><td><div>字面反斜线</div><code>\\</code></td><td>字面反斜线在单元格内双写。</td><td><code> ?Task1 1
+C:\\Project
+
+
+</code></td></tr><tr tabindex="0" role="button" data-index="16" aria-label="展开 字面 Tab"><td><div>字面 Tab</div><code>\t</code></td><td>仅在正文单元格用转义写法，不会作为横向分列符。</td><td><code> ?Task1 1
+Hello\tWorld
+
+
+</code></td></tr><tr tabindex="0" role="button" data-index="17" aria-label="展开 精确名称标记"><td><div>精确名称标记</div><code>\=Name</code></td><td>标识原样保留，避免自动语义拆词。</td><td><code> ?Task1 1
+\=HTTP401
+
+
+</code></td></tr><tr tabindex="0" role="button" data-index="18" aria-label="展开 共通字典 / 传输"><td><div>共通字典 / 传输</div><code>dictionary + .nemat</code></td><td>仅用于可逆传输 Codec；不是 .nema 原生领域语法。</td><td><code>原生示例：
+ ?Task1 1
+BuildLoginFlow
+
+
+
+传输 Codec 见 codec/nemat.py</code></td></tr><tr tabindex="0" role="button" data-index="19" aria-label="展开 LF 文末约束"><td><div>LF 文末约束</div><code>\n\n\n</code></td><td>最后正文行后必须连续三个 LF，不能混用 CRLF。</td><td><code> ?Task1 1
+BuildLoginFlow
+
+
+</code></td></tr><tr tabindex="0" role="button" data-index="20" aria-label="展开 全角空格禁止"><td><div>全角空格禁止</div><code>U+3000 ❌</code></td><td>领域头及正文统一禁止全角空格，必须用 ASCII U+0020。</td><td><code>正确： ?Task1 1
+错误：　?Task1 1</code></td></tr></tbody></table></div><p class="hint">示例内的空格均为半角 U+0020；显式表格表头正文的第一个字符同样为 U+0020。领域头绝不含 Tab 或全角空格。</p><div id="dialog" class="dialog" hidden aria-hidden="true"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><button type="button" class="close" id="closeDialog" aria-label="关闭弹窗">×</button><div class="eyebrow">LIVE GRAMMAR / FULL EXAMPLE</div><h2 id="modalTitle"></h2><p id="modalDesc" class="muted"></p><pre id="modalExample"></pre><div class="eyebrow" style="margin-top:18px">SEMANTIC PREVIEW / 结构化预览</div><pre id="modalSemantic" style="white-space:pre-wrap;max-height:22vh;overflow:auto"></pre><button class="button" id="copySyntax" type="button">复制完整示例</button></div></div><script>function preview(source,title){
+ // Compact browser rendering of canonical examples, not the authoritative full Python parser.
+ const lines=source.split("\n").filter(Boolean);if(!lines.length)return "示例为空";
+ const h=/^ ([?>]?)([A-Za-z0-9][A-Za-z0-9_.-]*) ([1-9][0-9]*)$/.exec(lines[0]);
+ if(!h)return title.includes("禁止")?"全角空格校验：拒绝 U+3000（正确行是 U+0020）。":"此行仅为原生语法片段或传输层说明；参考规范与解释器。";
+ const [_,type,id,revision]=h;const body=lines.slice(1);
+ if(type==="?"){
+  const fields=["What","Why","How","Who","When","Where"],cols=fields.map(()=>[]);
+  for(const line of body){const cells=line.split(" ");for(let i=0;i<Math.min(6,cells.length);i++)if(cells[i])cols[i].push(cells[i])}
+  return JSON.stringify({domain:id,revision:+revision,mode:"5w1h",fields:Object.fromEntries(fields.map((f,i)=>[f,cols[i].join(" ")]))},null,2)
+ }
+ if(type===">"){
+  const nodes=[],edges=[];for(const line of body){const cols=line.split(" "),token=cols[0];if(!token){const target=edges.at(-1)||nodes.at(-1);if(target){target.description=(target.description||"")+" "+cols.filter(Boolean).join(" ")}continue}
+   const m=/^([A-Za-z0-9_.:-]+)([><=])([A-Za-z0-9_.:-]+)\2([A-Za-z0-9_.:-]+)$/.exec(token);
+   if(m){edges.push({id:m[3],from:m[2]==="<"?m[4]:m[1],to:m[2]==="<"?m[1]:m[4],kind:m[2]==="="?"undirected":"directed",label:cols[1]||"",description:cols[2]||""})}
+   else nodes.push({id:token,name:cols[1]||"",description:cols[2]||""})
+  }
+  return JSON.stringify({domain:id,mode:"graph",nodes,edges},null,2)
+ }
+ const headed=body[0]?.startsWith("\t"),headers=headed?body.shift().slice(1).split(" "):body[0]?.split(" ").map((_,i)=>"column"+(i+1))||[];
+ const rows=[];for(const line of body){const cells=line.split(" ");if(cells[0])rows.push(cells);else if(rows.length)cells.forEach((v,i)=>{if(v)rows[rows.length-1][i]=(rows[rows.length-1][i]||"")+" "+v})}
+ return JSON.stringify({domain:id,mode:headed?"table":"table_implicit",columns:headers,rows:rows.map(r=>Object.fromEntries(headers.map((c,i)=>[c,r[i]||""])))},null,2)
+}
+const items=[{"title": "领域头 / 5W1H", "syntax": " ?ID REV", "description": "5W1H 领域；首字符恰好一个半角空格，随后 ? 标记模式。", "example": " ?Task1 1\nBuildLoginFlow PreventLeak VerifyToken Owner Today AuthService\n\n\n"}, {"title": "领域头 / Table", "syntax": " ID REV", "description": "表格领域；以单个半角空格起始，后面直接接 ID。", "example": " Table1 1\nAlpha Ready\nBeta Blocked\n\n\n"}, {"title": "领域头 / Graph", "syntax": " >ID REV", "description": "图领域；半角空格后紧跟 >，再写领域 ID 和修订号。", "example": " >Gauth1 1\nA LoginAPI Authentication\nB TokenStore SessionStorage\nA>X>B Reads VerifySession\n\n\n"}, {"title": "5W1H 六列", "syntax": "What Why How Who When Where", "description": "六列固定语义；以一个半角空格横向分隔，多余列报错。", "example": " ?Task1 1\nBuildLoginFlow PreventLeak VerifyToken Owner Today AuthService\n\n\n"}, {"title": "5W1H 纵向续写", "syntax": " X1Text", "description": "行首一个半角空格表示续写 X1（Why）。", "example": " ?Task1 1\nBuildLoginFlow PreventLeak\n SecondReason\n\n\n"}, {"title": "显式表格表头", "syntax": " ColA ColB", "description": "Table 领域首条正文使用一个前导半角空格，后接自定义列名。", "example": " Table1 1\n Agent Status Note\nClaude Ready CheckComplete\n\n\n"}, {"title": "隐式表格 / 自动列", "syntax": "Value1 Value2", "description": "Table 首正文直接是数据，自动生成 column1、column2…", "example": " Tauto1 1\nA Ready First\nB Blocked Second\n\n\n"}, {"title": "表格纵向续写", "syntax": "  Detail", "description": "首列为空续写前一记录；前导两个半角空格定位第三列。", "example": " Tauto1 1\nA Ready First\n  MoreDetail\nB Done Last\n\n\n"}, {"title": "Node 声明", "syntax": "A Name Description", "description": "Graph X0 的节点 ID 顶格；X1 名称、X2 描述。", "example": " >Gauth1 1\nA LoginAPI Authentication\nB TokenStore SessionStorage\n\n\n"}, {"title": "Edge 正向", "syntax": "A>X>B Label Detail", "description": "从 A 指向 B，X 是关系 ID；由 > 识别 Edge。", "example": " >Gauth1 1\nA LoginAPI\nB TokenStore\nA>X>B Reads VerifySession\n\n\n"}, {"title": "Edge 反向", "syntax": "A<Y<B Label Detail", "description": "从 B 指向 A；Y 是独立 Edge ID。", "example": " >Gauth1 1\nA LoginAPI\nB TokenStore\nA<Y<B Responds SessionReady\n\n\n"}, {"title": "Edge 无向", "syntax": "A=U=B Label Detail", "description": "A 与 B 的无向关系；U 是独立 Edge ID。", "example": " >Gauth1 1\nA LoginAPI\nB TokenStore\nA=U=B Shares SecurityPolicy\n\n\n"}, {"title": "Graph X2 续写", "syntax": " Detail", "description": "一个半角空格将描述追加到前一个 Node/Edge 的 X2。", "example": " >Gauth1 1\nA LoginAPI Authentication\n MoreDetails\n\n\n"}, {"title": "Graph X3+ 扩展", "syntax": "  APIKey", "description": "前导两个半角空格定位 X3；多一个前导空格定位下一列。", "example": " >Gauth1 1\nA LoginAPI Authentication\n  APIKey\n\n\n"}, {"title": "字面空格转义", "syntax": "\\ ", "description": "表示单元格内部字面半角空格，不触发分列。", "example": " ?Task1 1\nBuild\\ Login\\ Flow\n\n\n"}, {"title": "字面反斜线", "syntax": "\\\\", "description": "字面反斜线在单元格内双写。", "example": " ?Task1 1\nC:\\\\Project\n\n\n"}, {"title": "字面 Tab", "syntax": "\\t", "description": "仅在正文单元格用转义写法，不会作为横向分列符。", "example": " ?Task1 1\nHello\\tWorld\n\n\n"}, {"title": "精确名称标记", "syntax": "\\=Name", "description": "标识原样保留，避免自动语义拆词。", "example": " ?Task1 1\n\\=HTTP401\n\n\n"}, {"title": "共通字典 / 传输", "syntax": "dictionary + .nemat", "description": "仅用于可逆传输 Codec；不是 .nema 原生领域语法。", "example": "原生 .nema：\n ?Task1 1\nAuthenticate ValidateToken\n\n\n\n共通字典传输 .nemat：\n\t$2\nAuthenticate\nValidateToken\n ?Task1 1\n^0 ^1"}, {"title": "LF 文末约束", "syntax": "\\n\\n\\n", "description": "最后正文行后必须连续三个 LF，不能混用 CRLF。", "example": " ?Task1 1\nBuildLoginFlow\n\n\n"}, {"title": "全角空格禁止", "syntax": "U+3000 ❌", "description": "领域头及正文统一禁止全角空格，必须用 ASCII U+0020。", "example": "正确： ?Task1 1\n错误：　?Task1 1"}];let lastFocus=null,active=-1;const box=document.getElementById("dialog"),close=document.getElementById("closeDialog");function openModal(i){active=i;const v=items[i];if(!v)return;lastFocus=document.activeElement;document.getElementById("modalTitle").textContent=v.title+" · "+v.syntax;document.getElementById("modalDesc").textContent=v.description;document.getElementById("modalExample").textContent=v.example;document.getElementById("modalSemantic").textContent=preview(v.example,v.title);box.hidden=false;box.setAttribute("aria-hidden","false");document.body.style.overflow="hidden";close.focus()}function hideModal(){if(box.hidden)return;box.hidden=true;box.setAttribute("aria-hidden","true");document.body.style.overflow="";lastFocus?.focus()}document.querySelectorAll("[data-index]").forEach(el=>{const f=()=>openModal(Number(el.dataset.index));el.addEventListener("click",f);el.addEventListener("keydown",ev=>{if(ev.key==="Enter"||ev.key===" "){ev.preventDefault();f()}})});close.onclick=hideModal;box.addEventListener("click",e=>{if(e.target===box)hideModal()});document.addEventListener("keydown",e=>{if(box.hidden)return;if(e.key==="Escape"){e.preventDefault();hideModal()}else if(e.key==="Tab"){const controls=[close,document.getElementById("copySyntax")];if(e.shiftKey&&document.activeElement===controls[0]){e.preventDefault();controls[1].focus()}else if(!e.shiftKey&&document.activeElement===controls[1]){e.preventDefault();controls[0].focus()}}});document.getElementById("copySyntax").onclick=()=>{const value=items[active]?.example||"";navigator.clipboard?.writeText(value).then(()=>{document.getElementById("copySyntax").textContent="已复制"}).catch(()=>{const e=document.createElement("textarea");e.value=value;document.body.append(e);e.select();document.execCommand("copy");e.remove()})};</script></main><footer><div class="wrap">.NEMA · ARIADNE’S THREAD · ASCII SPACE / LF · v1.5</div></footer></body></html>

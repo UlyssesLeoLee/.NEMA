@@ -1,0 +1,49 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark"><title>.NEMA v1.2 — 日本語の現行文法ガイド · .NEMA</title><link rel="stylesheet" href="../docs/docs.css"><link rel="icon" href="../assets/nema-app-icon.svg"><link rel="stylesheet" href="../art-unified-v16.css"></head><body><header><div class="wrap"><a class="logo" href="../index.html">.NEMA</a><nav><a href="../index.html">首页</a><a href="../syntax.html">语法清单</a><a href="../docs/index.html">文档中心</a><a href="../download.html">解释器</a></nav></div></header><main class="wrap"><div id="doc-top" class="eyebrow">DOCUMENTATION / SPEC_v1.2_ja</div><p class="pill">历史版本，仅供兼容参考。现行语法请阅读 <a href="SPEC_v1.5_zh.html">v1.5 规范</a>。</p><figure class="doc-cover-figure"><img src="../assets/ariadne-maze.webp" loading="lazy" alt="金线与迷宫：.NEMA 文档视觉索引"><figcaption>ARIADNE’S THREAD · 金线与迷宫：.NEMA 文档视觉索引</figcaption></figure><div class="reading"><aside><div class="eyebrow">CONTENTS / 目录</div><a href="#doc-top">返回顶部</a><a href="#sec-0">基本設計</a><a href="#sec-1">3 つのモード</a><a href="#sec-2">R7 audit clarification — Graph extensions</a></aside><article class="article"><h1>.NEMA v1.2 — 日本語の現行文法ガイド</h1><h1>.NEMA v1.2 — 日本語の現行文法ガイド</h1>
+<p><strong>状態：</strong> 実験仕様。Python リファレンスインタープリタと検証用データを同梱。標準化機関による公開規格ではありません。<code>.nema</code> は編集用、<code>.nemat</code> は可逆通信形式です。</p>
+<h2 id="sec-0">基本設計</h2>
+<p>.NEMA は<strong>縦方向に不規則なデータ形式</strong>です。横方向は ASCII スペース (U+0020) で列を分け、意味を区切る必要があるときだけ LF で縦に延長します。日本語・中国語の文章は通常連続で表現し、英語では <code>BuildLoginFlow</code> や <code>HTTPItIs</code> のような記法を利用できます。意味表示は元の大文字・スペースを一意に復元するものではありません。</p>
+<p>ヘッダーは <code>Tab + ドメインID + 空白 + 改訂番号</code>、Graph ヘッダーは <code>Tab + &gt; + ドメインID + 空白 + 改訂番号</code>。ドメイン間の空行は不要です。末尾は完全な空行が 2 行続くことで示します。</p>
+<h2 id="sec-1">3 つのモード</h2>
+<table>
+<thead>
+<tr>
+<th>モード</th>
+<th>判定条件</th>
+<th>列の意味</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>5W1H（既定）</td>
+<td>ヘッダー直後の本文が左端から始まる</td>
+<td>What → Why → How → Who → When → Where</td>
+</tr>
+<tr>
+<td>Table</td>
+<td>最初の本文行が 1 個の Tab から始まる</td>
+<td>ヘッダー名と自由な列</td>
+</tr>
+<tr>
+<td>Graph</td>
+<td>ドメインヘッダーに <code>&gt;</code> がある</td>
+<td>Node / Edge の ID、名称、説明</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-text">⇥T1 1
+認証処理を確認する 情報漏洩を防ぐ トークンを検証する
+⇥&gt;G1 1
+␠A LoginAPI Authentication
+␠B TokenStore SessionStorage
+A&gt;X&gt;B Reads VerifySession
+␠␠CacheExpiredRetryOnce
+
+
+</code></pre>
+<p><code>⇥</code> と <code>␠</code> は説明用の可視記号です。実際のファイルにはそれぞれ本物の Tab と ASCII スペースを入れます。Graph の Node は行頭 <strong>スペース 1 個</strong>で定義し、Edge は<strong>インデントなし</strong>です。<strong>スペース 2 個以上</strong>から始まる行は現在の Node/Edge の X2 の続きです。</p>
+<p>Node の X0 は ID、X1 は <code>LoginAPI</code> のような<strong>文字どおりの名称</strong>、X2 は任意の説明です。Edge <code>A&gt;X&gt;B</code> は A→B を表し X が Edge ID、<code>B&lt;Y&lt;A</code> は A→B、<code>A=U=B</code> は無向関係を表します。ホバー・キーボードフォーカスでは X2 を表示し、クリック・タップでは詳細を固定表示します。X2 はトポロジーに影響しません。</p>
+<p><code>.nemat</code> は辞書 (<code>Tab+$N</code>)、数字接頭辞 (<code>Tab+数字</code>)、リテラル <code>^</code> のエスケープ (<code>\^</code>) を利用して圧縮し、<strong>元の <code>.nema</code> の UTF-8 バイト列</strong>を完全に復元しなければなりません。Rust/TS/Python のソースコード自体は NEMA に変換しません。</p>
+<p>参照：<a href="SPEC_v1.2_zh.html">中国語の完全仕様</a>、<a href="TRANSPORT_v1.2.html">Codec</a>、<a href="JSON_COMPARISON_METHOD_v1.2.html">JSON 比較方法</a>、<a href="INTERPRETER_USAGE_v1.2.html">インタープリタ</a>。</p>
+<h2 id="sec-2">R7 audit clarification — Graph extensions</h2>
+<p>Graph の X3 以降の拡張列は、インタープリタの意味表示に <code>extensions: {&quot;X3&quot;:&quot;...&quot;}</code> として出力します。<code>APIKey</code> や <code>HTTP401</code> は文字列の綴りを保持します。継続行の先頭スペース2個は X2、3個は X3、という座標規則です。Node 宣言の先頭は ASCII スペースちょうど1個で、<code>\=</code> は不要です。</p>
+<p><a class="button" href="../../docs/SPEC_v1.2_ja.md">查看原始 Markdown 源文档 ↗</a></p></article></div></main><footer><div class="wrap">.NEMA · ARIADNE’S THREAD · ASCII SPACE / LF · v1.5</div></footer></body></html>

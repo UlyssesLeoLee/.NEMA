@@ -116,7 +116,7 @@ def prefix_decode(lines:list[str])->list[str]:
         if m:
             if active is None:raise ValueError('missing prefix group')
             mark,stem=groups[active]
-            out.append(f'\t{mark}{stem}{m.group(1)} {m.group(2)}');continue
+            out.append(f' {mark}{stem}{m.group(1)} {m.group(2)}');continue
         out.append(line)
     return out
 
@@ -125,15 +125,15 @@ def cell_candidates(source:str)->list[str]:
     out=[];mode=None;first=False
     for line in _rows(source):
         m=HEADER.fullmatch(line)
-        if m:mode='graph' if m.group(1) else None;first=True;continue
+        if m:mode='graph' if m.group(1)=='>' else ('5w1h' if m.group(1)=='?' else None);first=True;continue
         if first and mode is None:
-            mode='table' if line.startswith('\t') else '5w1h'
+            mode='table' if line.startswith(' ') else 'table_implicit'
         if first and mode=='table':first=False;continue
         first=False
         vals=split_raw(line)
         for i,s in enumerate(vals):
             if not s or len(s)<3 or len(s.encode())>16384 or SECRET.search(s):continue
-            if mode=='graph' and (i==0 or (i==1 and line.startswith(' '))):continue
+            if mode=='graph' and i==0:continue
             out.append(s)
     return out
 
@@ -143,12 +143,12 @@ def dict_encode(lines:list[str],dictionary:list[str])->list[str]:
     mode=None;first=False;out=[]
     for line in lines:
         m=HEADER.fullmatch(line)
-        if m:mode='graph' if m.group(1) else None;first=True;out.append(line);continue
-        if first and mode is None:mode='table' if line.startswith('\t') else '5w1h'
+        if m:mode='graph' if m.group(1)=='>' else ('5w1h' if m.group(1)=='?' else None);first=True;out.append(line);continue
+        if first and mode is None:mode='table' if line.startswith(' ') else 'table_implicit'
         if first and mode=='table':out.append(esc(line));first=False;continue
         first=False
         vals=split_raw(line)
-        out.append(' '.join((esc(v) if mode=='graph' and (idx==0 or (idx==1 and line.startswith(' '))) else look.get(v,esc(v))) for idx,v in enumerate(vals)))
+        out.append(' '.join((esc(v) if mode=='graph' and (idx==0) else look.get(v,esc(v))) for idx,v in enumerate(vals)))
     return out
 
 
@@ -156,15 +156,15 @@ def dict_decode(lines:list[str],dictionary:list[str])->list[str]:
     mode=None;first=False;out=[]
     for line in lines:
         m=HEADER.fullmatch(line)
-        if m:mode='graph' if m.group(1) else None;first=True;out.append(line);continue
-        if first and mode is None:mode='table' if line.startswith('\t') else '5w1h'
+        if m:mode='graph' if m.group(1)=='>' else ('5w1h' if m.group(1)=='?' else None);first=True;out.append(line);continue
+        if first and mode is None:mode='table' if line.startswith(' ') else 'table_implicit'
         if first and mode=='table':out.append(unesc(line));first=False;continue
         first=False
         vals=split_raw(line)
         decoded=[]
         for idx,value in enumerate(vals):
             ref=ALIAS.fullmatch(value)
-            if ref and not (mode=='graph' and (idx==0 or (idx==1 and line.startswith(' ')))):
+            if ref and not (mode=='graph' and (idx==0)):
                 n=int(ref.group(1))
                 if n>=len(dictionary):raise ValueError('invalid alias')
                 decoded.append(dictionary[n])

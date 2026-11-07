@@ -1,0 +1,3 @@
+{"input": "\t>G 1\nA LoginAPI\nB Store\nA>X>B Reads\n Check\n\n\n", "expected": "valid Graph with 2 nodes and 1 edge, X2 description Check"}
+{"input": "\t>G 1\n A LoginAPI\nB Store\n\n\n", "expected": "invalid: Graph continuation before first element"}
+{"input": "\t>G 1\nA LoginAPI\nB Store\nA>X<B Reads\n\n\n", "expected": "invalid: mismatched relation operators"}

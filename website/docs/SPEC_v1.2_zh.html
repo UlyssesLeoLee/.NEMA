@@ -1,0 +1,106 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark"><title>.NEMA v1.2 — 统一规范（现行版） · .NEMA</title><link rel="stylesheet" href="../docs/docs.css"><link rel="icon" href="../assets/nema-app-icon.svg"><link rel="stylesheet" href="../art-unified-v16.css"></head><body><header><div class="wrap"><a class="logo" href="../index.html">.NEMA</a><nav><a href="../index.html">首页</a><a href="../syntax.html">语法清单</a><a href="../docs/index.html">文档中心</a><a href="../download.html">解释器</a></nav></div></header><main class="wrap"><div id="doc-top" class="eyebrow">DOCUMENTATION / SPEC_v1.2_zh</div><p class="pill">历史版本，仅供兼容参考。现行语法请阅读 <a href="SPEC_v1.5_zh.html">v1.5 规范</a>。</p><figure class="doc-cover-figure"><img src="../assets/ariadne-maze.webp" loading="lazy" alt="金线与迷宫：.NEMA 文档视觉索引"><figcaption>ARIADNE’S THREAD · 金线与迷宫：.NEMA 文档视觉索引</figcaption></figure><div class="reading"><aside><div class="eyebrow">CONTENTS / 目录</div><a href="#doc-top">返回顶部</a><a href="#sec-0">1. 核心语义</a><a href="#sec-1">2. 三模式</a><a href="#sec-2">3. 5W1H / 纯文本</a><a href="#sec-3">4. Table</a><a href="#sec-4">5. Graph / Node–Edge</a><a href="#sec-5">6. 源文本的空格与转义</a><a href="#sec-6">7. 领域头保留与边界</a><a href="#sec-7">8. 语义不等于字节无损</a><a href="#sec-8">9. 最低兼容规则</a><a href="#sec-9">10. Graph X3+ 扩展属性的语义输出（R7 勘误）</a></aside><article class="article"><h1>.NEMA v1.2 — 统一规范（现行版）</h1><h1>.NEMA v1.2 — 统一规范（现行版）</h1>
+<ul>
+<li>文档状态：候选协议 / 参考解释器已执行测试；未成为标准化组织发布的行业规范。</li>
+<li>本版兼容性：v1.2 Graph 节点改为<strong>行首恰好一个 ASCII 空格</strong>。旧版 <code>A \=LoginAPI</code> 必须经迁移处理，不可当成 v1.2 Node。</li>
+<li>此文档定义 <code>.nema</code> <strong>编辑层</strong>；<code>.nemat</code> 是可逆的压缩传输层。源码（Rust、TS 等）保持原格式，<code>.NEMA</code> 只存储协作和图拓扑元数据。</li>
+</ul>
+<h2 id="sec-0">1. 核心语义</h2>
+<p><strong>横向不规则、纵向按需延展</strong>。ASCII 空格（U+0020）定位 X 列；换行 LF 定义 Y 意群。语义上没有必要时不强制拆句。中日文可以直接横向连写；英文推荐 <code>BuildLoginFlow</code>、<code>HTTPItIs</code>，多段无法区分的全大写缩写应换行。<code>HTTPItIs</code> 展示为 HTTP it is，但不保证逆向恢复原始空格与大小写。</p>
+<p>一个领域头总是 <code>Tab + 领域ID + 空格 + 正整数修订号</code>。Graph 头是 <code>Tab + &gt; + 领域ID + 空格 + 修订号</code>。Tab 不再充当正文列分隔。领域之间<strong>无空行</strong>。整个文档以连续两个完全空白的物理行结束（最后正文行后 3 个 LF）。不允许 CRLF 或额外的空行。</p>
+<h3 id="sec-1">2. 三模式</h3>
+<table>
+<thead>
+<tr>
+<th>模式</th>
+<th>判定</th>
+<th>X0、X1、X2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>5W1H（默认）</td>
+<td>领域头后第一条正文行顶格</td>
+<td>What、Why、How；X3=Who、X4=When、X5=Where</td>
+</tr>
+<tr>
+<td>Table</td>
+<td>领域头后第一条正文行以单个 Tab 开始</td>
+<td>该行是一组自定义列名；记录首列非空则开新记录</td>
+</tr>
+<tr>
+<td>Graph</td>
+<td>领域头带 <code>&gt;</code></td>
+<td>Graph 内部的 Node、Edge 使用独立的两种 X0 声明方式</td>
+</tr>
+</tbody>
+</table>
+<h3 id="sec-2">3. 5W1H / 纯文本</h3>
+<pre><code class="language-text">⇥Ttext1 1
+What
+HTTPItIs
+⇥Tzh1 1
+审核认证流程 防止泄密 验证令牌
+
+
+</code></pre>
+<p>其中 <code>⇥</code> <strong>仅在文档说明中代替一个真实 Tab</strong>；可执行文件必须使用 ASCII Tab。字段顺序永远是 <strong>What → Why → How → Who → When → Where</strong>。空格分列；如果只有一个字段就是 What 文本。<code>What</code> 与 <code>HTTPItIs</code> 是同一 What 的两个纵向意群，可渲染为 <code>What HTTP it is</code>。</p>
+<h3 id="sec-3">4. Table</h3>
+<pre><code class="language-text">⇥Tab1 1
+⇥Agent Status Note
+Claude Ready 校验完成
+  等待再次复核
+Codex Blocked HTTP401
+
+
+</code></pre>
+<p><code>⇥</code> 是真实 Tab 的可视替身；<code>␠␠</code> 在文中可用于强调两个空格。<code>  等待再次复核</code> 从 X2 纵向续写到上一条 Claude 的 Note。普通数据行首列非空，才是新行。数据的自然语言空格不能直接与分列空格混淆；可使用 PascalCase、合适的纵向意群或 <code>\ </code> 表示精确单元格内字面空格。</p>
+<h3 id="sec-4">5. Graph / Node–Edge</h3>
+<pre><code class="language-text">⇥&gt;Gauth1 1
+␠A LoginAPI Authentication
+␠B TokenStore SessionStorage
+A&gt;X&gt;B Reads VerifySession
+␠␠CacheExpiredRetryOnce
+B&lt;Y&lt;A Responds SessionReady
+A=U=B Shares SecurityPolicy
+A&gt;P&gt;A Retry Maximum3Attempts
+
+
+</code></pre>
+<p>上述 <code>⇥</code> / <code>␠</code> 在教程中是显示用标记；<strong>实际文件中只写一个 Tab 与 ASCII 空格本身</strong>。</p>
+<ul>
+<li><code>␠A</code>：Graph 中<strong>行首恰好一个空格</strong>，创建 Node A；X1=<code>LoginAPI</code>（标识符原样保留，无需 <code>\=</code>），X2=<code>Authentication</code> 是可选职责说明。</li>
+<li><code>A&gt;X&gt;B</code>：没有前导空格，创建 Edge X，从 A → B；X1=<code>Reads</code>，X2=<code>VerifySession</code>。</li>
+<li><code>B&lt;Y&lt;A</code>：创建反向 Edge Y，实际 A → B。解析器永远以 X0 的箭头符决定方向。</li>
+<li><code>A=U=B</code>：无向关联 U；双向独立行为请写两条方向相反的 Edge。</li>
+<li><code>A&gt;P&gt;A</code>：自循环；允许平行边、反馈环、多 Agent 依赖与普通无环 DAG（后者需要另做有环校验）。</li>
+<li><code>␠␠CacheExpiredRetryOnce</code>：<strong>恰好两个前置空格</strong>，继续当前 Node/Edge 的 X2；更多前置空格延伸到更右侧的扩展属性。</li>
+<li>Node 和 Edge ID 在单个 Graph 内唯一，边两端必须引用已声明的节点。Graph 行首零空格只能写 Edge，一空格只能写 Node，两及以上是纵向续写。X1 在 v1.2 不允许纵向续写，以免与 Node 声明歧义。</li>
+</ul>
+<p><strong>X2 只影响描述和 AI 语义，不会创建节点、改变 Edge 箭头。</strong> 悬停 Node/Edge 时实时显示其 X2；点击固定完整详情。键盘焦点以及触屏单击同等可用。</p>
+<h3 id="sec-5">6. 源文本的空格与转义</h3>
+<ul>
+<li>原文件中的 U+0020 空格要真实保留，禁止通过 CSS 字体/布局伪造多个空格；示例 <code>&lt;pre&gt;</code> 必须使用等宽字体、<code>white-space:pre</code>、<code>letter-spacing:0</code>，禁用连字。</li>
+<li>UI 的 <code>·</code> / <code>⇥</code> 可视化开关仅改变<strong>显示副本</strong>。复制/保存必须使用原始原文。</li>
+<li>原始精确空格需写 <code>\ </code>，反斜杠为 <code>\\</code>，原始 Tab 作为正文值用 <code>\t</code>。5W1H/Table 中的 <code>\=literal</code> 可提示按字面保留；Graph X1 默认按字面保留。</li>
+<li>无法从 <code>LoginAPI</code> 推断是否应变成 <code>Login API</code>；Graph 名称默认不拆。普通英文 PascalCase 只用于人类语义显示。</li>
+<li>若需要保留人类原文的每一个空格/大小写/换行，使用已经准确记录的 <code>.nema</code> 原文，不要从语义视图倒推原文。</li>
+</ul>
+<h3 id="sec-6">7. 领域头保留与边界</h3>
+<p><code>^\t&gt;?ID REV$</code>（详见 <code>codec/native.py</code> 的严格正则）永远优先于正文，防止无空行时丢失边界。这是<strong>保留的结构形状</strong>，普通文本如果恰巧长成领域头，需要由编辑器提示/修改。不能靠 LLM 猜测。一个 Graph 领域与另一个 Table 领域无需空行分隔。</p>
+<h3 id="sec-7">8. 语义不等于字节无损</h3>
+<p>人类渲染 <code>BuildLoginFlow</code> → “Build login flow” 是展示策略；AI 生成的原生格式不保证原自然语言的 byte-exact roundtrip。而 <code>.nemat</code> 编码—解码对<strong>已存在的 <code>.nema</code> 原始 UTF-8 字节</strong>提供完全无损保护。在 API 调用前应通过同一解释器验码，不能只依赖模型学习。</p>
+<h3 id="sec-8">9. 最低兼容规则</h3>
+<p>编码版本 <code>v1.2</code>、UTF-8、LF、三模式、WHAT-first、Graph leading-space Node、Edge 方向与悬停 X2、无损 <code>.nemat</code> 必须明确标记。旧版 Graph 原文不能混进当前训练集。在转换失败时回退原文，显示语法错误，不自动“修正”代码文件。</p>
+<h3 id="sec-9">10. Graph X3+ 扩展属性的语义输出（R7 勘误）</h3>
+<p>Graph 的 X3、X4… 不是仅供解释器内部存储：<code>codec.native.parse()</code> 保留列原子；<code>codec.native.view()</code> <strong>必须</strong>将有值的扩展列输出为可选 <code>extensions</code> 映射（例如 <code>{&quot;X3&quot;:&quot;APIKey&quot;}</code>）。无扩展列时不生成该键，以保证现有 JSON 语义输出兼容。X3+ 使用精确字面量拼接，不自动拆分 <code>HTTP401</code>、<code>SHA256</code> 或 <code>APIKey</code>。纵向续写 X3 是三个前导空格，X4 是四个，依此类推；X2 的两个前导空格规则不变。</p>
+<pre><code class="language-text">⇥&gt;G1 1
+␠A LoginAPI Authentication APIKey
+␠B TokenStore SessionStorage
+A&gt;X&gt;B Reads VerifySession HTTP401
+␠␠␠RetryOnTimeout
+
+
+</code></pre>
+<p><code>⇥</code>/<code>␠</code> 在文档中是<strong>展示用标识</strong>；真实 <code>.nema</code> 使用 Tab 与 ASCII 空格。Graph A 节点 X3 保留 <code>APIKey</code>，Edge X 的 X3 呈现 <code>HTTP401 RetryOnTimeout</code>。其 X2 始终只用于说明和悬停，不改变关系方向。</p>
+<p>注意：Graph 旧式 <code>A \=LoginAPI</code> 只可在迁移指南和历史对比中出现，当前原生 Graph 节点必须以 <strong>恰好一个 ASCII 空格</strong>起始。</p>
+<p><a class="button" href="../../docs/SPEC_v1.2_zh.md">查看原始 Markdown 源文档 ↗</a></p></article></div></main><footer><div class="wrap">.NEMA · ARIADNE’S THREAD · ASCII SPACE / LF · v1.5</div></footer></body></html>

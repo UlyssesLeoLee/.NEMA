@@ -1,0 +1,22 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark"><title>.NEMA v1.5 — TEST DESIGN · .NEMA</title><link rel="stylesheet" href="../docs/docs.css"><link rel="icon" href="../assets/nema-app-icon.svg"><link rel="stylesheet" href="../art-unified-v16.css"></head><body><header><div class="wrap"><a class="logo" href="../index.html">.NEMA</a><nav><a href="../index.html">首页</a><a href="../syntax.html">语法清单</a><a href="../docs/index.html">文档中心</a><a href="../download.html">解释器</a></nav></div></header><main class="wrap"><div id="doc-top" class="eyebrow">DOCUMENTATION / TEST_DESIGN_v1.5</div><figure class="doc-cover-figure"><img src="../assets/ariadne-maze.webp" loading="lazy" alt="金线与迷宫：.NEMA 文档视觉索引"><figcaption>ARIADNE’S THREAD · 金线与迷宫：.NEMA 文档视觉索引</figcaption></figure><div class="reading"><aside><div class="eyebrow">CONTENTS / 目录</div><a href="#doc-top">返回顶部</a><a href="#sec-0">R7 额外验收项目</a><a href="#sec-1">v1.5 增补</a></aside><article class="article"><h1>.NEMA v1.5 · TEST DESIGN</h1>
+<blockquote>
+<p>当前版，2026-11-07。<a href="SPEC_v1.5_zh.html">当前语法规范</a>；v1.3 资料仅作为历史版本。</p>
+</blockquote>
+<h2 id="sec-0">设计要求</h2>
+<p>强制检查：三类领域头、显式/隐式表格表头、5W1H 六列、Graph 顶格、X2/X3+、字面转义、全角空格拒绝、CRLF 拒绝、末尾 3 LF、重复域、重复 Node/Edge ID、悬空 Edge、.nemat 无损往返、迁移语义等价、网页链接和弹窗 Esc/遮罩/× 退出。</p>
+<h2 id="sec-1">标准语法示例</h2>
+<pre><code class="language-text"> ?Task1 1
+BuildLoginFlow PreventLeak VerifyToken Owner Today AuthService
+ Tauto1 1
+A Ready First
+B Blocked Second
+ &gt;Gauth1 1
+A LoginAPI Authentication
+B TokenStore SessionStorage
+A&gt;X&gt;B Reads VerifySession
+
+
+</code></pre>
+<h2 id="sec-2">历史细节与继承资料</h2>
+<p>旧版详细推导与研究见 <a href="TEST_DESIGN_v1.3.html">TEST_DESIGN v1.3</a>，但此处所有语法规则以 v1.5 为准。</p>
+</article></div></main><footer><div class="wrap">.NEMA · ARIADNE’S THREAD · ASCII SPACE / LF · v1.5</div></footer></body></html>

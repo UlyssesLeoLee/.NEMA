@@ -1,0 +1,11 @@
+ >Gauth1 1
+A LoginAPI Authentication APIKey
+B TokenStore SessionStorage
+A>X>B Reads VerifySession HTTP401
+ CacheExpiredRetryOnce
+  RetryOnTimeout
+B<Y<A Responds SessionReady
+A=U=B Shares SecurityPolicy
+A>P>A Retry Maximum3Attempts
+
+

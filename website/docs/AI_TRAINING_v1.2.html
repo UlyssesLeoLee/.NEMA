@@ -1,0 +1,18 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark"><title>.NEMA v1.2 · 大模型学习/训练和评测指南 · .NEMA</title><link rel="stylesheet" href="../docs/docs.css"><link rel="icon" href="../assets/nema-app-icon.svg"><link rel="stylesheet" href="../art-unified-v16.css"></head><body><header><div class="wrap"><a class="logo" href="../index.html">.NEMA</a><nav><a href="../index.html">首页</a><a href="../syntax.html">语法清单</a><a href="../docs/index.html">文档中心</a><a href="../download.html">解释器</a></nav></div></header><main class="wrap"><div id="doc-top" class="eyebrow">DOCUMENTATION / AI_TRAINING_v1.2</div><p class="pill">历史版本，仅供兼容参考。现行语法请阅读 <a href="SPEC_v1.5_zh.html">v1.5 规范</a>。</p><figure class="doc-cover-figure"><img src="../assets/ariadne-comic.webp" loading="lazy" alt="阿里阿德涅：语义协作的视觉母题"><figcaption>ARIADNE’S THREAD · 阿里阿德涅：语义协作的视觉母题</figcaption></figure><div class="reading"><aside><div class="eyebrow">CONTENTS / 目录</div><a href="#doc-top">返回顶部</a><a href="#sec-0">模型任务与语法边界</a><a href="#sec-1">训练文件</a><a href="#sec-2">模型指令（示意）</a><a href="#sec-3">验收准则</a><a href="#sec-4">R7 补充必测</a></aside><article class="article"><h1>.NEMA v1.2 · 大模型学习/训练和评测指南</h1><h1>.NEMA v1.2 · 大模型学习/训练和评测指南</h1>
+<h2 id="sec-0">模型任务与语法边界</h2>
+<p>训练目标是使 Agent 能在正确信任边界内输出/解释 5W1H、Table、Graph：默认 What-first；横向一个 ASCII space 一列，纵向必要时 LF 意群；Graph Node 必须以<strong>一个真实空格</strong>开头；Edge <strong>零空格</strong>；两空格继续 X2。领域头以 Tab 开始，Table 首行以 Tab 开始，尾标记双空行。</p>
+<p>不要将 NEMA 当成 Python/Rust 源码压缩器，别把 Graph X2 文本当做可执行路由或自动创建的 node。英文 <code>HTTPItIs</code> 可拆成 HTTP it is，但 Graph X1 <code>LoginAPI</code> 始终按字面展示。中文和日文不强制拆词；特殊指令/秘钥必须原样保留且避免在字典里收集。</p>
+<h2 id="sec-1">训练文件</h2>
+<ul>
+<li><code>training/sft_train_v12.jsonl</code>: SFT 正例，使用 messages 数组，正文中含合法 <code>.nema</code> 原文（包括两个空白尾行）。</li>
+<li><code>training/sft_eval_v12.jsonl</code>: 独立保留的评测集。不能从训练集把预期答案泄漏到 prompt。</li>
+<li><code>training/adversarial_v12.jsonl</code>: 解析应拒绝的例子（多空格声明、非法箭头、悬空引用、CRLF、缺终止符、重复域等）。拒绝是通过 Python parser 判断而非模型主观打分。</li>
+<li><code>training/GOLDEN_CASES.md</code>: 人类可审查的合法、非法和语义渲染用例。</li>
+</ul>
+<h2 id="sec-2">模型指令（示意）</h2>
+<p>“只输出合法 UTF-8 .nema 文本，不输出 Markdown 围栏。使用 What → Why → How → Who → When → Where，单空格定位列。Graph 节点首空格，Edge 顶格，描述写 X2。所有领域都要有 ID/版本，末尾连续两行完全空白。遇到不确定字段不要猜测凭空补齐。”</p>
+<h2 id="sec-3">验收准则</h2>
+<p>Parse success rate, strict topology validity, graph direction exact-match, X2 provenance fidelity, byte-exact <code>.nemat</code> decode roundtrip, English / Chinese / Japanese render equivalence, false-positive structural markers, domain ID consistency。必须计入提示词说明成本、输出 Token、纠错重试、tokenizer 版本和测试集污染。离线编码 Token 不等于实际模型费用。</p>
+<h2 id="sec-4">R7 补充必测</h2>
+<p>包含 Graph X3+ 的正例以及不允许跨语义字段丢弃属性的负例：<code> A LoginAPI Authentication APIKey</code> 生成节点 X3=<code>APIKey</code>；<code>A&gt;X&gt;B Reads VerifySession HTTP401</code> 生成边 X3=<code>HTTP401</code>。检查 <code>/docs/REVIEW_R7_FIVE_ROUNDS.md</code> 所列测试。训练目标不得在 <code>Graph</code> 模式生成旧版 <code>A \=LoginAPI</code>。JSON 对照应分别报告对象式 JSON、依赖外部模式的极简位置式 JSON、包含 <code>w/t/g</code> 模式标签的独立位置式 JSON。</p>
+<p><a class="button" href="../../docs/AI_TRAINING_v1.2.md">查看原始 Markdown 源文档 ↗</a></p></article></div></main><footer><div class="wrap">.NEMA · ARIADNE’S THREAD · ASCII SPACE / LF · v1.5</div></footer></body></html>

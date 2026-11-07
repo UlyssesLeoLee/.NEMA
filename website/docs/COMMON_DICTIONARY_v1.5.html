@@ -1,0 +1,40 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark"><title>共通字典与可逆传输 · .NEMA</title><link rel="stylesheet" href="../docs/docs.css"><link rel="icon" href="../assets/nema-app-icon.svg"><link rel="stylesheet" href="../art-unified-v16.css"></head><body><header><div class="wrap"><a class="logo" href="../index.html">.NEMA</a><nav><a href="../index.html">首页</a><a href="../syntax.html">语法清单</a><a href="../docs/index.html">文档中心</a><a href="../download.html">解释器</a></nav></div></header><main class="wrap"><div id="doc-top" class="eyebrow">DOCUMENTATION / COMMON_DICTIONARY_v1.5</div><figure class="doc-cover-figure"><img src="../assets/ariadne-maze.webp" loading="lazy" alt="金线与迷宫：.NEMA 文档视觉索引"><figcaption>ARIADNE’S THREAD · 金线与迷宫：.NEMA 文档视觉索引</figcaption></figure><div class="reading"><aside><div class="eyebrow">CONTENTS / 目录</div><a href="#doc-top">返回顶部</a><a href="#sec-0">1. 两个领域的原始 .nema</a><a href="#sec-1">2. 共通字典压缩后的 .nemat</a><a href="#sec-2">3. Python 调用</a><a href="#sec-3">4. 安全与收益边界</a></aside><article class="article"><h1>.NEMA v1.5 · 共通字典与可逆传输案例</h1>
+<blockquote>
+<p>共通字典是 <code>.nemat</code> 的可选压缩机制，不是新的原生领域语法。示例与项目内 <code>codec/nemat.py</code> 的真实输出逐字节一致。原生 <code>.nema</code> 领域头只使用半角空格。</p>
+</blockquote>
+<h2 id="sec-0">1. 两个领域的原始 .nema</h2>
+<pre><code class="language-text"> ?Task1 1
+Authenticate ValidateToken
+ ?Task2 1
+Authenticate ValidateToken
+
+
+</code></pre>
+<h2 id="sec-1">2. 共通字典压缩后的 .nemat</h2>
+<p>使用 <code>encode(source, ['Authenticate','ValidateToken'])</code>：</p>
+<pre><code class="language-text">	$2
+Authenticate
+ValidateToken
+ ?Task1 1
+^0 ^1
+	2 1
+^0 ^1
+
+
+</code></pre>
+<ul>
+<li>传输流第一行的真实 <code>Tab + $2</code> 是 <strong><code>.nemat</code> 字典清单控制行</strong>，并非 <code>.nema</code> 领域头；它在传输协议中允许使用。</li>
+<li>接下来两行是字典条目 <code>Authenticate</code> 与 <code>ValidateToken</code>，对应 <code>^0</code> 和 <code>^1</code>。</li>
+<li><code> ?Task1 1</code> 是原生 5W1H 领域头；字段内容可以写作 <code>^0 ^1</code>，解码后恢复原文。</li>
+<li><code>Tab + 2 1</code> 是 <code>.nemat</code> 中对第二个同前缀领域的压缩控制行，解码器重建完整的 <code> ?Task2 1</code>。</li>
+<li>因此 <code>.nemat</code> 可以包含 Tab 控制行，但<strong>原生 <code>.nema</code> 领域头绝不含 Tab</strong>。不要混淆两个层次，也不要把传输示例直接交给原生解释器。</li>
+</ul>
+<h2 id="sec-2">3. Python 调用</h2>
+<pre><code class="language-python">from codec.nemat import encode, decode
+source = &quot; ?Task1 1\nAuthenticate ValidateToken\n ?Task2 1\nAuthenticate ValidateToken\n\n\n&quot;
+encoded = encode(source, ['Authenticate', 'ValidateToken'])
+assert decode(encoded).encode('utf-8') == source.encode('utf-8')
+</code></pre>
+<h2 id="sec-3">4. 安全与收益边界</h2>
+<p>共通字典上限、特殊字符与敏感信息筛除规则以随包 Codec 为准。不得把重复片段直接等同于 Token 收益；真实评估必须统计字典清单成本、文本内容、压缩前后 tokenizer 和模型提示词成本。<code>optimize()</code> 会在原生、字典、前缀和组合候选中按给定评分选择，但不保证每次都优于紧凑 YAML。</p>
+</article></div></main><footer><div class="wrap">.NEMA · ARIADNE’S THREAD · ASCII SPACE / LF · v1.5</div></footer></body></html>

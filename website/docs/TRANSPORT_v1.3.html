@@ -1,0 +1,23 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark"><title>.NEMA v1.3 — `.nemat` 可逆传输协议 · .NEMA</title><link rel="stylesheet" href="../docs/docs.css"><link rel="icon" href="../assets/nema-app-icon.svg"><link rel="stylesheet" href="../art-unified-v16.css"></head><body><header><div class="wrap"><a class="logo" href="../index.html">.NEMA</a><nav><a href="../index.html">首页</a><a href="../syntax.html">语法清单</a><a href="../docs/index.html">文档中心</a><a href="../download.html">解释器</a></nav></div></header><main class="wrap"><div id="doc-top" class="eyebrow">DOCUMENTATION / TRANSPORT_v1.3</div><p class="pill">历史版本，仅供兼容参考。现行语法请阅读 <a href="SPEC_v1.5_zh.html">v1.5 规范</a>。</p><figure class="doc-cover-figure"><img src="../assets/ariadne-maze.webp" loading="lazy" alt="金线与迷宫：.NEMA 文档视觉索引"><figcaption>ARIADNE’S THREAD · 金线与迷宫：.NEMA 文档视觉索引</figcaption></figure><div class="reading"><aside><div class="eyebrow">CONTENTS / 目录</div><a href="#doc-top">返回顶部</a><a href="#sec-0">CLI</a></aside><article class="article"><h1>.NEMA v1.3 — `.nemat` 可逆传输协议</h1><blockquote>
+<p>v1.3 authoritative Graph delta: <code>docs/GRAPH_V13_MIGRATION.md</code>. Node and Edge both start at X0; one leading space continues X2, two X3; domain header still begins with a literal Tab and is unchanged. Historical R7 text below, if quoted, is non-normative.</p>
+</blockquote>
+<h1>.NEMA v1.3 — <code>.nemat</code> 可逆传输协议</h1>
+<p>编码器位于 <code>codec/nemat.py</code>；参考 CLI 在 <code>codec/cli.py</code>。<code>.nema</code> 是唯一可信的编辑态；<code>.nemat</code> 仅为 AI 传输或缓存，不替代 Git、AST、语言服务器或源代码。</p>
+<ul>
+<li>单独一行 <code>Tab + $N</code> 声明 N 个字典值，后续 N 行依次为词典内容。文字 <code>$</code> 在普通 <code>.nema</code> 的 What 字段中不影响语义；词典声明只在 <code>.nemat</code> 最前的协议状态有效。</li>
+<li><code>^0</code>, <code>^1</code> 等只在传输中引用词典条目，字面量 <code>^</code> 在传输中转义为 <code>\^</code>；字面量 <code>\\</code> 应由 native 编码器正确保留。</li>
+<li><code>Tab + 0</code>、<code>Tab + 1</code> 等只在 <code>.nemat</code> 使用，表示自动发现的领域 ID 公共前缀组；不要求人为声明 <code>:TaskLogin0</code> 等冗余装饰。</li>
+<li>领域短头使用 <code>Tab + 数字后缀 + 空格 + 版本</code>，解码时用当前前缀组还原原始头部。</li>
+<li><strong>压缩器不能把 Graph 续写的前导空格当作可替换的空字段或词典引用。</strong> Graph Node 的 ID（X0）和 Edge 关系表达式（X0）必须保持原始结构。词典只替换可变内容格。</li>
+<li>自动从原始文本提炼重复候选，逐候选比较目标 tokenizer 的实际 Token 开销；没有收益时回退原始 <code>.nema</code>。</li>
+<li>回写时必须 <code>decode(encode(original)) == original</code> <strong>逐字节一致</strong>，包括换行、空格、原始标点。禁止把语义拆分结果当作无损输出。</li>
+<li>有大小限制、字典条数限制、秘密扫描以及损坏词典拒绝，参阅参考实现。Tokenizer 训练文件仅供离线基准，不可宣称为商业模型官方 Tokenizer。</li>
+</ul>
+<h2 id="sec-0">CLI</h2>
+<pre><code class="language-powershell">python -m codec.cli render examples/graph_3n_4e.nema
+python -m codec.cli encode examples/graph_3n_4e.nema --output sample.nemat
+python -m codec.cli decode sample.nemat --output restored.nema
+python -m codec.cli inspect examples/graph_3n_4e.nema
+</code></pre>
+<p>使用 <code>--cost bpe</code> 或 <code>--cost unigram</code> 时可选安装 <code>sentencepiece</code> 并加载随包本地参考模型。实际部署须使用目标 AI 提供商的 tokenizer 进行最终计费校验，包含 prompt/response/retry。</p>
+<p><a class="button" href="../../docs/TRANSPORT_v1.3.md">查看原始 Markdown 源文档 ↗</a></p></article></div></main><footer><div class="wrap">.NEMA · ARIADNE’S THREAD · ASCII SPACE / LF · v1.5</div></footer></body></html>

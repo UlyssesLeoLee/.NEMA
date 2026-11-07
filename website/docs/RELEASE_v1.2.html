@@ -1,0 +1,14 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark"><title>.NEMA v1.2 — Current complete release · .NEMA</title><link rel="stylesheet" href="../docs/docs.css"><link rel="icon" href="../assets/nema-app-icon.svg"><link rel="stylesheet" href="../art-unified-v16.css"></head><body><header><div class="wrap"><a class="logo" href="../index.html">.NEMA</a><nav><a href="../index.html">首页</a><a href="../syntax.html">语法清单</a><a href="../docs/index.html">文档中心</a><a href="../download.html">解释器</a></nav></div></header><main class="wrap"><div id="doc-top" class="eyebrow">DOCUMENTATION / RELEASE_v1.2</div><p class="pill">历史版本，仅供兼容参考。现行语法请阅读 <a href="SPEC_v1.5_zh.html">v1.5 规范</a>。</p><figure class="doc-cover-figure"><img src="../assets/thread-maze-detail.webp" loading="lazy" alt="金线细部：从文本到关系"><figcaption>ARIADNE’S THREAD · 金线细部：从文本到关系</figcaption></figure><div class="reading"><aside><div class="eyebrow">CONTENTS / 目录</div><a href="#doc-top">返回顶部</a><a href="#sec-0">R7 审核修订</a></aside><article class="article"><h1>.NEMA v1.2 — Current complete release</h1><h1>.NEMA v1.2 — Current complete release</h1>
+<ol>
+<li><code>.NEMA</code> is the only product brand spelling; <code>.nema</code> and <code>.nemat</code> remain lowercase file suffixes.</li>
+<li>Three modes: What-first 5W1H, Table (Tab header), Graph. Node uses exactly one ASCII-space indentation; Edge begins at column zero; X2 carries optional descriptions.</li>
+<li>ASCII space is a real layout coordinate. Source display supports an opt-in <code>·</code> marker but copy/export remains byte-exact.</li>
+<li>Chinese/Japanese text may remain unsplit. English PascalCase is a semantic view, not a byte-exact reconstruction.</li>
+<li>Node and Edge hover/focus/tap descriptions and directed multi-edges are supported by the website.</li>
+<li>Token Lab compares native <code>.nema</code>, reversible <code>.nemat</code>, object JSON, positional JSON, positional YAML, and uses local BPE + Unigram counts with reproducible scripts.</li>
+<li>Interpreter download, AI training/hold-out/adversarial data, IDE1.0 and IME1.0 integration specs are included.</li>
+<li>On-device Windows TSF / IDE Rust integration and proprietary tokenizer billing are pending and not reported as completed.</li>
+</ol>
+<h2 id="sec-0">R7 审核修订</h2>
+<p>见 <code>docs/REVIEW_R7_FIVE_ROUNDS.md</code>。Graph X3+ 现在会进入 <code>view()</code> 的 <code>extensions</code>；解释器 ZIP 与训练测试已同步。Token Lab 的 R6 8 组原始数据保持不变，另新增带类型标记的位置式 JSON 对照。现行网站新增 <code>audit-r7.html</code>，旧 R4/R5 审查页面是历史记录。</p>
+<p><a class="button" href="../../docs/RELEASE_v1.2.md">查看原始 Markdown 源文档 ↗</a></p></article></div></main><footer><div class="wrap">.NEMA · ARIADNE’S THREAD · ASCII SPACE / LF · v1.5</div></footer></body></html>

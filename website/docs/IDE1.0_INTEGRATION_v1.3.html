@@ -1,0 +1,23 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark"><title>IDE1.0 对接 .NEMA v1.3 — 基本设计与详细设计 · .NEMA</title><link rel="stylesheet" href="../docs/docs.css"><link rel="icon" href="../assets/nema-app-icon.svg"><link rel="stylesheet" href="../art-unified-v16.css"></head><body><header><div class="wrap"><a class="logo" href="../index.html">.NEMA</a><nav><a href="../index.html">首页</a><a href="../syntax.html">语法清单</a><a href="../docs/index.html">文档中心</a><a href="../download.html">解释器</a></nav></div></header><main class="wrap"><div id="doc-top" class="eyebrow">DOCUMENTATION / IDE1.0_INTEGRATION_v1.3</div><p class="pill">历史版本，仅供兼容参考。现行语法请阅读 <a href="SPEC_v1.5_zh.html">v1.5 规范</a>。</p><figure class="doc-cover-figure"><img src="../assets/thread-maze-detail.webp" loading="lazy" alt="金线细部：从文本到关系"><figcaption>ARIADNE’S THREAD · 金线细部：从文本到关系</figcaption></figure><div class="reading"><aside><div class="eyebrow">CONTENTS / 目录</div><a href="#doc-top">返回顶部</a><a href="#sec-0">权责</a><a href="#sec-1">分层与模块建议</a><a href="#sec-2">状态/仲裁</a><a href="#sec-3">编写与可视化</a><a href="#sec-4">UT/IT/ST 验收</a><a href="#sec-5">R7 语义一致性门禁</a></aside><article class="article"><h1>IDE1.0 对接 .NEMA v1.3 — 基本设计与详细设计</h1><blockquote>
+<p>v1.3 authoritative Graph delta: <code>docs/GRAPH_V13_MIGRATION.md</code>. Node and Edge both start at X0; one leading space continues X2, two X3; domain header still begins with a literal Tab and is unchanged. Historical R7 text below, if quoted, is non-normative.</p>
+</blockquote>
+<h1>IDE1.0 对接 .NEMA v1.3 — 基本设计与详细设计</h1>
+<p>依据已检查的公开 IDE1.0 仓库结构（<code>crates/ide-kernel-core</code>, <code>ide-kernel</code>, <code>ide-shell</code>, <code>ide-shell-web</code>, <code>ide-shell-desktop</code>, <code>ide-cli</code>），以下是<strong>拟开发方案</strong>而不是已经合入仓库的功能。</p>
+<h2 id="sec-0">权责</h2>
+<p>IDE 默认仅实时解析与展示 <code>.nema</code>，可以切换“原始空格 / ·/⇥ 可视化”但复制保持真实字符。Graph Node/Edge 支持悬停 X2、点击详情、无向/正反向箭头、键盘/触屏。用户手动点击“压缩转换”按钮时 IDE 才取得转换权；否则由 IME1.0 在提交稳定文本后自动转换。模型通信优先传输自适应 <code>.nemat</code>，但<strong>文件磁盘上仍以 <code>.nema</code> 为权威</strong>。</p>
+<h2 id="sec-1">分层与模块建议</h2>
+<p><code>crates/nema-core/</code>：独立 Rust crate <code>NemaParser</code>, <code>NemaView</code>, <code>NemaCodec</code>, <code>NemaMetrics</code>、<code>NemaDiff</code>；由 <code>ide-kernel-core</code> 调度。<code>ide-shell-web</code> 和 <code>ide-shell-desktop</code> 复用相同的结构 JSON；<code>ide-cli</code> 提供 <code>nema render/encode/decode/verify/bench</code> 子命令。前端或 WebView 不重新实现语法，避免 JS/Rust 不一致。参考 Python <code>codec</code> 为唯一黄金向量来源。</p>
+<h2 id="sec-2">状态/仲裁</h2>
+<p><code>SourceDoc{uri,version,sha256,mode,writer,source_bytes,wire_bytes}</code>。持有者通过原子 <code>acquire(docUri,baseVersion,mode)</code> 申请；两端均在线时 IME 为自动转换 owner，IDE 为 manual-only。用户点击 IDE 转换，申请一次性 manual owner；IDE 生成后做 roundtrip + SHA256 + compare-and-swap 写入新版本；如果版本已更新则显示冲突，并提供重新计算按钮。<strong>不能由 IDE 在 IME 正在组合输入时触发二次转码</strong>。</p>
+<h2 id="sec-3">编写与可视化</h2>
+<p>TextPane 使用 <code>font-variant-ligatures:none</code>,<code>white-space:pre</code>,<code>letter-spacing:0</code>,<code>tab-size:2</code>。Node 原文行首单空格；Edge 顶格，续写两空格。显示空格开关只作用于渲染副本。应用代码和 Git Diff 不进入 <code>.NEMA</code> 语法，必须保持原生 Rust/TS/JSON 文件独立。</p>
+<h2 id="sec-4">UT/IT/ST 验收</h2>
+<p>UT：全部 Golden vectors、双向/反向 Edge、X2 Tooltip、原始字节还原、转义和冲突；IT：IDE/IME owner handoff、断线恢复、权限拒绝；ST：Windows / Tauri / CLI、模型供应商 Tokenizer 插件、100k Edge 懒加载、撤销和性能回归。测试不通过禁止默认写入。</p>
+<h2 id="sec-5">R7 语义一致性门禁</h2>
+<ul>
+<li>必须使用同一参考 <code>.NEMA</code> 原生解析器 / 无损 Codec 的 golden vectors。<code>parse</code>、<code>view</code>、Graph 悬停检查器、JSON 导出不得丢失 X3+ 扩展属性；X3 的 <code>APIKey</code>、<code>HTTP401</code> 保留字面拼写。</li>
+<li>只在 Graph 的 X2 显示悬停说明。点击可展开 X3+，但不改变 Node/Edge 方向与文件数据；复制源码始终保留真实空格。</li>
+<li>IME1.0 默认提交后执行自动压缩；IDE1.0 仅在用户主动点击转换时覆盖自动触发。压缩前后通过逐字节解码往返校验，并对含 <code>\^</code>、普通数字和 <code>\ </code> 的输入做对抗性测试。</li>
+<li>产品集成仍是开发要求，不因本 R7 审查而宣称已经安装到两个仓库。</li>
+</ul>
+<p><a class="button" href="../../docs/IDE1.0_INTEGRATION_v1.3.md">查看原始 Markdown 源文档 ↗</a></p></article></div></main><footer><div class="wrap">.NEMA · ARIADNE’S THREAD · ASCII SPACE / LF · v1.5</div></footer></body></html>

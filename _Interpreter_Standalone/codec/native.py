@@ -1,11 +1,11 @@
-""".NEMA v1.2 reference interpreter. Space-X and LF-Y, graph node indent = 1 space.
+""".NEMA v1.5 reference interpreter. Space-X and LF-Y; Graph Node/Edge both start at X0.
 Editing syntax is not a byte-reversible natural language segmentation algorithm.
 """
 from __future__ import annotations
 import re
 from typing import Any
 
-HEADER=re.compile(r'^\t(>?)([A-Za-z][A-Za-z0-9_.-]*) ([1-9][0-9]*)$')
+HEADER=re.compile(r'^ ([?>]?)([A-Za-z0-9][A-Za-z0-9_.-]*) ([1-9][0-9]*)$')
 EDGE=re.compile(r'^([A-Za-z][A-Za-z0-9_.:-]*)([><=])([A-Za-z][A-Za-z0-9_.:-]*)([><=])([A-Za-z][A-Za-z0-9_.:-]*)$')
 NODE=re.compile(r'^[A-Za-z][A-Za-z0-9_.:-]*$')
 CJK=re.compile(r'[\u3040-\u30ff\u3400-\u9fff\uac00-\ud7af]')
@@ -49,19 +49,20 @@ def append_cols(cols:list[list[str]],cells:list[str])->None:
 
 def parse(source:str)->list[dict[str,Any]]:
     ds=[];d=None;seen=set()
-    for line in rows_from(source):
+    for lineno,line in enumerate(rows_from(source),1):
+        if '\u3000' in line:raise ValueError(f'line {lineno}: fullwidth U+3000 whitespace forbidden; use ASCII space U+0020')
         head=HEADER.fullmatch(line)
         if head:
             graph,name,version=head.groups()
             if name in seen:raise ValueError('duplicate domain ID')
             seen.add(name)
-            d={'id':name,'revision':int(version),'mode':'graph' if graph else None,'raw_rows':[], 'records':[]}
+            d={'id':name,'revision':int(version),'mode':'graph' if graph=='>' else ('5w1h' if graph=='?' else None),'raw_rows':[], 'records':[]}
             ds.append(d);continue
         if d is None:raise ValueError('body before header')
-        if d['mode'] is None:d['mode']='table' if line.startswith('\t') else '5w1h'
+        if d['mode'] is None:d['mode']='table' if line.startswith(' ') else 'table_implicit'
         mode=d['mode']
         if mode=='table' and not d['raw_rows']:
-            if not line.startswith('\t') or line.startswith('\t\t'):raise ValueError('table header one Tab only')
+            if not line.startswith(' ') or line.startswith('  '):raise ValueError('table header requires exactly one ASCII space')
             labels=split_x(line[1:])
             if not labels or any(not v for v in labels) or len(labels)!=len(set(labels)):
                 raise ValueError('table header invalid')
@@ -70,39 +71,45 @@ def parse(source:str)->list[dict[str,Any]]:
             cells=split_x(line)
             if len(cells)>6:raise ValueError('5w1h max six fields')
             append_cols(d.setdefault('fields',[[] for _ in range(6)]),cells)
-        elif mode=='table':
+        elif mode in ('table','table_implicit'):
             cells=split_x(line)
-            if len(cells)>len(d['columns']):raise ValueError('table data too wide')
+            if mode=='table_implicit' and not d['raw_rows']:
+                if not cells[0]:raise ValueError('implicit table first row requires nonempty X0')
+                d['columns']=['column'+str(i+1) for i in range(len(cells))]
+            if mode=='table_implicit' and len(cells)>len(d['columns']):
+                d['columns'].extend('column'+str(i+1) for i in range(len(d['columns']),len(cells)))
+            elif mode=='table' and len(cells)>len(d['columns']):raise ValueError('table data too wide')
             if cells[0]:d['records'].append({'values':[]})
             elif not d['records']:raise ValueError('table continuation without record')
             append_cols(d['records'][-1]['values'],cells)
         else:
-            # one leading ASCII space = NODE declaration; zero = EDGE; 2+ = X2 continuation.
-            if line.startswith('  '):
+            # v1.3: X0 Node ID or relation, selected by the relation operators.
+            # One leading ASCII space continues X2; two continue X3, etc.
+            # Domain header is ASCII space + mode marker + ID + revision.
+            if line.startswith(' '):
                 if not d['records']:raise ValueError('graph continuation without element')
                 cells=split_x(line)
-                if cells[:2]!=['','']:raise ValueError('graph continuation requires two leading spaces')
-                if not any(cells[2:]):raise ValueError('empty graph continuation')
-                append_cols(d['records'][-1]['values'],cells)
-            elif line.startswith(' '):
-                cells=split_x(line[1:])
-                if len(cells)<1 or not NODE.fullmatch(cells[0]):raise ValueError('invalid node declaration')
-                r={'kind':'node','id':cells[0],'values':[]}
-                d['records'].append(r)
-                append_cols(r['values'],cells)
+                if not any(cells[1:]):raise ValueError('empty graph continuation')
+                append_cols(d['records'][-1]['values'],['']+cells)
             else:
                 cells=split_x(line)
-                m=EDGE.fullmatch(cells[0])
-                if not m:raise ValueError('graph edge must start in column zero and use A>X>B')
-                a,op,e,op2,b=m.groups()
-                if op!=op2:raise ValueError('incompatible arrows')
-                source,target=((b,a) if op=='<' else (a,b))
-                r={'kind':'edge','id':e,'source':source,'target':target,'direction':op,'raw':cells[0],'values':[]}
-                d['records'].append(r);append_cols(r['values'],cells)
+                token=cells[0]
+                if any(op in token for op in ('>','<','=')):
+                    m=EDGE.fullmatch(token)
+                    if not m:raise ValueError('invalid graph edge expression (cannot downgrade to node)')
+                    a,op,e,op2,b=m.groups()
+                    if op!=op2:raise ValueError('incompatible arrows')
+                    source,target=((b,a) if op=='<' else (a,b))
+                    r={'kind':'edge','id':e,'source':source,'target':target,'direction':op,'raw':token,'values':[]}
+                else:
+                    if not NODE.fullmatch(token):raise ValueError('invalid node declaration')
+                    r={'kind':'node','id':token,'values':[]}
+                d['records'].append(r)
+                append_cols(r['values'],cells)
         d['raw_rows'].append(line)
     for d in ds:
         if not d['raw_rows']:raise ValueError('empty domain')
-        if d['mode']=='table' and not d['records']:raise ValueError('empty table')
+        if d['mode'] in ('table','table_implicit') and not d['records']:raise ValueError('empty table')
         if d['mode']=='graph':
             node_ids=set();edge_ids=set()
             for r in d['records']:
@@ -146,7 +153,7 @@ def view(source:str,language:str='auto')->list[dict[str,Any]]:
         record={'id':d['id'],'revision':d['revision'],'mode':d['mode']}
         if d['mode']=='5w1h':
             record['fields']={name:join_intents(d['fields'][i],language) for i,name in enumerate(FIELD_NAMES)}
-        elif d['mode']=='table':
+        elif d['mode'] in ('table','table_implicit'):
             record['columns']=d['columns']
             record['records']=[{name:join_intents(r['values'][i],language) if i<len(r['values']) else ''
                 for i,name in enumerate(d['columns'])} for r in d['records']]
