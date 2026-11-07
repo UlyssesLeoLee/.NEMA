@@ -1,1 +1,1 @@
-"""NEMA v1.1 experimental reference codec."""
+""".NEMA v1.2 reference codec package."""

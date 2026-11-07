@@ -1,0 +1,35 @@
+{"id": 0, "type": "graph_node_missing_indent", "source": "\t>G1 1\nA LoginAPI Authentication\n\n\n", "expected": "reject"}
+{"id": 1, "type": "graph_node_two_indent", "source": "\t>G1 1\n  A LoginAPI Authentication\n\n\n", "expected": "reject"}
+{"id": 2, "type": "edge_dangling", "source": "\t>G1 1\n A LoginAPI\nA>X>B Reads\n\n\n", "expected": "reject"}
+{"id": 3, "type": "bad_arrow", "source": "\t>G1 1\n A LoginAPI\n B TokenStore\nA>X<B Reads\n\n\n", "expected": "reject"}
+{"id": 4, "type": "no_header", "source": "What\n\n\n", "expected": "reject"}
+{"id": 5, "type": "bad_eof", "source": "\tT1 1\nWhat\n", "expected": "reject"}
+{"id": 6, "type": "crlf", "source": "\tT1 1\r\nWhat\r\n\r\n\r\n", "expected": "reject"}
+{"id": 7, "type": "duplicate_node", "source": "\t>G1 1\n A LoginAPI\n A TokenStore\n\n\n", "expected": "reject"}
+{"id": 8, "type": "table_no_row", "source": "\tT1 1\n\tAgent Status Note\n\n\n", "expected": "reject"}
+{"id": 9, "type": "malformed_escape", "source": "\tT1 1\nWhat\\x\n\n\n", "expected": "reject"}
+{"id": 10, "type": "graph_node_missing_indent", "source": "\t>G1 1\nA LoginAPI Authentication\n\n\n", "expected": "reject"}
+{"id": 11, "type": "graph_node_two_indent", "source": "\t>G1 1\n  A LoginAPI Authentication\n\n\n", "expected": "reject"}
+{"id": 12, "type": "edge_dangling", "source": "\t>G1 1\n A LoginAPI\nA>X>B Reads\n\n\n", "expected": "reject"}
+{"id": 13, "type": "bad_arrow", "source": "\t>G1 1\n A LoginAPI\n B TokenStore\nA>X<B Reads\n\n\n", "expected": "reject"}
+{"id": 14, "type": "no_header", "source": "What\n\n\n", "expected": "reject"}
+{"id": 15, "type": "bad_eof", "source": "\tT1 1\nWhat\n", "expected": "reject"}
+{"id": 16, "type": "crlf", "source": "\tT1 1\r\nWhat\r\n\r\n\r\n", "expected": "reject"}
+{"id": 17, "type": "duplicate_node", "source": "\t>G1 1\n A LoginAPI\n A TokenStore\n\n\n", "expected": "reject"}
+{"id": 18, "type": "table_no_row", "source": "\tT1 1\n\tAgent Status Note\n\n\n", "expected": "reject"}
+{"id": 19, "type": "malformed_escape", "source": "\tT1 1\nWhat\\x\n\n\n", "expected": "reject"}
+{"id": 20, "type": "graph_node_missing_indent", "source": "\t>G1 1\nA LoginAPI Authentication\n\n\n", "expected": "reject"}
+{"id": 21, "type": "graph_node_two_indent", "source": "\t>G1 1\n  A LoginAPI Authentication\n\n\n", "expected": "reject"}
+{"id": 22, "type": "edge_dangling", "source": "\t>G1 1\n A LoginAPI\nA>X>B Reads\n\n\n", "expected": "reject"}
+{"id": 23, "type": "bad_arrow", "source": "\t>G1 1\n A LoginAPI\n B TokenStore\nA>X<B Reads\n\n\n", "expected": "reject"}
+{"id": 24, "type": "no_header", "source": "What\n\n\n", "expected": "reject"}
+{"id": 25, "type": "bad_eof", "source": "\tT1 1\nWhat\n", "expected": "reject"}
+{"id": 26, "type": "crlf", "source": "\tT1 1\r\nWhat\r\n\r\n\r\n", "expected": "reject"}
+{"id": 27, "type": "duplicate_node", "source": "\t>G1 1\n A LoginAPI\n A TokenStore\n\n\n", "expected": "reject"}
+{"id": 28, "type": "table_no_row", "source": "\tT1 1\n\tAgent Status Note\n\n\n", "expected": "reject"}
+{"id": 29, "type": "malformed_escape", "source": "\tT1 1\nWhat\\x\n\n\n", "expected": "reject"}
+{"id": 30, "type": "graph_node_missing_indent", "source": "\t>G1 1\nA LoginAPI Authentication\n\n\n", "expected": "reject"}
+{"id": 31, "type": "graph_node_two_indent", "source": "\t>G1 1\n  A LoginAPI Authentication\n\n\n", "expected": "reject"}
+{"id": 32, "type": "edge_dangling", "source": "\t>G1 1\n A LoginAPI\nA>X>B Reads\n\n\n", "expected": "reject"}
+{"id": 33, "type": "bad_arrow", "source": "\t>G1 1\n A LoginAPI\n B TokenStore\nA>X<B Reads\n\n\n", "expected": "reject"}
+{"id": 34, "type": "no_header", "source": "What\n\n\n", "expected": "reject"}

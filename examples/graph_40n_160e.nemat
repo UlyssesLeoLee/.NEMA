@@ -1,49 +1,49 @@
 	$4
 传递任务状态
 接收并处理任务
-Notify
+Notifies
 等待下一轮确认
 	>Gnetwork1 1
-N00 Node00 ^1
-N01 Node01 ^1
-N02 Node02 ^1
-N03 Node03 ^1
-N04 Node04 ^1
-N05 Node05 ^1
-N06 Node06 ^1
-N07 Node07 ^1
-N08 Node08 ^1
-N09 Node09 ^1
-N10 Node10 ^1
-N11 Node11 ^1
-N12 Node12 ^1
-N13 Node13 ^1
-N14 Node14 ^1
-N15 Node15 ^1
-N16 Node16 ^1
-N17 Node17 ^1
-N18 Node18 ^1
-N19 Node19 ^1
-N20 Node20 ^1
-N21 Node21 ^1
-N22 Node22 ^1
-N23 Node23 ^1
-N24 Node24 ^1
-N25 Node25 ^1
-N26 Node26 ^1
-N27 Node27 ^1
-N28 Node28 ^1
-N29 Node29 ^1
-N30 Node30 ^1
-N31 Node31 ^1
-N32 Node32 ^1
-N33 Node33 ^1
-N34 Node34 ^1
-N35 Node35 ^1
-N36 Node36 ^1
-N37 Node37 ^1
-N38 Node38 ^1
-N39 Node39 ^1
+ N00 Node00 ^1
+ N01 Node01 ^1
+ N02 Node02 ^1
+ N03 Node03 ^1
+ N04 Node04 ^1
+ N05 Node05 ^1
+ N06 Node06 ^1
+ N07 Node07 ^1
+ N08 Node08 ^1
+ N09 Node09 ^1
+ N10 Node10 ^1
+ N11 Node11 ^1
+ N12 Node12 ^1
+ N13 Node13 ^1
+ N14 Node14 ^1
+ N15 Node15 ^1
+ N16 Node16 ^1
+ N17 Node17 ^1
+ N18 Node18 ^1
+ N19 Node19 ^1
+ N20 Node20 ^1
+ N21 Node21 ^1
+ N22 Node22 ^1
+ N23 Node23 ^1
+ N24 Node24 ^1
+ N25 Node25 ^1
+ N26 Node26 ^1
+ N27 Node27 ^1
+ N28 Node28 ^1
+ N29 Node29 ^1
+ N30 Node30 ^1
+ N31 Node31 ^1
+ N32 Node32 ^1
+ N33 Node33 ^1
+ N34 Node34 ^1
+ N35 Node35 ^1
+ N36 Node36 ^1
+ N37 Node37 ^1
+ N38 Node38 ^1
+ N39 Node39 ^1
 N03<E000<N00 ^2 ^0
   ^3
 N01>E001>N10 ^2 ^0

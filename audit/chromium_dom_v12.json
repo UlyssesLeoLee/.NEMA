@@ -1,0 +1,22 @@
+[
+  {
+    "page": "index.html",
+    "js_execution": "pass",
+    "ui_controls": "pass"
+  },
+  {
+    "page": "token-benchmark.html",
+    "js_execution": "pass",
+    "ui_controls": "pass"
+  },
+  {
+    "page": "graph-guide.html",
+    "js_execution": "pass",
+    "ui_controls": "pass"
+  },
+  {
+    "page": "download.html",
+    "js_execution": "pass",
+    "ui_controls": "pass"
+  }
+]

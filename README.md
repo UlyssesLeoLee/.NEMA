@@ -1,24 +1,45 @@
-# NEMA · Ariadne’s Thread — Website R5 / Comic 3D→2D
+# .NEMA v1.2 R7 — Audited Complete Delivery
 
-基于 NEMA v1.1 Website R4 完整功能的网站美术改版：保持原有希腊神话主题、三种数据模式、What-first 语法、Graph 悬停与点击检查器、三语及 Token 基准数据，不修改 Codec 或训练结果。
+**Brand:** `.NEMA` (leading dot, uppercase). **File extensions:** `.nema` (native) and `.nemat` (reversible compressed transport). `NEMA.` is not the brand spelling.
 
-## 使用
+## Open the site
 
-打开 `index.html`（跳转到 `website/index.html`）；或直接打开 `website/index.html`。网站静态资源已在本地，浏览时不要求网络。
+Double-click **`index.html`** to open the multilingual website (ZH/JA/EN) including all three syntax modes, a live Graph with Node/Edge hover, the Token Lab showing JSON/YAML controls, an interpreter download page, and Greek-mythology cel-shaded artwork. A Three.js WebGL accent is attempted on desktop when the CDN can load; otherwise the page retains its static art. All critical site content runs without WebGL.
 
-## 页面
+**Standalone interpreter:** download from `website/download.html` or use `downloads/NEMA_Interpreter_v1.2.zip`. Python 3.10+ for parser/codec; optional `sentencepiece` only for offline benchmark counting. Python reference only: **not a Rust SDK, Windows EXE or already installed IDE/IME feature**.
 
-- `website/index.html`：中日英主页、交互 5W1H/Table/Graph、Node/Edge 悬停、Token 对照。
-- `website/graph-guide.html`：Graph X0/X1/X2、方向、悬停/聚焦/触屏说明。
-- `website/token-benchmark.html`：11 场景 Token 测量与真实样本（参考数据来自 R4）。
-- `website/codec.html`：字典、前缀和传输说明。
-- `website/review.html`：R4 五轮审查内容归档。
-- `website/comic.css`：R5 视觉设计实现（可作为后续主题皮肤继续修改）。
+## Deliverables
 
-## 视觉改动
+- `website/`: comic-book cel-shaded editorial theme, 3-mode visualizer, Graph focus/hover/touch inspector, graphical Token Lab, downloads and guides; code whitespace visualization toggles display only.
+- `docs/`: definitive Chinese v1.2 syntax; English/Japanese current summaries; Graph render specification, reversible codec, JSON comparison methods, interpreter operations, AI training, IDE1.0 and IME1.0 development plans, acceptance tests.
+- `codec/`: Python standard-library native `.nema` parser, semantic view, reversible `.nemat` decoder/encoder and CLI.
+- `downloads/`: independently runnable interpreter ZIP.
+- `examples/`: 8 groups of native, compressed, JSON and positional comparison fixtures including uncompressible cases.
+- `bench/`: reproducible BPE / Unigram models and script, raw CSV/JSON and limitations.
+- `training/`: positive, held-out and adversarial prompts with validation and golden rules.
+- `tests/`: Python unit/consistency tests and Chromium browser smoke.
+- `archive/`: separate historical prior-version references; do **not** treat them as current grammar.
 
-美漫 3D-to-2D：墨色粗轮廓、石雕版画质感、网点半色调、斜切标签、金色线程、古希腊迷宫背景、漫画纸米色卡片、可视化 SVG 关系图。所有按钮、标签页和图的悬停行为均仍为真实 DOM 交互，图片仅作艺术装饰。
+## Key grammar
 
-## 注意
+In Graph mode `	>Gauth1 1`, one leading ASCII space defines a Node (` A LoginAPI Authentication`), no indentation defines an Edge (`A>X>B Reads VerifySession`) and two spaces continue X2 (`  CacheExpiredRetryOnce`). 5W1H is What-first: **What, Why, How, Who, When, Where**. Table mode uses a single Tab-prefixed *first header row*. Natural-language words can be PascalCase or left as intact Chinese/Japanese text; fields use real ASCII spaces. In example views, visible `·` and `⇥` are display aids only—not stored delimiters.
 
-这是网站 R5 美术版；保留 v1.1 协议与基准原始数据，并未重新运行商业模型 Token 计费实测。IDE1.0 / IME1.0 产品集成仍独立于本网站。
+## Measurement
+
+BPE/Unigram counts come from **bundled locally trained whitespace-preserving SentencePiece models**; percentages are NOT official GPT/Claude/Gemini billing data. See `bench/LATEST_REPORT_V12.md` and `website/token-benchmark.html`. Strong baseline is *positional JSON*, separately from ordinary self-describing JSON. Native vs `.nemat` bytes and tokenizer counts are different metrics. Some short/high-entropy cases will not benefit from the codec.
+
+## Integrity and validation
+
+Run `python -m unittest discover -s tests -p test_v12.py` from this directory. Run `python -m codec.cli render examples/complete_v12.nema`. For browser checks, install Playwright/Chromium separately; recorded evidence in `audit/` and screenshots under `previews/`. Check SHA256 in `MANIFEST_SHA256.txt` and each ZIP using ZipFile.testzip().
+
+## Status and boundaries
+
+The complete website and Python reference interpreter are bundled. The IDE1.0/IME1.0 integration docs are implementation specifications; no source changes have been pushed into those external repositories. Actual GPT/Claude/Gemini API tokenizer and full end-to-end agent rework-cost trials have not been executed. Three.js embellishment depends on the availability of the pinned CDN and WebGL.
+
+## R7 audited corrections
+
+- Fixed Graph X3+ semantic output (`extensions`) while preserving exact technical literals (APIKey, HTTP401, SHA256); X2 remains the hover-only note.
+- Fixed active Chinese/Japanese/English Graph name-escaping copy and mislabeled Japanese benchmark metric.
+- Added self-identifying `w/t/g` positional JSON baseline (separate from R6's externally negotiated positional JSON) with actual locally executed BPE/Unigram counts.
+- Added `website/audit-r7.html` (three languages), docs audit, Graph X3 golden corpus and regression suite; interpreter download rebundled with updated parser.
+- Existing R6 benchmark numbers are not re-labeled or fabricated. Real browser navigation and commercial provider billing remain unverified.

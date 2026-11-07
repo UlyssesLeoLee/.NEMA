@@ -1,0 +1,29 @@
+{
+  "zh": {
+    "brand": ".NEMA",
+    "node": "节点",
+    "edge": "关系",
+    "description": "可选说明",
+    "indented_node": "行首一个空格声明节点",
+    "top_edge": "顶格写有向关系",
+    "token_notice": "本地 Token 实测，不是官方计费"
+  },
+  "ja": {
+    "brand": ".NEMA",
+    "node": "ノード",
+    "edge": "関係",
+    "description": "任意の説明",
+    "indented_node": "先頭半角スペース1個がノード宣言",
+    "top_edge": "インデント0の Edge",
+    "token_notice": "ローカル計測であり公式課金ではありません"
+  },
+  "en": {
+    "brand": ".NEMA",
+    "node": "Node",
+    "edge": "Edge",
+    "description": "optional description",
+    "indented_node": "one leading ASCII space declares a Node",
+    "top_edge": "an unindented line declares an Edge",
+    "token_notice": "Local tokenizer benchmark, not provider billing"
+  }
+}

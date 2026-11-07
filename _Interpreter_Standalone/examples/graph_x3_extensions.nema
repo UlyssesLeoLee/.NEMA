@@ -1,0 +1,7 @@
+	>Gext1 1
+ A LoginAPI Authentication APIKey
+ B TokenStore SessionStorage
+A>X>B Reads VerifySession HTTP401
+   RetryOnTimeout
+
+

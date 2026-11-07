@@ -1,0 +1,19 @@
+	Tja1 1
+ログイン処理を確認する 情報漏洩を防ぐ 認証トークンを検証する 担当エージェント 今日 認証サービス
+ セッションを守る
+	Ttable1 1
+	Agent Status Note
+Claude Ready 认证检查已完成
+  下一轮验证权限
+Codex Review 准备输出审核结果
+	>Gauth1 1
+ A LoginAPI Authentication
+ B TokenStore SessionStorage
+ C AuditService RecordsSecurityEvents
+A>X>B Reads VerifySession
+  CacheExpiredRetryOnce
+B<Y<C Notifies AuditEvent
+A=U=C Shares SecurityPolicy
+A>P>A Retry Maximum3Attempts
+
+

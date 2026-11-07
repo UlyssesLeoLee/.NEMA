@@ -1,0 +1,1 @@
+[["Gauth1",1,[["A","LoginAPI","Authentication"],["B","TokenStore","Session storage"],["C","AuditService","Records security events"]],[["X","A","B",">","Reads","Verify session cache expired retry once"],["Y","C","B","<","Notifies","Audit event"],["U","A","C","=","Shares","Security policy"],["P","A","A",">","Retry","Maximum 3 attempts"]]]]

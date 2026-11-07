@@ -1,4 +1,4 @@
-"""Experimental NEMA v1.1 transport codec.  Native SPACE geometry is preserved byte for byte.
+"""Experimental .NEMA v1.2 transport codec.  Native SPACE geometry is preserved byte for byte.
 Stateful control lines use SPACE; escaped caret is \\^ (literal ^).
 Requires out-of-band format negotiation: NEVER silently parse .nemat as .nema.
 """
@@ -133,7 +133,7 @@ def cell_candidates(source:str)->list[str]:
         vals=split_raw(line)
         for i,s in enumerate(vals):
             if not s or len(s)<3 or len(s.encode())>16384 or SECRET.search(s):continue
-            if mode=='graph' and i==0:continue
+            if mode=='graph' and (i==0 or (i==1 and line.startswith(' '))):continue
             out.append(s)
     return out
 
@@ -148,7 +148,7 @@ def dict_encode(lines:list[str],dictionary:list[str])->list[str]:
         if first and mode=='table':out.append(esc(line));first=False;continue
         first=False
         vals=split_raw(line)
-        out.append(' '.join((esc(v) if mode=='graph' and idx==0 else look.get(v,esc(v))) for idx,v in enumerate(vals)))
+        out.append(' '.join((esc(v) if mode=='graph' and (idx==0 or (idx==1 and line.startswith(' '))) else look.get(v,esc(v))) for idx,v in enumerate(vals)))
     return out
 
 
@@ -164,7 +164,7 @@ def dict_decode(lines:list[str],dictionary:list[str])->list[str]:
         decoded=[]
         for idx,value in enumerate(vals):
             ref=ALIAS.fullmatch(value)
-            if ref and not (mode=='graph' and idx==0):
+            if ref and not (mode=='graph' and (idx==0 or (idx==1 and line.startswith(' ')))):
                 n=int(ref.group(1))
                 if n>=len(dictionary):raise ValueError('invalid alias')
                 decoded.append(dictionary[n])

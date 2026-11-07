@@ -1,0 +1,11 @@
+	>Gauth1 1
+ A LoginAPI Authentication
+ B TokenStore SessionStorage
+ C AuditService RecordsSecurityEvents
+A>X>B Reads VerifySession
+  CacheExpiredRetryOnce
+B<Y<C Notifies AuditEvent
+A=U=C Shares SecurityPolicy
+A>P>A Retry Maximum3Attempts
+
+
