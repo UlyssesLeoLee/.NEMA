@@ -1,0 +1,6 @@
+ \>3 1
+A LoginAPI Authentication
+B TokenStore SessionStorage
+A>X>B Reads VerifySession
+A>Y>B Writes AuditLog
+B>Z>A Returns SessionReady

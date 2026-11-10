@@ -1,1 +1,1 @@
-""".NEMA v1.2 reference codec package."""
+from .nemat import encode, decode

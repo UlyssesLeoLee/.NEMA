@@ -1,0 +1,14 @@
+{
+  "asset": "ariadne-relief-3d.glb",
+  "source": "User-approved image reference, relief geometry and separate 3D gold sphere/thread",
+  "full_round_sculpture": false,
+  "actual_mesh": true,
+  "estimated_front_triangle_count": 62179,
+  "additional_components": 22,
+  "license": "Reference image user-supplied in conversation; derived geometry generated for user",
+  "limitations": [
+    "2.5D relief, not full photogrammetric human sculpt",
+    "Back is inferred, not sculptor-authored",
+    "Orb and thread are independent real 3D geometry"
+  ]
+}

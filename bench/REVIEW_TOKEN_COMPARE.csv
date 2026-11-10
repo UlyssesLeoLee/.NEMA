@@ -1,0 +1,10 @@
+scenario,format,bytes_utf8,neutral_bpe_tokens
+table_with_null,nema,77,56
+table_with_null,json,219,152
+table_with_null,yaml,201,160
+five_w_one_h,nema,135,70
+five_w_one_h,json,303,184
+five_w_one_h,yaml,276,186
+node_edge,nema,169,91
+node_edge,json,580,348
+node_edge,yaml,513,383

@@ -1,0 +1,9 @@
+{
+  "name":"nema-ariadne-site",
+  "private":true,
+  "version":"1.0.0",
+  "type":"module",
+  "description":".NEMA standalone syntax site and real GLB relief sculpture; Three.js available through CDN or local vendoring",
+  "scripts":{"bundle:offline":"node scripts/vendor_three.mjs","test:ui":"node tests/test_interaction_contract.mjs && node tests/test_controls.mjs && node tests/test_semantic_panels.mjs"},
+  "dependencies":{"three":"0.171.0"}
+}

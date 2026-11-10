@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width,initial-scale=1" name="viewport"/>
+  <meta content="#071524" name="theme-color"/>
+  <title>几何效果 · .NEMA</title>
+  <link href="assets/nema-app-icon.svg" rel="icon"/>
+  <link href="premier.css" rel="stylesheet"/>
+</head>
+<body>
+<header class="nav">
+  <div class="wrap navline">
+    <a class="wordmark" href="index.html">
+      <div class="wordmark-brand">
+        <svg class="wordmark-seal" viewBox="0 0 32 32" width="28" height="28" aria-hidden="true">
+          <circle cx="16" cy="16" r="14" fill="none" stroke="#d4af37" stroke-width="1.2" opacity="0.6"/>
+          <circle cx="16" cy="16" r="10.5" fill="none" stroke="#f5cf62" stroke-width="0.8" stroke-dasharray="2 3"/>
+          <polygon points="16,3 29,16 16,29 3,16" fill="none" stroke="#d4af37" stroke-width="1" opacity="0.8"/>
+          <path d="M12 16 H20 M16 12 V20" stroke="#ffe899" stroke-width="1.8" stroke-linecap="round"/>
+          <circle cx="16" cy="16" r="2.2" fill="#ffe899"/>
+        </svg>
+        <div>
+          <div class="wordmark-title"><span class="gold-dot">.</span>NEMA</div>
+          <small class="wordmark-sub">νῆμα · ARIADNE'S THREAD</small>
+        </div>
+      </div>
+    </a>
+    <button aria-expanded="false" aria-label="展开导航" class="menubtn" id="menuBtn">☰</button>
+    <nav aria-label="主导航" class="navlinks" id="navLinks">
+      <a href="index.html">典籍首页</a>
+      <a href="grammar.html">语法规范</a>
+      <a class="active" href="playground.html">几何效果</a>
+      <a href="downloads.html">文献下载</a>
+    </nav>
+    <a class="top-cta" href="downloads.html">下载解释器 ↗</a>
+  </div>
+</header>
+
+<main>
+<section class="pagehero">
+  <div class="wrap">
+    <div class="kicker">LABORATORIUM · 典籍工作台</div>
+    <h1>写下一行，洞见其几何结构。</h1>
+    <p>编辑 .NEMA 源码，实时观测试验解析器 AST、精确的错误诊断和结构化拓扑图。支持三种模式、稀疏矩阵与多向链路。</p>
+  </div>
+</section>
+
+<div class="wrap main-page">
+  <div class="controls">
+    <select aria-label="选择完整样例" id="sampleSelect">
+      <option value="">选择完整样例…</option>
+    </select>
+    <button class="btn primary" id="parseNow">几何解析 / 渲染</button>
+    <button class="btn" id="copyText">复制源码</button>
+    <button class="btn" id="saveText">保存 .nema</button>
+    <a class="btn" href="#sourceAstSection">底层源码与 AST ↓</a>
+    <a class="btn" href="grammar.html">查看完整规范 ↗</a>
+  </div>
+
+  <section class="panel graph-workbench" id="graphWorkbench">
+    <h2>Node–Edge · 拓扑关系图</h2>
+    <p class="mini">可直接切换正向、反向、无向、自循环和平行边；图拓扑完全由当前 AST 生成，呈现神圣几何逻辑。</p>
+    <div aria-label="关系图案例" class="ng-controls graph-controls" role="group">
+      <button class="btn" data-graph-case="forward" type="button">正向关系</button>
+      <button class="btn" data-graph-case="reverse" type="button">反向关系</button>
+      <button class="btn" data-graph-case="undirected" type="button">无向关系</button>
+      <button class="btn" data-graph-case="loop" type="button">自循环</button>
+      <button class="btn" data-graph-case="parallel" type="button">平行边</button>
+    </div>
+    <svg aria-label="由当前 AST 自动生成的 Node–Edge 关系图" id="liveNodeGraph" role="img" viewBox="0 0 700 330"></svg>
+    <p aria-live="polite" class="mini" id="graphLegend"></p>
+  </section>
+
+  <section class="panel" id="semanticWorkbench" style="margin-top:22px">
+    <h2>结构化语义</h2>
+    <p class="mini">解析器提取的高阶领域语义呈现：表格多维视图、5W1H 情境实体或拓扑链路。</p>
+    <div class="ng-panel" id="humanRender" style="min-height:120px;margin-bottom:0"></div>
+  </section>
+
+  <section class="panel" style="margin-top:22px">
+    <h2>更多经典变体</h2>
+    <p class="mini">139 种变化的完整矩阵与合法/错误判定均在规范页可查。常见案例可直接调入工作台实时复核。</p>
+    <div class="controls" id="quickRules"></div>
+  </section>
+
+  <section class="demo-grid" id="sourceAstSection" style="margin-top:22px">
+    <div class="panel">
+      <h2>源码 · ASCII 半角空格</h2>
+      <textarea aria-label=".NEMA 编辑器" class="ng-editor" id="source" spellcheck="false"></textarea>
+      <p class="mini" id="sourceStats"></p>
+    </div>
+    <div class="panel">
+      <h2>解析结果 · AST</h2>
+      <pre aria-live="polite" class="ng-ast" id="ast"></pre>
+    </div>
+  </section>
+</div>
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <strong>.NEMA</strong>
+    <span>没有隐式猜测 · 只有确定性的解析</span>
+    <a href="grammar.html">查阅规范 ↗</a>
+  </div>
+</footer>
+
+<script src="rule-matrix-data.js"></script>
+<script src="strict-parser.js"></script>
+<script src="js/ui.js"></script>
+<script src="interpreter-page.js"></script>
+<script src="premier.js"></script>
+<script src="js/graph-renderer.js"></script>
+<script src="js/playground-graph.js"></script>
+</body>
+</html>

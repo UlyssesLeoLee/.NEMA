@@ -1,76 +1,353 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#091831">
-<meta name="description" content=".NEMA — Ariadne's Thread. AI-native 5W1H, Tables and Graphs for collaborating agents.">
-<title>.NEMA · Ariadne's Thread</title>
-<link rel="icon" type="image/svg+xml" href="assets/nema-app-icon.svg">
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css"><script src="demo_data.js" defer></script><script src="benchmark_v12.js" defer></script><script src="app.js" defer></script>
-<link rel="stylesheet" href="comic.css"><link rel="stylesheet" href="art-direction-v12.css"><link rel="stylesheet" href="three-accent-r7.css"><link rel="stylesheet" href="statue-hero.css"><script type="module" src="three-hero.js"></script>
-<link rel="stylesheet" href="art-unified-v16.css"></head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width,initial-scale=1" name="viewport"/>
+  <meta content="#071524" name="theme-color"/>
+  <meta content=".NEMA — 为 AI 与多智能体协作设计的极简结构化语义语言。语法规范、可交互迷宫演示与同等语义对比。" name="description"/>
+  <title>.NEMA — 让结构清晰可见 · 阿里阿德涅之线</title>
+  <link href="assets/nema-app-icon.svg" rel="icon"/>
+  <link href="premier.css" rel="stylesheet"/>
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "./vendor/three/build/three.module.js",
+      "three/addons/": "./vendor/three/addons/"
+    }
+  }
+  </script>
+</head>
 <body>
-<a class="skip" href="#examples" data-i="skip">跳到示例</a>
-<header class="site-nav"><div class="container nav-row">
- <a class="wordmark" href="#top" aria-label=".NEMA"><img src="assets/nema-logo.svg" alt=""><strong>.NEMA</strong><span class="word-sub">ARIADNE'S THREAD</span></a>
- <nav id="mainNav"><a href="#features" data-i="navFeatures">能力</a><a href="#examples" data-i="navExamples">示例</a><a href="#graph-guide" data-g="navGraph">图结构</a><a href="#benchmark" data-i="navBenchmark">性能</a><a href="syntax.html">语法清单</a><a href="docs/index.html" data-i="navDocs">文档</a><a href="download.html" aria-label="下载解释器">解释器 ↓</a></nav>
- <div class="nav-actions"><div class="langs" aria-label="Languages" role="group"><button class="lang active" data-lang="zh" aria-pressed="true">中</button><button class="lang" data-lang="ja" aria-pressed="false">日</button><button class="lang" data-lang="en" aria-pressed="false">EN</button></div><a href="download.html" class="small-button" data-i="navGet">开始使用</a><button id="navToggle" class="nav-toggle" aria-label="Toggle navigation">☰</button></div>
-</div></header>
-<main id="top">
-<section class="hero"><div class="container hero-content">
- <div class="hero-copy"><div class="overline"><span class="gold-dot"></span> .NEMA / ARIADNE'S THREAD</div>
- <h1><span class="period">.</span>NEMA</h1>
- <div class="strap">AI-NATIVE SEMANTIC INTERCHANGE</div>
- <h2 data-i="heroTitle">让多个智能体，沿着同一根线穿过迷宫。</h2>
- <p class="hero-desc" data-i="heroDesc">5W1H、显式/无表头表格与有向关系图，统一由 空格横向分列、意群纵向延展。一个领域就是独立协作边界。</p>
- <div class="hero-buttons"><a class="button gold" href="#examples"><span data-i="heroPrimary">交互体验 .NEMA</span> <span>↗</span></a><a class="button outline" href="syntax.html"><span data-i="heroSecondary">阅读语法规范</span> <span>→</span></a></div>
- <div class="meta-line"><span data-i="heroMeta1">领域可独立分派</span><i></i><span data-i="heroMeta2">二维语义位置</span><i></i><span data-i="heroMeta3">可视化还原</span></div>
- </div><div class="hero-art"><div id="threeStage" aria-hidden="true"></div><img src="assets/ariadne-comic.webp" alt="American comic-style marble Ariadne holding the golden thread in a Greek labyrinth"><span class="sculpture-caption" aria-hidden="true">ARIADNE · MARBLE & GOLD · TOON 3D</span></div>
-</div><div class="hero-horizon"></div></section>
-<section class="feature-ribbon" id="features"><div class="container feature-grid">
- <div class="feature"><span class="feat-icon">⌘</span><div><h3 data-i="f1">一域一边界</h3><p data-i="f1d">Agent 可独立协作与审查</p></div></div>
- <div class="feature"><span class="feat-icon">⇥</span><div><h3 data-i="f2">二维语义</h3><p data-i="f2d">横向列与纵向意群</p></div></div>
- <div class="feature"><span class="feat-icon">◇</span><div><h3 data-i="f3">三种领域类型</h3><p data-i="f3d">5W1H、表格与 Graph</p></div></div>
- <div class="feature"><span class="feat-icon">◎</span><div><h3 data-i="f4">IDE1.0 渲染</h3><p data-i="f4d">原文紧凑，视图清晰</p></div></div>
-</div></section>
-<section class="art-chapter" aria-labelledby="art-chapter-heading"><div class="container art-chapter-inner">
-<div class="section-marker">VISUAL ATLAS / ARIADNE’S THREAD</div><h2 id="art-chapter-heading" class="art-chapter-lead">从线索到结构，再从结构抵达理解。</h2>
-<div class="art-triptych">
-<a class="art-tile" href="syntax.html"><span class="art-index">01 / THE THREAD</span><img src="assets/ariadne-maze.webp" loading="lazy" alt="美漫画风的阿里阿德涅与古希腊迷宫，金线作为语义导引"><span class="art-label"><strong>一条线，串起三种语法。</strong><small>探索 5W1H · Table · Graph 的共同坐标</small></span></a>
-<a class="art-tile" href="graph-guide.html"><span class="art-index">02 / THE STRUCTURE</span><img src="assets/thread-maze-detail.webp" loading="lazy" alt="金线穿过迷宫的漫画细部"><span class="art-label"><strong>关系并非装饰，而是路径。</strong><small>查看 Node–Edge 的方向与语义</small></span></a>
-<a class="art-tile" href="docs/index.html"><span class="art-index">03 / THE MEMORY</span><img src="assets/marble-guardian.webp" loading="lazy" alt="希腊大理石雕像的美漫卡通渲染"><span class="art-label"><strong>将规则保存为可追溯的知识。</strong><small>进入统一的文档与案例图鉴</small></span></a>
-</div></div></section>
-<section class="section examples-section" id="examples"><div class="container">
-<div class="section-marker">01 / MACHINE → HUMAN</div><div class="section-header"><div><h2 data-i="exTitle">一种格式，三种信息形态。</h2><p data-i="exDesc">直接查看真正的 .nema 原文，并切换到人类可读视图。字段位置、关系方向和纵向意群都由解析器确定。</p></div></div>
-<div class="mode-tabs" role="tablist" aria-label=".NEMA data modes"><button id="nema-tab-task" role="tab" aria-controls="rendered" aria-selected="true" tabindex="0" class="mode active" data-mode="task" data-i="modeTask">5W1H / 文本</button><button id="nema-tab-table" role="tab" aria-controls="rendered" aria-selected="false" tabindex="-1" class="mode" data-mode="table" data-i="modeTable">表格 Table</button><button id="nema-tab-graph" role="tab" aria-controls="rendered" aria-selected="false" tabindex="-1" class="mode" data-mode="graph" data-i="modeGraph">Node–Edge 图</button><button id="nema-tab-implicit" role="tab" aria-controls="rendered" aria-selected="false" tabindex="-1" class="mode" data-mode="implicit">无表头 Table</button></div>
-<div class="mode-explainer" id="modeExplainer" aria-live="polite"></div><div class="workspace"><div class="work-header"><div class="lights"><i></i><i></i><i></i></div><span id="filename">task.nema</span><button id="spacesButton" class="copy-button" type="button" aria-pressed="false" title="用 · 显示半角空格；不修改源文件">空格 ·</button><button id="copyButton" class="copy-button" data-i="copy">复制源文件</button></div><div class="work-content"><section class="work-pane source-pane"><div class="pane-top"><span data-i="sourceTitle">.NEMA 源文件</span><span class="pill">UTF-8 · SPACE-X</span></div><pre id="sourceCode" aria-label="Exact .NEMA source with real ASCII spaces"></pre><div class="pane-foot" data-i="sourceHint">领域头前只有一个半角 ASCII 空格；列按半角空格坐标识别。</div></section><section class="work-pane render-pane"><div class="pane-top"><span data-i="renderTitle">IDE1.0 语义渲染</span><span class="pill" id="domainType">5W1H</span></div><div id="rendered" role="tabpanel" tabindex="0" aria-labelledby="nema-tab-task" aria-live="polite"></div></section></div></div>
-<div class="note"><span>✦</span><span data-i="demoNote">这是可运行的规范示例；Graph 的 X1 是原样保留的标识符；正文按需进行语义拆读。</span></div>
-<div class="demo-legend" id="demoLegend"></div><p class="syntax-keyline">ASCII SPACE <b>·</b> 区分横向字段 · LF <b>↵</b> 延续意群 · GRAPH <b>A</b> 声明节点，<b>A&gt;X&gt;B</b> 声明关系 · 浏览器展示可切换可见空格</p>
-
-</div></section>
-<section class="section graph-guide-section" id="graph-guide"><div class="container">
-  <div class="section-marker">02 / NODE–EDGE SEMANTICS</div>
-  <div class="graph-intro"><div><h2 data-g="graphTitle">Node 与 Edge 的每一列代表什么？</h2><p class="lead" data-g="graphIntro">Node 和 Edge 均顶格声明；Edge 由关系符识别。Graph X0 负责图的结构，X1 是名称，X2 才是可选说明。说明不会创建额外节点，也不改变箭头方向。</p></div><a class="button outline graph-cta" href="graph-guide.html"><span data-g="graphRead">完整图语法与方向示例</span><span aria-hidden="true">↗</span></a></div>
-  <div class="graph-pair">
-    <article class="graph-schema-card"><div class="schema-eyebrow" data-g="nodeType">NODE · 节点</div><pre class="schema-code">A LoginAPI Authentication</pre>
-      <div class="schema-tokens"><div><span>X0</span><b>A</b><small data-g="node0">稳定的 Node ID，用于引用</small></div><div><span>X1</span><b>LoginAPI</b><small data-g="node1">显示名称；Graph X1 默认原样保留</small></div><div><span>X2</span><b>Authentication</b><small data-g="node2">可选说明：身份认证，不决定拓扑</small></div></div>
-      <p class="schema-result"><span data-g="humanView">人类视图</span> · <strong>LoginAPI</strong> <span>— Authentication</span></p>
-    </article>
-    <article class="graph-schema-card"><div class="schema-eyebrow" data-g="edgeType">EDGE · 有向关系</div><pre class="schema-code">A&gt;X&gt;B Reads VerifySession</pre>
-      <div class="schema-tokens"><div><span>X0</span><b>A&gt;X&gt;B</b><small data-g="edge0">A → B；X 是 Edge 的独立 ID</small></div><div><span>X1</span><b>Reads</b><small data-g="edge1">关系名称</small></div><div><span>X2</span><b>VerifySession</b><small data-g="edge2">可选的关系说明，可纵向继续</small></div></div>
-      <p class="schema-result"><span data-g="humanView2">人类视图</span> · <strong>A → B</strong> <span data-g="edgePreview">Reads · Verify session</span></p>
-    </article>
+<header class="nav">
+  <div class="wrap navline">
+    <a class="wordmark" href="index.html">
+      <div class="wordmark-brand">
+        <svg class="wordmark-seal" viewBox="0 0 32 32" width="28" height="28" aria-hidden="true">
+          <circle cx="16" cy="16" r="14" fill="none" stroke="#d4af37" stroke-width="1.2" opacity="0.6"/>
+          <circle cx="16" cy="16" r="10.5" fill="none" stroke="#f5cf62" stroke-width="0.8" stroke-dasharray="2 3"/>
+          <polygon points="16,3 29,16 16,29 3,16" fill="none" stroke="#d4af37" stroke-width="1" opacity="0.8"/>
+          <path d="M12 16 H20 M16 12 V20" stroke="#ffe899" stroke-width="1.8" stroke-linecap="round"/>
+          <circle cx="16" cy="16" r="2.2" fill="#ffe899"/>
+        </svg>
+        <div>
+          <div class="wordmark-title"><span class="gold-dot">.</span>NEMA</div>
+          <small class="wordmark-sub">νῆμα · ARIADNE'S THREAD</small>
+        </div>
+      </div>
+    </a>
+    <button aria-expanded="false" aria-label="展开导航" class="menubtn" id="menuBtn">☰</button>
+    <nav aria-label="主导航" class="navlinks" id="navLinks">
+      <a class="active" href="index.html">典籍首页</a>
+      <a href="grammar.html">语法规范</a>
+      <a href="playground.html">几何效果</a>
+      <a href="downloads.html">文献下载</a>
+    </nav>
+    <a class="top-cta" href="playground.html">进入工作台 <span aria-hidden="true">↗</span></a>
   </div>
-  <p class="graph-hover-intro" data-g="hoverGraphCTA">悬停 Node / Edge，立即阅读描述；点击打开完整字段</p>
-  <div class="direction-strip" role="note"><span data-g="directionName">方向速查</span><code>A&gt;X&gt;B</code><strong>A → B</strong><code>A&lt;Y&lt;B</code><strong>B → A</strong><code>A=U=B</code><strong>A — B</strong><a href="graph-guide.html" data-g="allDirections">更多：自循环、平行边与复杂拓扑</a></div>
-</div></section>
-<section class="section principles" id="syntax"><div class="container"><div class="section-marker">03 / MINIMAL GRAMMAR</div><h2 data-i="syntaxTitle">位置承载结构，内容无需装饰。</h2><p class="lead" data-i="syntaxDesc">NEMA 不再强制使用 类型括号或图形绘制代码。只有语法边界需要严格规则。</p>
-<div class="principles-grid"><article><span>01</span><h3 data-i="s1">半角空格识别领域</h3><p data-i="s1d">领域头统一以半角空格起始，由 ?、> 区分领域模式。</p><code> ?Task1 1</code></article><article><span>02</span><h3 data-i="s2">5W1H 显式标记</h3><p data-i="s2d">领域头以 ? 标记，正文六列对应 What、Why、How、Who、When、Where。</p><code>What Why How Who When Where</code></article><article><span>03</span><h3 data-i="s3">表格支持自动列名</h3><p data-i="s3d">显式表头首正文用空格，无表头自动生成 column1…N。</p><code>Agent Status Note</code></article><article><span>04</span><h3 data-i="s4">Edge 拥有身份与方向</h3><p data-i="s4d">Node 与 Edge 都顶格；关系符识别 A&gt;X&gt;B 有向 Edge X。</p><code>A LoginAPI</code></article></div>
-</div></section>
-<section class="section benchmark" id="benchmark"><div class="container benchmark-inner"><div><div class="section-marker">04 / EMPIRICAL BENCHMARK</div><h2 data-i="benchTitle">不猜测 Token，用实验检验。</h2><p data-i="benchDesc">等价语义对比原生 NEMA、Tab 分列控制、位置式 YAML 与可逆 .nemat。这里展示本地 SentencePiece BPE 的实测，不代表 GPT / Claude / Gemini 账单。</p><div class="metric-line"><div><strong id="metricValue">0.00%</strong><span data-i="metricLabel">英文 60 领域：相对紧凑 JSON 的本地 BPE Token 节省</span></div></div><p class="caveat" data-i="benchCaveat">真实目标模型的 tokenizer 尚不可用；最终收益必须结合模型输入输出与纠错测试验证。</p></div><div class="bench-card"><div class="bench-card-head" data-i="benchCard">本地 BPE · 同一语义负载</div><div id="benchmarkBars"></div><a href="token-benchmark.html" class="button outline" style="display:inline-block;margin:22px 0 0" id="benchmarkLink">查看中英日完整实测与示例 →</a><div class="legend" data-i="benchLegend">数值来自可复现的本地基准；另见独立 Token 页面。</div></div></div></section>
-<section class="section docs-section" id="docs"><div class="container docs-inner"><div><div class="section-marker">05 / OPEN DOCUMENTATION</div><h2 data-i="docsTitle">从源文件到训练语料，一套完整的线索。</h2><p data-i="docsDesc">所有示例、解析器、测试、模型训练资料和历史实验资料都与主页一同交付，可离线打开和查阅。</p></div><div class="doc-links"><a href="docs/SPEC_v1.5_zh.html"><strong data-i="linkSpec">核心语法规范</strong><span>v1.5 语法 ↗</span></a><a id="humanGuide" href="docs/SPEC_v1.5_zh.html"><strong data-i="linkGuide">人工书写指南</strong><span>5W1H / Table / Graph ↗</span></a><a href="graph-guide.html"><strong data-g="linkGraphGuide">Graph 字段与方向规范</strong><span>Node / Edge / X0-X2 ↗</span></a><a href="docs/AI_TRAINING_v1.5.html"><strong data-i="linkTrain">AI 专项训练说明</strong><span>SFT / Evaluation ↗</span></a><a href="docs/LATEST_REPORT_V12.html"><strong data-i="linkBench">实测 Token 报告</strong><span>BPE / Unigram / gzip ↗</span></a><a href="../examples/explicit_5w1h_v15.nema"><strong data-i="linkSample">完整样品 .nema</strong><span>UTF-8 / ASCII ↗</span></a></div></div></section>
-</main><footer class="footer"><div class="container foot-inner"><div class="foot-brand"><img src="assets/nema-logo.svg" alt=""><span>.NEMA</span></div><p data-i="footerText">阿里阿德涅的线团，为协作留下通往出口的路径。</p><a href="#top" data-i="toTop">回到顶部 ↑</a></div></footer>
-<div class="footer-links"><a href="audit-r7.html" data-g="auditReport">五轮审查报告</a><a href="graph-guide.html" data-g="footerGraph">Graph 字段与方向详解</a><a href="token-benchmark.html" data-g="footerToken">Token 中英日实测</a><a href="codec.html" data-g="footerCodec">Codec / 压缩传输</a></div>
-</body></html>
+</header>
+
+<main>
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div class="hero-text">
+      <div class="eyebrow">DE STRUCTURA ET VERITATE · 纯粹的结构与真理</div>
+      <h1>代达罗斯的迷宫，<br/><em>终有清晰的归途。</em></h1>
+      <p>在庞杂混沌的语言模型迷阵中，.NEMA 是最古老的秩序重现。以极简的结构几何表达 Table、5W1H 与拓扑图关系；零隐式歧义，确定性解析，建立可全方位复核的语义基准。</p>
+      <div class="hero-actions">
+        <a class="cta" href="playground.html">体验几何效果 <span>↗</span></a>
+        <a class="cta ghost" href="grammar.html">查阅完整规范 <span>↗</span></a>
+      </div>
+      <div class="hero-tags">
+        <span>几何同构</span>
+        <span>零隐式歧义</span>
+        <span>139 项可验真矩阵</span>
+      </div>
+    </div>
+    <div class="sculpture-column">
+      <div aria-label="3D 阿里阿德涅雕塑，24秒连续周期运转，古希腊美漫三渲二交互场景" class="statue-stage" id="ariadneStatue3d">
+        <div aria-label="可拖动旋转的三维阿里阿德涅浮雕雕塑" class="sculpture-viewport"></div>
+        <span class="stage-tag" title="Real 3D Ariadne Relief with Greek Comic Cel-Shading.">ARIADNE · 3D CEL-SHADING</span>
+      </div>
+      <div aria-label="雕塑视角控制" class="stage-controls" role="group">
+        <button class="stage-control" id="stageFront" data-view="front" aria-pressed="false" type="button">子午向 · 0°</button>
+        <button class="stage-control" id="stageLeft" data-view="left" aria-pressed="false" type="button">偏东 · 90°</button>
+        <button class="stage-control" id="stageRight" data-view="right" aria-pressed="false" type="button">偏西 · 270°</button>
+        <button class="stage-control" id="stageReset" type="button">规整复位</button>
+        <button class="stage-control" id="motionToggle" type="button" aria-pressed="false">暂停运转 Ⅱ</button>
+        <button class="stage-control" id="stageCapture" type="button">导出画作 ⤓</button>
+      </div>
+      <div class="stage-note">
+        <span>真实 3D 浮雕网格 · 古希腊美漫三渲二 · 24 秒天球周期</span>
+        <span aria-live="polite" id="stageState">3D 美漫三渲二雕塑 · 加载中</span>
+      </div>
+      <p class="statue-disclosure">典藏说明：真实 3D 浮雕网格（16.2 万面），结合多阶漫反射色阶着色（Cel-Shading）、美漫反向法线外轮廓勾线与动态浑天仪金轨，呈现克里特神话与数字秩序的交融。</p>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="benchmark">
+  <div class="wrap">
+    <div class="sectionhead">
+      <div class="kicker">COMPARATIO CANONICA · 结构度量典籍</div>
+      <h2>不是虚饰的口号，是刻于金石的度量。</h2>
+      <p>同一语义结构，分别以 .NEMA、紧凑 JSON、紧凑 YAML 严谨编码。切换样本，实时观察 Token 消耗与信息密度的客观变化；每一项均支持查阅原始文本与复现数据。</p>
+    </div>
+    <div class="benchmark">
+      <div class="benchmark-aside">
+        <div>
+          <div class="eyebrow">VERIFIABLE CANON</div>
+          <h3>同一语义，<br/>三重形制。</h3>
+          <p>这组数据来自严谨的本地 neutral BPE 实验基准，不代表特定商业 API 的单方计费，亦不妄言在所有数据类型中均必然更省。</p>
+        </div>
+        <small>比较维度：本地 Token / UTF-8 字节 / 源码全对照<br/>以金石碑铭之诚，不将未验证的断言外推。</small>
+      </div>
+      <div class="bench-main">
+        <div aria-label="选择对比案例" class="tabs" role="tablist">
+          <button aria-selected="false" data-bench="table_with_null" role="tab">Table · 显式空值</button>
+          <button aria-selected="false" data-bench="five_w_one_h" role="tab">5W1H · 六维语义</button>
+          <button aria-selected="true" data-bench="node_edge" role="tab">Node–Edge · 拓扑图</button>
+        </div>
+        <div aria-live="polite" id="metrics">
+          <div class="meter">
+            <div class="meterlabel"><span>.NEMA</span><strong>56 Token</strong></div>
+            <div class="track"><div class="fill nema" style="width:36.8%"></div></div>
+          </div>
+        </div>
+        <div aria-live="polite" class="bench-explainer">
+          <div class="bench-heading">
+            <strong id="benchScenarioTitle">Table · 显式空值</strong>
+            <span id="benchDescription">等价语义 · 三格式对照</span>
+          </div>
+          <div aria-label="选择源码格式" class="bench-code-tabs" role="tablist">
+            <button aria-selected="true" data-format="nema" type="button">.NEMA</button>
+            <button aria-selected="false" data-format="json" type="button">JSON</button>
+            <button aria-selected="false" data-format="yaml" type="button">YAML</button>
+            <button class="bench-copy" id="benchCopy" type="button">复制典籍源码</button>
+          </div>
+          <pre aria-label="当前格式的完整示例源码" class="bench-code" id="benchmarkSource" tabindex="0"></pre>
+          <div aria-label="语法结构渲染预览" class="bench-graph" id="benchmarkGraph">
+            <div class="bench-render" id="benchmarkRendered" aria-live="polite"></div>
+          </div>
+          <p class="bench-explainer-note">源码与拓扑图形联动；数值为本地 neutral BPE 计数，非商业模型 API 计费 Token。</p>
+        </div>
+        <div class="bench-foot">
+          <span id="savingCopy">以 Table 样本为例，按此本地模型计数。</span>
+          <a href="downloads.html#bench">查看原始基准与复现文件 ↗</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section alt" id="grammar">
+  <div class="wrap">
+    <div class="sectionhead">
+      <div class="kicker">TRIA FUNDAMENTA · 结构的三重秩序</div>
+      <h2>三种法则，容纳万象的结构。</h2>
+      <p>矩阵、六维情境与拓扑图谱，各自拥有清晰的表达疆界。形式服务于本质，秩序源自纯粹。</p>
+    </div>
+    <div class="triad">
+      <article class="tile">
+        <div class="tile-visual">
+          <svg aria-hidden="true" viewBox="0 0 340 220">
+            <defs>
+              <radialGradient id="tableGlow" cx="50%" cy="45%" r="60%">
+                <stop offset="0%" stop-color="#163754" stop-opacity="0.9"/>
+                <stop offset="60%" stop-color="#091b2c" stop-opacity="0.95"/>
+                <stop offset="100%" stop-color="#040e18" stop-opacity="1"/>
+              </radialGradient>
+              <linearGradient id="goldBeam" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#ffe899"/>
+                <stop offset="50%" stop-color="#d4af37"/>
+                <stop offset="100%" stop-color="#8a6a1c"/>
+              </linearGradient>
+            </defs>
+            <rect width="340" height="220" fill="url(#tableGlow)"/>
+            <g stroke="rgba(212, 175, 55, 0.12)" stroke-width="0.8">
+              <line x1="30" y1="20" x2="310" y2="20"/>
+              <line x1="30" y1="200" x2="310" y2="200"/>
+              <line x1="30" y1="20" x2="30" y2="200"/>
+              <line x1="310" y1="20" x2="310" y2="200"/>
+              <line x1="30" y1="20" x2="310" y2="200" stroke-dasharray="2 4" opacity="0.4"/>
+              <line x1="30" y1="200" x2="310" y2="20" stroke-dasharray="2 4" opacity="0.4"/>
+            </g>
+            <path d="M26 34 V26 H34 M306 26 H314 V34 M314 186 V194 H306 M34 194 H26 V186" fill="none" stroke="#d4af37" stroke-width="1.5" opacity="0.7"/>
+            <g transform="translate(170, 110)">
+              <polygon points="0,-64 96,-18 0,28 -96,-18" fill="#0d243a" stroke="#d4af37" stroke-width="1.4"/>
+              <polygon points="-96,-18 0,28 0,84 -96,38" fill="#081827" stroke="rgba(212, 175, 55, 0.5)" stroke-width="1.2"/>
+              <polygon points="0,28 96,-18 96,38 0,84" fill="#0b1f32" stroke="rgba(212, 175, 55, 0.5)" stroke-width="1.2"/>
+              <path d="M-48,-41 L48,5 M-72,-29 L24,17 M-24,-53 L72,-7 M-48,5 L48,-41 M-24,17 L72,-29 M-72,-7 L24,-53" fill="none" stroke="rgba(245, 207, 98, 0.35)" stroke-width="0.9"/>
+              <line x1="-96" y1="-18" x2="96" y2="-18" stroke="url(#goldBeam)" stroke-width="2.2" stroke-dasharray="6 4" class="flowline"/>
+              <line x1="0" y1="-64" x2="0" y2="28" stroke="url(#goldBeam)" stroke-width="1.8"/>
+              <line x1="-48" y1="5" x2="-48" y2="61" stroke="rgba(212, 175, 55, 0.3)" stroke-width="1" stroke-dasharray="3 3"/>
+              <line x1="48" y1="5" x2="48" y2="61" stroke="rgba(212, 175, 55, 0.3)" stroke-width="1" stroke-dasharray="3 3"/>
+              <line x1="0" y1="28" x2="0" y2="84" stroke="#d4af37" stroke-width="1.8"/>
+              <circle cx="0" cy="-18" r="6" fill="#ffe899" filter="drop-shadow(0 0 6px #f5cf62)"/>
+              <circle cx="-48" cy="-5" r="3.5" fill="#f5cf62"/>
+              <circle cx="48" cy="-31" r="3.5" fill="#f5cf62"/>
+              <circle cx="-24" cy="-35" r="3" fill="#ffe899" opacity="0.8"/>
+              <circle cx="24" cy="-1" r="3" fill="#ffe899" opacity="0.8"/>
+              <text x="-76" y="-36" fill="#a8bece" font-family="'Cinzel', serif" font-size="9" text-anchor="middle">C₁</text>
+              <text x="-24" y="-58" fill="#a8bece" font-family="'Cinzel', serif" font-size="9" text-anchor="middle">C₂</text>
+              <text x="28" y="-58" fill="#a8bece" font-family="'Cinzel', serif" font-size="9" text-anchor="middle">C₃</text>
+              <text x="80" y="-36" fill="#a8bece" font-family="'Cinzel', serif" font-size="9" text-anchor="middle">C₄</text>
+            </g>
+            <text x="170" y="206" fill="rgba(212, 175, 55, 0.75)" font-family="'Cinzel', serif" font-size="9.5" font-weight="700" letter-spacing="0.25em" text-anchor="middle">MATRICA · TABULATA</text>
+          </svg>
+        </div>
+        <div class="tile-body">
+          <span class="index">LIBER I / STRUCTURE</span>
+          <h3>Table · 矩阵</h3>
+          <p>有表头或无表头的列式数据，以清晰的列坐标与显式空值保存客观意义。</p>
+          <a href="grammar.html?mode=table">查阅规范 ↗</a>
+        </div>
+      </article>
+
+      <article class="tile">
+        <div class="tile-visual">
+          <svg aria-hidden="true" viewBox="0 0 340 220">
+            <defs>
+              <radialGradient id="hexGlow" cx="50%" cy="48%" r="60%">
+                <stop offset="0%" stop-color="#163754" stop-opacity="0.9"/>
+                <stop offset="60%" stop-color="#091b2c" stop-opacity="0.95"/>
+                <stop offset="100%" stop-color="#040e18" stop-opacity="1"/>
+              </radialGradient>
+              <radialGradient id="sunGlow" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#ffffff"/>
+                <stop offset="40%" stop-color="#ffe48a"/>
+                <stop offset="80%" stop-color="#d4af37"/>
+                <stop offset="100%" stop-color="#8a6a1c"/>
+              </radialGradient>
+            </defs>
+            <rect width="340" height="220" fill="url(#hexGlow)"/>
+            <path d="M26 34 V26 H34 M306 26 H314 V34 M314 186 V194 H306 M34 194 H26 V186" fill="none" stroke="#d4af37" stroke-width="1.5" opacity="0.7"/>
+            <g transform="translate(170, 105)">
+              <circle cx="0" cy="0" r="82" fill="none" stroke="rgba(212, 175, 55, 0.25)" stroke-width="1"/>
+              <circle cx="0" cy="0" r="76" fill="none" stroke="rgba(212, 175, 55, 0.45)" stroke-width="0.8" stroke-dasharray="2 4"/>
+              <circle cx="0" cy="0" r="54" fill="none" stroke="rgba(212, 175, 55, 0.2)" stroke-width="1"/>
+              <polygon points="0,-72 62.35,-36 62.35,36 0,72 -62.35,36 -62.35,-36" fill="rgba(13, 34, 54, 0.7)" stroke="#d4af37" stroke-width="1.5"/>
+              <polygon points="0,72 62.35,-36 -62.35,-36" fill="none" stroke="rgba(245, 207, 98, 0.3)" stroke-width="1" stroke-dasharray="3 3"/>
+              <polygon points="0,-72 62.35,36 -62.35,36" fill="none" stroke="rgba(245, 207, 98, 0.3)" stroke-width="1" stroke-dasharray="3 3"/>
+              <line x1="0" y1="0" x2="0" y2="-72" stroke="#f5cf62" stroke-width="1.6" class="flowline"/>
+              <line x1="0" y1="0" x2="62.35" y2="-36" stroke="#f5cf62" stroke-width="1.6" class="flowline"/>
+              <line x1="0" y1="0" x2="62.35" y2="36" stroke="#f5cf62" stroke-width="1.6" class="flowline"/>
+              <line x1="0" y1="0" x2="0" y2="72" stroke="#f5cf62" stroke-width="1.6" class="flowline"/>
+              <line x1="0" y1="0" x2="-62.35" y2="36" stroke="#f5cf62" stroke-width="1.6" class="flowline"/>
+              <line x1="0" y1="0" x2="-62.35" y2="-36" stroke="#f5cf62" stroke-width="1.6" class="flowline"/>
+              <circle cx="0" cy="-72" r="9" fill="#091b2c" stroke="#f5cf62" stroke-width="1.8"/>
+              <text x="0" y="-69" fill="#ffe899" font-family="'Cinzel', serif" font-size="7.5" font-weight="700" text-anchor="middle">WHAT</text>
+              <circle cx="62.35" cy="-36" r="9" fill="#091b2c" stroke="#f5cf62" stroke-width="1.8"/>
+              <text x="62.35" y="-33" fill="#ffe899" font-family="'Cinzel', serif" font-size="7.5" font-weight="700" text-anchor="middle">WHY</text>
+              <circle cx="62.35" cy="36" r="9" fill="#091b2c" stroke="#f5cf62" stroke-width="1.8"/>
+              <text x="62.35" y="39" fill="#ffe899" font-family="'Cinzel', serif" font-size="7.5" font-weight="700" text-anchor="middle">HOW</text>
+              <circle cx="0" cy="72" r="9" fill="#091b2c" stroke="#f5cf62" stroke-width="1.8"/>
+              <text x="0" y="75" fill="#ffe899" font-family="'Cinzel', serif" font-size="7.5" font-weight="700" text-anchor="middle">WHO</text>
+              <circle cx="-62.35" cy="36" r="9" fill="#091b2c" stroke="#f5cf62" stroke-width="1.8"/>
+              <text x="-62.35" y="39" fill="#ffe899" font-family="'Cinzel', serif" font-size="6.8" font-weight="700" text-anchor="middle">WHEN</text>
+              <circle cx="-62.35" cy="-36" r="9" fill="#091b2c" stroke="#f5cf62" stroke-width="1.8"/>
+              <text x="-62.35" y="-33" fill="#ffe899" font-family="'Cinzel', serif" font-size="6.5" font-weight="700" text-anchor="middle">WHERE</text>
+              <circle cx="0" cy="0" r="16" fill="url(#sunGlow)" filter="drop-shadow(0 0 10px #f5cf62)"/>
+              <circle cx="0" cy="0" r="19" fill="none" stroke="#ffe899" stroke-width="1" stroke-dasharray="2 3"/>
+              <text x="0" y="3.5" fill="#06121e" font-family="'Cinzel', serif" font-size="9" font-weight="900" text-anchor="middle">5W1H</text>
+            </g>
+            <text x="170" y="206" fill="rgba(212, 175, 55, 0.75)" font-family="'Cinzel', serif" font-size="9.5" font-weight="700" letter-spacing="0.25em" text-anchor="middle">HEXAGONUM · COGNITIO</text>
+          </svg>
+        </div>
+        <div class="tile-body">
+          <span class="index">LIBER II / SEMANTICS</span>
+          <h3>5W1H · 六维</h3>
+          <p>What、Why、How、Who、When、Where 六个永恒的认识论存在坐标。</p>
+          <a href="grammar.html?mode=5w1h">查阅规范 ↗</a>
+        </div>
+      </article>
+
+      <article class="tile">
+        <div class="tile-visual">
+          <svg aria-hidden="true" viewBox="0 0 340 220">
+            <defs>
+              <radialGradient id="nodeGlow" cx="50%" cy="48%" r="60%">
+                <stop offset="0%" stop-color="#163754" stop-opacity="0.9"/>
+                <stop offset="60%" stop-color="#091b2c" stop-opacity="0.95"/>
+                <stop offset="100%" stop-color="#040e18" stop-opacity="1"/>
+              </radialGradient>
+              <marker id="dartGold" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+                <path d="M0 1.5L9 5L0 8.5L2.5 5Z" fill="#f5cf62"/>
+              </marker>
+              <marker id="dartTeal" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+                <path d="M0 1.5L9 5L0 8.5L2.5 5Z" fill="#5ccbbd"/>
+              </marker>
+            </defs>
+            <rect width="340" height="220" fill="url(#nodeGlow)"/>
+            <path d="M26 34 V26 H34 M306 26 H314 V34 M314 186 V194 H306 M34 194 H26 V186" fill="none" stroke="#d4af37" stroke-width="1.5" opacity="0.7"/>
+            <g transform="translate(170, 105)">
+              <ellipse cx="0" cy="0" rx="130" ry="70" fill="none" stroke="rgba(212, 175, 55, 0.12)" stroke-width="1" stroke-dasharray="3 5"/>
+              <ellipse cx="0" cy="0" rx="90" ry="48" fill="none" stroke="rgba(212, 175, 55, 0.15)" stroke-width="0.8"/>
+              <path d="M -80 15 Q 0 -68 76 12" fill="none" stroke="#f5cf62" stroke-width="2.5" stroke-dasharray="8 6" class="flowline" marker-end="url(#dartGold)" filter="drop-shadow(0 0 6px #f5cf62)"/>
+              <path d="M 80 20 Q 0 88 -76 22" fill="none" stroke="#5ccbbd" stroke-width="2.2" stroke-dasharray="7 5" class="flowline" marker-end="url(#dartTeal)"/>
+              <path d="M -98 8 C -135 -38 -135 58 -96 28" fill="none" stroke="#cfb1dd" stroke-width="1.8" stroke-dasharray="3 4"/>
+              <g transform="translate(0, -38)">
+                <circle cx="0" cy="0" r="14" fill="#091b2c" stroke="#f5cf62" stroke-width="2"/>
+                <circle cx="0" cy="0" r="18" fill="none" stroke="rgba(245, 207, 98, 0.4)" stroke-width="1" stroke-dasharray="2 3"/>
+                <text x="0" y="4" fill="#ffe899" font-family="'Cinzel', serif" font-size="11" font-weight="900" text-anchor="middle">X</text>
+                <text x="0" y="-22" fill="#a8bece" font-family="'Cinzel', serif" font-size="8" letter-spacing="0.1em" text-anchor="middle">RELATIO</text>
+              </g>
+              <g transform="translate(-80, 15)">
+                <circle cx="0" cy="0" r="24" fill="#0a1d30" stroke="#d4af37" stroke-width="2.2" filter="drop-shadow(0 0 10px rgba(0,0,0,0.6))"/>
+                <circle cx="0" cy="0" r="28" fill="none" stroke="rgba(212, 175, 55, 0.4)" stroke-width="1" stroke-dasharray="2 3"/>
+                <circle cx="0" cy="0" r="18" fill="none" stroke="rgba(245, 207, 98, 0.25)" stroke-width="1"/>
+                <text x="0" y="6" fill="#ffffff" font-family="'Cinzel', serif" font-size="16" font-weight="900" text-anchor="middle">A</text>
+                <text x="0" y="39" fill="#c4d5e2" font-family="'Cinzel', serif" font-size="8.5" font-weight="700" letter-spacing="0.12em" text-anchor="middle">ORIGEN</text>
+              </g>
+              <g transform="translate(80, 15)">
+                <circle cx="0" cy="0" r="24" fill="#0a1d30" stroke="#d4af37" stroke-width="2.2" filter="drop-shadow(0 0 10px rgba(0,0,0,0.6))"/>
+                <circle cx="0" cy="0" r="28" fill="none" stroke="rgba(212, 175, 55, 0.4)" stroke-width="1" stroke-dasharray="2 3"/>
+                <circle cx="0" cy="0" r="18" fill="none" stroke="rgba(245, 207, 98, 0.25)" stroke-width="1"/>
+                <text x="0" y="6" fill="#ffffff" font-family="'Cinzel', serif" font-size="16" font-weight="900" text-anchor="middle">B</text>
+                <text x="0" y="39" fill="#c4d5e2" font-family="'Cinzel', serif" font-size="8.5" font-weight="700" letter-spacing="0.12em" text-anchor="middle">DESTINATIO</text>
+              </g>
+            </g>
+            <text x="170" y="206" fill="rgba(212, 175, 55, 0.75)" font-family="'Cinzel', serif" font-size="9.5" font-weight="700" letter-spacing="0.25em" text-anchor="middle">TOPOLOGIA · NEXUS</text>
+          </svg>
+        </div>
+        <div class="tile-body">
+          <span class="index">LIBER III / RELATION</span>
+          <h3>Node–Edge · 拓扑</h3>
+          <p>以稳定节点与关系 ID 编织因果、依赖、自循环和平行链路。</p>
+          <a href="grammar.html?mode=graph">查阅规范 ↗</a>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="cta-strip">
+  <div class="wrap">
+    <div>
+      <h2>从混沌至明晰，一览无余。</h2>
+      <p>浏览语法典章、运行严格解释器、检视 AST 几何与错误诊断。</p>
+    </div>
+    <a class="cta" href="playground.html">打开几何效果演示 ↗</a>
+  </div>
+</section>
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <strong>.NEMA</strong>
+    <span>神圣几何的秩序感 · 经典图文典籍 · 可验真的结构语法</span>
+    <span>© .NEMA · Source-first Canon</span>
+  </div>
+</footer>
+
+<script src="benchmark-data.js"></script>
+<script src="js/ui.js"></script>
+<script src="premier.js"></script>
+<script src="js/sculpture-motion.js"></script>
+<script src="js/sculpture-native.js" type="text/javascript"></script>
+<script src="js/sculpture-three.js" type="module"></script>
+<script src="js/sculpture-buttons.js" type="text/javascript"></script>
+<script src="strict-parser.js"></script>
+<script src="js/graph-renderer.js"></script>
+<script src="js/home-graph.js" type="text/javascript"></script>
+</body>
+</html>

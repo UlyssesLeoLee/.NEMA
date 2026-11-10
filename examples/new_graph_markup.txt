@@ -1,6 +1,0 @@
-	>Gauth1 1
- A LoginAPI Authentication
- B TokenStore SessionStorage
-A>X>B Reads VerifySession
-
-

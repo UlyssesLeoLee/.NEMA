@@ -1,4 +1,0 @@
-{"instruction": "Write a v1.3 .NEMA Graph domain with node A named LoginAPI and node B named TokenStore, edge X A to B called Reads, continuation CacheExpiredRetryOnce at X2. Preserve domain header format.", "output": "\t>Gauth1 1\nA LoginAPI\nB TokenStore\nA>X>B Reads\n CacheExpiredRetryOnce\n\n\n"}
-{"instruction": "Explain Graph v1.3 leading spaces; preserve 5W1H/Table and domain header syntax unchanged.", "output": "The domain header starts with one literal Tab, e.g. \\t>Gauth1 1. Node and Edge declarations both start at X0. Edge recognized by >, < or = relationship operators. A single leading space continues Graph X2, two continue X3. Other modes unchanged."}
-{"instruction": "Is A>X<B a valid v1.3 relation?", "output": "No. Mixed arrow operators are invalid. Reject the relation rather than treating it as a Node."}
-{"instruction": "Does v1.3 change the header >Gauth1 1?", "output": "No. Its actual byte syntax remains one raw Tab followed by >Gauth1 1."}
