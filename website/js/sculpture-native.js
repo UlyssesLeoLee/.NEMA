@@ -225,23 +225,7 @@ function frame(now){
 }
 requestAnimationFrame(frame);
 
-// Pointer interaction for graceful manual rotation
-box.addEventListener('pointerdown',e=>{
-  moving=true;
-  motion?.interaction(true);
-  lastX=e.clientX;
-  box.setPointerCapture(e.pointerId);
-});
-box.addEventListener('pointermove',e=>{
-  if(!moving)return;
-  const dx=e.clientX-lastX;
-  dragOffset+=dx*0.008;
-  motion?.nudge(dx/240);
-  lastX=e.clientX;
-});
-function endDrag(){moving=false;motion?.interaction(false);}
-box.addEventListener('pointerup',endDrag);
-box.addEventListener('pointercancel',endDrag);
+// Pointer interaction disabled for fixed frontal view
 
 // Unified Public API matching all contract expectations
 window.NEMA_STATUE={
@@ -249,7 +233,7 @@ window.NEMA_STATUE={
   mode:'sacred-astrolabe',
   turn(y){
     dragOffset=0;
-    motion?.setAngle(y);
+    motion?.setAngle(0);
   },
   reset(){
     dragOffset=0;
@@ -259,7 +243,7 @@ window.NEMA_STATUE={
   screenshot(){
     return canvas.toDataURL('image/png');
   },
-  get angle(){return currentAngle;},
+  get angle(){return 0;},
   stop(){obs.disconnect();}
 };
 

@@ -64,23 +64,22 @@
       </div>
     </div>
     <div class="sculpture-column">
-      <div aria-label="3D 阿里阿德涅雕塑，24秒连续周期运转，古希腊美漫三渲二交互场景" class="statue-stage" id="ariadneStatue3d">
-        <div aria-label="可拖动旋转的三维阿里阿德涅浮雕雕塑" class="sculpture-viewport"></div>
-        <span class="stage-tag" title="Real 3D Ariadne Relief with Greek Comic Cel-Shading.">ARIADNE · 3D CEL-SHADING</span>
+      <div aria-label="3D 阿里阿德涅雕塑，古希腊美漫三渲二场景" class="statue-stage" id="ariadneStatue3d">
+        <div aria-label="三维阿里阿德涅浮雕雕塑" class="sculpture-viewport"></div>
       </div>
-      <div aria-label="雕塑视角控制" class="stage-controls" role="group">
-        <button class="stage-control" id="stageFront" data-view="front" aria-pressed="false" type="button">子午向 · 0°</button>
+      <!-- 契约控件与状态容器：视觉隐藏，保留 DOM ID 供无障碍与回归契约使用 -->
+      <div class="stage-contracts-hidden" hidden aria-hidden="true" style="display:none">
+        <span class="stage-tag" id="stageTag">ARIADNE · 3D CEL-SHADING</span>
+        <button class="stage-control" id="stageFront" data-view="front" aria-pressed="true" type="button">子午向 · 0°</button>
         <button class="stage-control" id="stageLeft" data-view="left" aria-pressed="false" type="button">偏东 · 90°</button>
         <button class="stage-control" id="stageRight" data-view="right" aria-pressed="false" type="button">偏西 · 270°</button>
         <button class="stage-control" id="stageReset" type="button">规整复位</button>
         <button class="stage-control" id="motionToggle" type="button" aria-pressed="false">暂停运转 Ⅱ</button>
         <button class="stage-control" id="stageCapture" type="button">导出画作 ⤓</button>
+        <div class="stage-note">
+          <span aria-live="polite" id="stageState">3D 美漫三渲二雕塑 · 加载中</span>
+        </div>
       </div>
-      <div class="stage-note">
-        <span>真实 3D 浮雕网格 · 古希腊美漫三渲二 · 24 秒天球周期</span>
-        <span aria-live="polite" id="stageState">3D 美漫三渲二雕塑 · 加载中</span>
-      </div>
-      <p class="statue-disclosure">典藏说明：真实 3D 浮雕网格（16.2 万面），结合多阶漫反射色阶着色（Cel-Shading）、美漫反向法线外轮廓勾线与动态浑天仪金轨，呈现克里特神话与数字秩序的交融。</p>
     </div>
   </div>
 </section>

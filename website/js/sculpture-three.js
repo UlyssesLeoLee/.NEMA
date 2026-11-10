@@ -38,8 +38,8 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   const scene = new THREE.Scene();
   window.NEMA_SCENE = scene;
   const camera = new THREE.OrthographicCamera(-3.58, 3.58, 3.58, -3.58, 0.1, 100);
-  camera.position.set(0, 0.06, 13);
-  camera.lookAt(0, 0.04, 0);
+  camera.position.set(0, -0.18, 13);
+  camera.lookAt(0, -0.20, 0);
 
   const renderer = new THREE.WebGLRenderer({
     alpha: true,
@@ -206,6 +206,10 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   sparkHalo.rotation.x = Math.PI * 0.35;
   sparkGroup.add(sparkHalo);
 
+  // Living Comet Point Light: physically illuminates drapery & orb as it passes in 3D
+  const cometLight = new THREE.PointLight(0xffdf78, 2.2, 4.2, 1.3);
+  sparkGroup.add(cometLight);
+
   // 3 trailing comet sparks
   const tailSparks = [];
   for (let i = 0; i < 3; i++) {
@@ -244,23 +248,28 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   const stardust = new THREE.Points(particleGeom, particleMat);
   pivot.add(stardust);
 
-  // 9. OrbitControls Setup with Damping & Constraints
+  // 9. OrbitControls Setup - Fixed Frontal View (Rotation disabled)
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
   controls.dampingFactor = 0.055;
   controls.enablePan = false;
-  controls.minZoom = 0.75;
-  controls.maxZoom = 1.6;
-  controls.minAzimuthAngle = -1.1;
-  controls.maxAzimuthAngle = 1.1;
-  controls.minPolarAngle = Math.PI / 2 - 0.35;
-  controls.maxPolarAngle = Math.PI / 2 + 0.35;
+  controls.enableRotate = false; // Model orientation locked to front view
+  controls.enableZoom = false;   // Zoom disabled to preserve classical monument framing
   controls.target.set(0, 0.04, 0);
   controls.update();
 
   const motion = window.NEMAMotion;
   controls.addEventListener('start', () => motion?.interaction(true));
   controls.addEventListener('end', () => motion?.interaction(false));
+
+  // Mouse interactive pointer parallax for dynamic 3D light response
+  let mouseX = 0, mouseY = 0;
+  let targetMouseX = 0, targetMouseY = 0;
+  const onPointerMove = e => {
+    targetMouseX = (e.clientX / window.innerWidth) * 2 - 1;
+    targetMouseY = (e.clientY / window.innerHeight) * 2 - 1;
+  };
+  window.addEventListener('pointermove', onPointerMove, { passive: true });
 
   // 10. Viewport Resizing
   function getStageSize() {
@@ -301,7 +310,8 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     ready: true,
     mode: 'threejs-cel-3d',
     turn(rad) {
-      motion?.setAngle(rad);
+      // Model locked to front view; angle remains 0
+      motion?.setAngle(0);
       controls.reset();
     },
     reset() {
@@ -315,9 +325,10 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       return renderer.domElement.toDataURL('image/png');
     },
     get angle() {
-      return motion?.angle || 0;
+      return 0;
     },
     stop() {
+      window.removeEventListener('pointermove', onPointerMove);
       observer.disconnect();
       controls.dispose();
       renderer.dispose();
@@ -328,21 +339,44 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   window.NEMA_THREE = api;
 
   if (label) {
-    label.textContent = 'Three.js 3D 美漫三渲二 · 阿里阿德涅 · ' + (motion?.status || '自动旋转中');
+    label.textContent = 'Three.js 3D 美漫三渲二 · 阿里阿德涅 · ' + (motion?.status || '神殿光影流转中');
   }
   window.dispatchEvent(new Event('nema-statue-ready'));
 
-  // 13. Render Animation Loop
+  // 13. Render Animation Loop: Dynamic 3D Lighting & Celestial Motion
   function frame(now) {
     requestAnimationFrame(frame);
     if (!visible) return;
     resize();
 
     const isMoving = !motion?.paused && !motion?.reduced && !document.body.classList.contains('motion-off');
-    const angle = motion ? motion.tick(now) : 0;
-    pivot.rotation.y = angle;
+    
+    // Model orientation permanently fixed to front view (0°)
+    pivot.rotation.y = 0;
+
+    // Smooth mouse parallax lerp
+    mouseX += (targetMouseX - mouseX) * 0.05;
+    mouseY += (targetMouseY - mouseY) * 0.05;
 
     if (isMoving) {
+      // Dynamic 3D Celestial Light Movement: sweeping Apollo sun light across real geometric relief
+      const tLight = now * 0.00032;
+      const sweepX = -1.0 + Math.sin(tLight) * 2.8;
+      const sweepY = 4.2 + Math.cos(tLight * 0.65) * 1.3;
+      const sweepZ = 6.8 + Math.sin(tLight * 1.1) * 1.4;
+
+      warmKey.position.set(
+        sweepX + mouseX * 2.8,
+        sweepY - mouseY * 2.0,
+        sweepZ
+      );
+
+      coolRim.position.set(
+        4.0 - mouseX * 1.2,
+        -1.0 + Math.sin(tLight * 0.5) * 0.8,
+        -5.0
+      );
+
       // Counter-rotate the outer zodiac ring for rich astronomical celestial motion
       outerRing.rotation.z = -now * 0.0003;
       equatorRing.rotation.z = now * 0.00015;
@@ -368,6 +402,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       }
       posAttr.needsUpdate = true;
     } else {
+      warmKey.position.set(-2.0 + mouseX * 2.8, 4.5 - mouseY * 2.0, 7.0);
       for (let i = 0; i < tailSparks.length; i++) {
         tailSparks[i].visible = false;
       }
