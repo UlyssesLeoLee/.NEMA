@@ -197,6 +197,96 @@ def weight_audit(human):
         "weight_sum_max": max(sums),
     }
 
+def rig_structure_audit(rig):
+    bones = rig.data.bones
+    missing = []
+    short = []
+    broken_chains = []
+    finger_chains = {}
+    digit_prefixes = ("thumb", "f_index", "f_middle", "f_ring", "f_pinky")
+    finger_segment_count = 0
+    for side in ("L", "R"):
+        for digit in digit_prefixes:
+            chain = [f"DEF-{digit}.{i:02d}.{side}" for i in (1, 2, 3)]
+            finger_chains[f"{digit}.{side}"] = chain
+            for idx, name in enumerate(chain):
+                bone = bones.get(name)
+                if bone is None:
+                    missing.append(name)
+                    continue
+                finger_segment_count += 1
+                if bone.length < 0.005:
+                    short.append(name)
+                expected_parent = f"DEF-{digit}.{idx:02d}.{side}" if idx > 0 else f"DEF-hand.{side}"
+                if not bone.parent or bone.parent.name != expected_parent:
+                    broken_chains.append({
+                        "bone": name,
+                        "expected_parent": expected_parent,
+                        "actual_parent": bone.parent.name if bone.parent else None,
+                    })
+
+        arm_chain = [
+            f"DEF-upper_arm.{side}",
+            f"DEF-upper_arm.{side}.001",
+            f"DEF-forearm.{side}",
+            f"DEF-forearm.{side}.001",
+            f"DEF-hand.{side}",
+        ]
+        for idx, name in enumerate(arm_chain):
+            bone = bones.get(name)
+            if bone is None:
+                missing.append(name)
+                continue
+            if bone.length < 0.005:
+                short.append(name)
+            if idx > 0 and bone.parent and bone.parent.name != arm_chain[idx - 1]:
+                broken_chains.append({
+                    "bone": name,
+                    "expected_parent": arm_chain[idx - 1],
+                    "actual_parent": bone.parent.name,
+                })
+
+        leg_chain = [
+            f"DEF-thigh.{side}",
+            f"DEF-thigh.{side}.001",
+            f"DEF-shin.{side}",
+            f"DEF-shin.{side}.001",
+            f"DEF-foot.{side}",
+            f"DEF-toe.{side}",
+        ]
+        for idx, name in enumerate(leg_chain):
+            bone = bones.get(name)
+            if bone is None:
+                missing.append(name)
+                continue
+            if bone.length < 0.005:
+                short.append(name)
+            if idx > 0 and bone.parent and bone.parent.name != leg_chain[idx - 1]:
+                broken_chains.append({
+                    "bone": name,
+                    "expected_parent": leg_chain[idx - 1],
+                    "actual_parent": bone.parent.name,
+                })
+
+    result = {
+        "finger_chain_count": len(finger_chains),
+        "finger_segment_count": finger_segment_count,
+        "expected_finger_chain_count": 10,
+        "expected_finger_segment_count": 30,
+        "arm_chain_count": 2,
+        "leg_chain_count": 2,
+        "missing_bones": missing,
+        "short_bones": short,
+        "broken_chains": broken_chains,
+        "finger_chains": finger_chains,
+        "joint_limit_state": "PENDING_POSE_AND_APPROVED_THREE_VIEW_LANDMARK_FIT",
+        "motion_constraint_state": "NOT_APPLIED_TO_NEUTRAL_PREFIT",
+    }
+    if missing or short or broken_chains or finger_segment_count != 30:
+        raise RuntimeError("Rig anatomy structure audit failed: " + json.dumps(result, ensure_ascii=False))
+    return result
+
+
 def export_and_reload(human, rig):
     # The editable .blend retains the complete 706-bone Rigify control rig.
     # The runtime GLB receives only the actual deform skeleton so controls,
@@ -317,6 +407,7 @@ def main():
     human, files, morph_deltas, lo, hi, used_vertices = make_body()
     meta = fit_metarig_to_body(human, lo, hi)
     rig = generate_rig(meta)
+    rig_structure = rig_structure_audit(rig)
     arm_mods = bind_weights(human, rig)
     weights = weight_audit(human)
     meta_bone_count = len(meta.data.bones)
@@ -345,6 +436,7 @@ def main():
         "joint_landmark_fit": False,
         "armature_modifier_count": len(arm_mods),
         "skin_weight_audit": weights,
+        "rig_structure_audit": rig_structure,
         "editable_blend": blend.name,
         "reload_audit": reload,
         "limitations": [
