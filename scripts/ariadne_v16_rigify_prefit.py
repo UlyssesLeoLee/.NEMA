@@ -217,7 +217,17 @@ def rig_structure_audit(rig):
                 finger_segment_count += 1
                 if bone.length < 0.005:
                     short.append(name)
-                expected_parent = f"DEF-{digit}.{idx:02d}.{side}" if idx > 0 else f"DEF-hand.{side}"
+                palm_slot = {
+                    "thumb": "01",
+                    "f_index": "01",
+                    "f_middle": "02",
+                    "f_ring": "03",
+                    "f_pinky": "04",
+                }[digit]
+                expected_parent = (
+                    f"DEF-{digit}.{idx:02d}.{side}" if idx > 0
+                    else f"ORG-palm.{palm_slot}.{side}"
+                )
                 if not bone.parent or bone.parent.name != expected_parent:
                     broken_chains.append({
                         "bone": name,
@@ -271,6 +281,7 @@ def rig_structure_audit(rig):
     result = {
         "finger_chain_count": len(finger_chains),
         "finger_segment_count": finger_segment_count,
+        "palm_parent_bone_count": sum(1 for side in ("L", "R") for slot in ("01", "02", "03", "04") if bones.get(f"ORG-palm.{slot}.{side}") is not None),
         "expected_finger_chain_count": 10,
         "expected_finger_segment_count": 30,
         "arm_chain_count": 2,
@@ -282,7 +293,7 @@ def rig_structure_audit(rig):
         "joint_limit_state": "PENDING_POSE_AND_APPROVED_THREE_VIEW_LANDMARK_FIT",
         "motion_constraint_state": "NOT_APPLIED_TO_NEUTRAL_PREFIT",
     }
-    if missing or short or broken_chains or finger_segment_count != 30:
+    if missing or short or broken_chains or finger_segment_count != 30 or result["palm_parent_bone_count"] != 8:
         raise RuntimeError("Rig anatomy structure audit failed: " + json.dumps(result, ensure_ascii=False))
     return result
 
