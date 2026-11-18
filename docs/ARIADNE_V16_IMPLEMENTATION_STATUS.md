@@ -81,3 +81,17 @@ Run `44396992144` passed the neutral Rigify prefit diagnostic:
 - Editable BLEND saved; GLB export and independent Blender reload passed.
 
 The first successful runtime GLB carried all 706 Rigify bones as joints. That is excessive for a runtime skin asset. A follow-up change now builds a deform-only export skeleton from the 160 skinning bones, keeps the full control rig in the editable BLEND, and enforces a one-mesh/one-skin/160-joint GLB. This compact-export refinement is under CI retest; it is not yet claimed as passed.
+
+## P05A compact deform-only GLB retest
+
+Run `44398401636` passed the stricter runtime export and reload assertions.
+
+- Editable BLEND retains the complete 706-bone Rigify control rig.
+- Runtime GLB is exported from the 160 deform bones only.
+- GLB container: exactly 1 mesh, 1 primitive, 1 skin and 160 joints.
+- Runtime GLB size: 788,380 bytes.
+- All 19,158 source mesh vertices have skin weights; no unweighted vertices.
+- Normalized weight sums: 0.99999982–1.00000016.
+- Independent Blender reload: 1 armature, 1 skinned mesh and 1 armature skin modifier. Blender also reports one additional unskinned helper object named `Icosphere`; it is not a mesh/primitive in the GLB JSON and is not counted as the skinned runtime mesh.
+
+This passes only the neutral rigging/export diagnostic. It does not prove anatomical joint landmark fit, the K pose, finger joint limits, the orb grip, clothing/hair sculpt, or artistic similarity. P02 remains BLOCKED.
