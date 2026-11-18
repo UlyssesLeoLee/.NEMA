@@ -38,13 +38,13 @@ def material(name, rgb,metal=0,rough=.65):
     bs.inputs["Metallic"].default_value=metal
     bs.inputs["Roughness"].default_value=rough
     return m
-ivory=material("01_Ivory_Greek_Stone",(0.84,.787,.689),rough=.59)
-marble=material("02_Polished_Marble",(0.91,.846,.755),rough=.37)
-shadow=material("03_Deep_Fold_Undertone",(.60,.53,.45),rough=.72)
-gold=material("04_Warm_Solid_Gold",(.76,.39,.075),metal=.89,rough=.23)
+ivory=material("01_Ivory_Greek_Stone",(0.75,.68,.58),rough=.59)
+marble=material("02_Polished_Marble",(0.83,.758,.652),rough=.37)
+shadow=material("03_Deep_Fold_Undertone",(.49,.40,.33),rough=.72)
+gold=material("04_Warm_Solid_Gold",(.84,.48,.12),metal=.89,rough=.23)
 brightgold=material("05_Highlight_Gold",(1,.69,.17),metal=.88,rough=.18)
-darkgold=material("06_Antique_Gold",(.36,.17,.027),metal=.79,rough=.35)
-hairmat=material("07_Warm_Ivory_Hair",(.79,.728,.625),rough=.66)
+darkgold=material("06_Antique_Gold",(.39,.18,.035),metal=.79,rough=.35)
+hairmat=material("07_Warm_Ivory_Hair",(.71,.638,.53),rough=.66)
 bpy.ops.object.select_all(action="SELECT");bpy.ops.object.delete(use_global=False)
 
 def meshobj(name,vs,fs,mat):
@@ -68,6 +68,15 @@ for v in verts:
     rx=.202+dx*cos(a)-dz*sin(a)
     rz=1.285+dx*sin(a)+dz*cos(a)
     v[0]=x+(rx-x)*w;v[2]=z+(rz-z)*w
+    # Relax opposing arm to gravity from the original MakeHuman left A-pose.
+    if x < -.18 and z>.72:
+        lw=smooth(.16,.31,-x)*smooth(.71,.88,z)
+        ldx=x+.202;ldz=z-1.285
+        la=math.radians(23)
+        lx=-.202+ldx*cos(la)-ldz*sin(la)
+        lz=1.285+ldx*sin(la)+ldz*cos(la)
+        v[0]=v[0]+(lx-v[0])*lw
+        v[2]=v[2]+(lz-v[2])*lw
     # weight shift for contrapposto subtly moves pelvis and torso
     z=v[2]
     if z>.53 and z<1.33:
@@ -222,10 +231,10 @@ curve("40_Waist_Braided_Gold",[(.19*cos(2*pi*i/180)+.025,.136*sin(2*pi*i/180)-.0
 curve("41_Necklace_Cowl_Gold",[(-.20,-.085,1.32),(-.13,-.176,1.285),(0,-.197,1.26),(.13,-.160,1.30),(.20,-.08,1.34)],.006,brightgold)
 # Hair and braided Greek tiara — fully 3D spiral ropes around temple.
 head=(0,.010,1.505)
-UVsphere("50_Sculpted_Hair_Cap",(0,.03,1.526),(.090,.079,.095),hairmat)
+UVsphere("50_Sculpted_Hair_Cap",(0,.03,1.572),(.087,.079,.075),hairmat)
 for n in range(16):
     ang=2*pi*n/16
-    x=.084*cos(ang);y=.02+.068*sin(ang);z=1.573+.019*cos(ang*3)
+    x=.084*cos(ang);y=.02+.068*sin(ang);z=1.627+.016*cos(ang*3)
     UVsphere("Braid_Knot_%02d"%n,(x,y,z),(.022,.018,.019),hairmat,20,12)
 for j in range(6):
     ang=2*pi*j/6
@@ -234,7 +243,7 @@ for j in range(6):
         t=k/84; a=ang+2*pi*2*t
         x=.093*cos(ang)+.013*cos(a)*(1-t)
         y=.01+.066*sin(ang)+.012*sin(a)*(1-t)
-        z=1.569-.09*t
+        z=1.625-.12*t
         pts.append((x,y,z))
     curve("Braided_Curl_%02d"%j,pts,.0033,hairmat)
 # Classical ringlet braids framing cheeks, sculpted as full 3D continuous tubes.
@@ -246,20 +255,20 @@ for side in (-1,1):
             taper=(1-.18*u)
             x=side*(.075+.013*k)+.010*cos(u*8*pi+side*1.4)*taper
             y=-.064-.008*k+.010*sin(u*8*pi+side*1.4)*taper
-            z=1.57-.20*u
+            z=1.607-.22*u
             pts.append((x,y,z))
         curve("Classical_Face_Framing_Braid_"+str(side)+"_"+str(k),pts,.0043,hairmat)
 # Raised chignon bun as rounded authentic sculptural knots (not a smooth bald sphere).
 for i in range(15):
     a=2*pi*i/15
-    UVsphere("Carved_Chignon_Lock_%02d"%i,(.045*cos(a),.095+.035*sin(a),1.572+.029*cos(3*a)),(.018,.018,.028),hairmat,16,10)
+    UVsphere("Carved_Chignon_Lock_%02d"%i,(.045*cos(a),.095+.035*sin(a),1.624+.020*cos(3*a)),(.018,.018,.028),hairmat,16,10)
 # golden circlet and small filigree ornaments
-curve("51_Gold_Forehead_Diadem",[(.096*cos(2*pi*i/120),.014+.08*sin(2*pi*i/120),1.582) for i in range(120)],.006,gold,True)
+curve("51_Gold_Forehead_Diadem",[(.096*cos(2*pi*i/120),.014+.08*sin(2*pi*i/120),1.621) for i in range(120)],.006,gold,True)
 for n in range(24):
     a=n*2*pi/24
-    UVsphere("Tiara_Pearl_%02d"%n,(.096*cos(a),.014+.08*sin(a),1.583),(.006,.006,.006),brightgold,10,8)
+    UVsphere("Tiara_Pearl_%02d"%n,(.096*cos(a),.014+.08*sin(a),1.624),(.006,.006,.006),brightgold,10,8)
 # Orb with 3D criss-cross threads. Ball held above raised hand.
-ball=Vector((.665,-.085,1.52))
+ball=Vector((.695,-.085,1.565))
 UVsphere("60_Ariadne_Golden_Thread_Orb",ball,(.089,.089,.089),darkgold,64,40)
 for k in range(14):
     a=k*pi/14
@@ -273,7 +282,7 @@ for k in range(14):
         pts.append(tuple(ball+Vector((x,y,z))))
     curve("Orb_Real_Wound_Gold_%02d"%k,pts,.0028,brightgold,True)
 # gold cord a SINGLE spatial 3D curve (bevel creates real mesh on export)
-cord=[(.645,-.135,1.435),(.70,-.150,1.28),(.72,-.17,1.13),(.73,-.185,.96),(.71,-.22,.78),(.63,-.265,.68),
+cord=[(.67,-.135,1.475),(.70,-.150,1.28),(.72,-.17,1.13),(.73,-.185,.96),(.71,-.22,.78),(.63,-.265,.68),
  (.48,-.34,.60),(.23,-.39,.52),(-.015,-.39,.43),(-.24,-.36,.34),(-.405,-.31,.23),(-.46,-.23,.14),
  (-.45,-.19,.06),(-.36,-.29,.035),(-.25,-.39,.026),(-.35,-.46,.035),(-.49,-.28,.035),
  (-.44,.05,.038),(-.30,.29,.04),(-.03,.36,.04)]
@@ -295,9 +304,9 @@ def area(name,loc,energy,color,size):
     data=bpy.data.lights.new(name,"AREA");data.energy=energy;data.color=color;data.shape="DISK";data.size=size
     ob=bpy.data.objects.new(name,data);bpy.context.collection.objects.link(ob);ob.location=loc
     ob.rotation_euler=(Vector((0,0,1.03))-ob.location).to_track_quat("-Z","Y").to_euler()
-area("Warm_Key",(-3.2,-4,4.8),630,(1,.86,.73),4)
-area("Cool_Fill",(3,-3,2.5),330,(.64,.77,1),3)
-area("Golden_Rim",(1,3,3.0),760,(1,.86,.55),3)
+area("Warm_Key",(-3.2,-4,4.8),505,(1,.86,.73),4)
+area("Cool_Fill",(3,-3,2.5),225,(.64,.77,1),3)
+area("Golden_Rim",(1,3,3.0),650,(1,.86,.55),3)
 camdata=bpy.data.cameras.new("Locked_Orthographic_Camera")
 cam=bpy.data.objects.new("Locked_Orthographic_Camera",camdata);bpy.context.collection.objects.link(cam)
 camdata.type="ORTHO";camdata.ortho_scale=2.37
