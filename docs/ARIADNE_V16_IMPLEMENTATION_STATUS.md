@@ -45,3 +45,18 @@ No rigging, sculpting, GLB export, or formal release may run while P02 is blocke
 ## Scope not yet implemented
 
 P05-P16 production workers (full Rigify generation, anatomical pose solving, constrained hand/orb contact, garment pattern/cloth simulation, hair sculpt, multi-view sculpt, UV/PBR, independent GLB validation, and release) are not claimed as implemented by this change. They must be added and tested as real workers before the downstream workflow is unlocked.
+
+## P05A neutral Rigify prefit diagnostic (in progress)
+
+A separate CI worker has been added:
+
+- `scripts/ariadne_v16_rigify_prefit.py`
+- `.github/workflows/ariadne-v16-rigify-prefit.yml`
+
+It loads the real MakeHuman CC0 female base and morph, generates Blender's Rigify human metarig/control rig, applies a uniform-height proportional prefit, creates automatic skin weights, exports a diagnostic skinned GLB, and independently reloads that GLB.
+
+This is deliberately a **neutral rigging diagnostic only**. It does not perform landmark-by-landmark joint fitting, K-pose solving, hand/orb grip validation, clothing simulation, or final sculpture approval. P02 remains blocked and this diagnostic does not unlock P05-P16 production.
+
+## Side/back design concept
+
+A right-side and rear-view AI concept sheet was generated for human review in the conversation. It is not registered as a source view, is not orthographic-certified, and is not committed as approved artwork. It must remain `DRAFT_NOT_APPROVED` until explicitly accepted and checked against the original front art.
