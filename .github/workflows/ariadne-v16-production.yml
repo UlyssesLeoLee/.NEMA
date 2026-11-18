@@ -1,0 +1,81 @@
+name: Ariadne V16 three-view-first production gate
+
+on:
+  push:
+    branches: [ariadne-v16-implementation-20261118]
+    paths:
+      - "spec/Ariadne_V16_Production.yaml"
+      - "references/ariadne/**"
+      - "scripts/ariadne_v16_reference_gate.py"
+      - ".github/workflows/ariadne-v16-production.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  p02-reference-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      gate_state: ${{ steps.p02.outputs.gate_state }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate original reference provenance and required three-view inputs
+        id: p02
+        run: python scripts/ariadne_v16_reference_gate.py
+
+      - name: Publish P02 gate summary
+        if: always()
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path("ariadne_v16_artifacts/P02_Reference_Audit.json")
+          if not p.exists():
+              raise SystemExit("P02 audit file was not produced")
+          d=json.loads(p.read_text())
+          lines=[
+            "# Ariadne V16 — P02 Reference Gate",
+            "",
+            f"**State: {d['state']}**",
+            "",
+            f"- Approved 3-view inputs: {sum(1 for x in d['views'].values() if x['state']=='PASS')}/3",
+            f"- Approved 24-angle anchors: {d['approved_24_anchor_count']}/24",
+            f"- Semantic landmarks: {d['semantic_landmark_count']}/256",
+            "",
+            "## Blocking issues",
+          ]
+          lines += [f"- {x}" for x in d["issues"]] or ["- None"]
+          lines += ["", "Downstream geometry production is locked unless P02 is PASS."]
+          Path(__import__('os').environ['GITHUB_STEP_SUMMARY']).write_text("\n".join(lines))
+          PY
+
+      - name: Upload P02 audit evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Ariadne-V16-P02-Reference-Gate
+          path: ariadne_v16_artifacts/**
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Enforce fail-closed state
+        if: steps.p02.outputs.gate_state != 'PASS'
+        run: |
+          echo "P02 is BLOCKED. No rigging, sculpting, GLB build or release is permitted."
+          echo "See the Ariadne-V16-P02-Reference-Gate artifact."
+          exit 1
+
+  downstream-production:
+    needs: p02-reference-gate
+    if: needs.p02-reference-gate.outputs.gate_state == 'PASS'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Stop until P05-P16 production workers are installed
+        run: |
+          echo "P02 passed, but the downstream V16 production workers are not yet installed."
+          echo "Refusing to call the legacy non-rigged art draft pipeline."
+          exit 1
