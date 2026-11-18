@@ -270,8 +270,9 @@ def export_and_reload(human, rig):
     gltf = json.loads(raw[20:20 + json_length])
     glb_mesh_count = len(gltf.get("meshes", []))
     glb_skin_count = len(gltf.get("skins", []))
+    glb_primitive_count = sum(len(m.get("primitives", [])) for m in gltf.get("meshes", []))
     glb_joint_count = len(gltf.get("skins", [{}])[0].get("joints", [])) if glb_skin_count else 0
-    if glb_mesh_count != 1 or glb_skin_count != 1 or glb_joint_count != len(deform_bones):
+    if glb_mesh_count != 1 or glb_primitive_count != 1 or glb_skin_count != 1 or glb_joint_count != len(deform_bones):
         raise RuntimeError(
             f"Unexpected runtime GLB structure: meshes={glb_mesh_count}, skins={glb_skin_count}, "
             f"joints={glb_joint_count}, expected_deform_bones={len(deform_bones)}"
@@ -286,20 +287,25 @@ def export_and_reload(human, rig):
         raise RuntimeError("Independent GLB reload failed")
     meshes = [o for o in bpy.context.scene.objects if o.type == "MESH" and o.data and len(o.data.polygons) > 0]
     arms = [o for o in bpy.context.scene.objects if o.type == "ARMATURE"]
-    skin_mods = [m for o in meshes for m in o.modifiers if m.type == "ARMATURE"]
-    if len(meshes) != 1 or len(arms) != 1 or len(skin_mods) != 1:
+    skin_meshes = [o for o in meshes if any(m.type == "ARMATURE" for m in o.modifiers)]
+    skin_mods = [m for o in skin_meshes for m in o.modifiers if m.type == "ARMATURE"]
+    if len(skin_meshes) != 1 or len(arms) != 1 or len(skin_mods) != 1:
         raise RuntimeError(
-            f"Reload structure mismatch: meshes={len(meshes)}, armatures={len(arms)}, skin_modifiers={len(skin_mods)}"
+            f"Reload structure mismatch: meshes={len(meshes)} names={[o.name for o in meshes]}, "
+            f"skinned_meshes={len(skin_meshes)}, armatures={len(arms)}, skin_modifiers={len(skin_mods)}"
         )
     return {
         "glb": glb.name,
         "glb_bytes": glb.stat().st_size,
         "glb_sha256": source_hash,
         "glb_mesh_count": glb_mesh_count,
+        "glb_primitive_count": glb_primitive_count,
         "glb_skin_count": glb_skin_count,
         "glb_joint_count": glb_joint_count,
         "deform_bone_count": len(deform_bones),
         "reloaded_mesh_count": len(meshes),
+        "reloaded_mesh_names": [o.name for o in meshes],
+        "reloaded_skinned_mesh_count": len(skin_meshes),
         "reloaded_armature_count": len(arms),
         "reloaded_skin_modifier_count": len(skin_mods),
     }
