@@ -55,6 +55,7 @@ jobs:
           rig=d["rig_structure_audit"]
           assert rig["finger_chain_count"] == 10
           assert rig["finger_segment_count"] == 30
+          assert rig["palm_parent_bone_count"] == 8
           assert rig["missing_bones"] == []
           assert rig["short_bones"] == []
           assert rig["broken_chains"] == []
