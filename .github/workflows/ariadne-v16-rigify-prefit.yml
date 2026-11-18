@@ -54,10 +54,12 @@ jobs:
           assert d["joint_landmark_fit"] is False
           assert d["skin_weight_audit"]["unweighted_vertex_count"] == 0
           assert d["reload_audit"]["glb_mesh_count"] == 1
+          assert d["reload_audit"]["glb_primitive_count"] == 1
           assert d["reload_audit"]["glb_skin_count"] == 1
           assert d["reload_audit"]["glb_joint_count"] == d["reload_audit"]["deform_bone_count"]
           assert d["reload_audit"]["glb_joint_count"] < 250
-          assert d["reload_audit"]["reloaded_mesh_count"] == 1
+          assert d["reload_audit"]["reloaded_mesh_count"] >= 1
+          assert d["reload_audit"]["reloaded_skinned_mesh_count"] == 1
           assert d["reload_audit"]["reloaded_armature_count"] == 1
           assert d["reload_audit"]["reloaded_skin_modifier_count"] == 1
           print(json.dumps(d, indent=2))
