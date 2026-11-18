@@ -69,8 +69,10 @@ ariadne_v16:
         - "Keep the full 706-bone Rigify control rig in the editable BLEND."
         - "Export a deform-only runtime skin skeleton and independently reload the GLB."
         - "Assert exactly one skinned mesh, one skin and only deform joints in the runtime GLB."
+        - "Validate both arm and leg deform-bone chains, plus 10 finger chains containing 30 non-zero-length finger segments."
+        - "Keep motion limits pending until approved 3-view landmarks and the Ariadne pose are fitted."
         - "Report all limitations; this is not anatomical joint fitting or the final Ariadne pose."
-      gate: "RIGIFY_GENERATION_SKIN_WEIGHTS_AND_INDEPENDENT_RELOAD_PASS"
+      gate: "RIGIFY_GENERATION_SKIN_WEIGHTS_FINGER_LIMB_CHAINS_AND_INDEPENDENT_RELOAD_PASS"
       unlocks: []
       limitations:
         - "No individual joint landmark fitting."
