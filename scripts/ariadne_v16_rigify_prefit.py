@@ -198,32 +198,106 @@ def weight_audit(human):
     }
 
 def export_and_reload(human, rig):
+    # The editable .blend retains the complete 706-bone Rigify control rig.
+    # The runtime GLB receives only the actual deform skeleton so controls,
+    # mechanism bones and custom widgets do not become hundreds of runtime joints.
+    deform_bones = [b for b in rig.data.bones if b.use_deform]
+    if len(deform_bones) < 100:
+        raise RuntimeError(f"Unexpectedly small Rigify deform skeleton: {len(deform_bones)} bones")
+    group_names = {g.name for g in human.vertex_groups}
+    missing_groups = [b.name for b in deform_bones if b.name not in group_names]
+    if missing_groups:
+        raise RuntimeError(f"Deform bones lack matching skin groups: {missing_groups[:12]}")
+
+    export_data = bpy.data.armatures.new("Ariadne_V16_DeformOnly_Skin_Data")
+    export_rig = bpy.data.objects.new("Ariadne_V16_DeformOnly_Skin", export_data)
+    bpy.context.collection.objects.link(export_rig)
+    export_rig.matrix_world = rig.matrix_world.copy()
+    export_data.pose_position = "REST"
+    activate(export_rig)
+    bpy.ops.object.mode_set(mode="EDIT")
+    edit_map = {}
+    for bone in deform_bones:
+        eb = export_data.edit_bones.new(bone.name)
+        eb.head = bone.head_local
+        eb.tail = bone.tail_local
+        eb.roll = bone.roll
+        eb.use_deform = True
+        edit_map[bone.name] = eb
+    for bone in deform_bones:
+        parent = bone.parent
+        while parent is not None and not parent.use_deform:
+            parent = parent.parent
+        eb = edit_map[bone.name]
+        if parent is not None:
+            eb.parent = edit_map[parent.name]
+            eb.use_connect = bool(bone.use_connect and (eb.parent.tail - eb.head).length < 1e-5)
+    bpy.ops.object.mode_set(mode="OBJECT")
+
+    # Preserve the visible mesh transform while switching its skin target.
+    mesh_world = human.matrix_world.copy()
+    for mod in list(human.modifiers):
+        if mod.type == "ARMATURE":
+            human.modifiers.remove(mod)
+    human.parent = export_rig
+    human.matrix_parent_inverse = export_rig.matrix_world.inverted()
+    human.matrix_world = mesh_world
+    skin = human.modifiers.new("Ariadne_V16_DeformOnly_Skin", "ARMATURE")
+    skin.object = export_rig
+    skin.use_vertex_groups = True
+    skin.use_bone_envelopes = False
+
     glb = OUT / "Ariadne_V16_Neutral_Rigify_Prefit_DIAGNOSTIC.glb"
-    activate(rig)
+    bpy.ops.object.select_all(action="DESELECT")
     human.select_set(True)
+    export_rig.select_set(True)
+    bpy.context.view_layer.objects.active = export_rig
     status = bpy.ops.export_scene.gltf(
         filepath=str(glb), export_format="GLB", use_selection=True,
         export_skins=True, export_animations=False, export_apply=False,
     )
     if "FINISHED" not in status or not glb.exists() or glb.stat().st_size < 100_000:
-        raise RuntimeError("Skinned diagnostic GLB export failed")
+        raise RuntimeError("Deform-only skinned diagnostic GLB export failed")
     source_hash = hashlib.sha256(glb.read_bytes()).hexdigest()
+
+    # Independently inspect the GLB JSON before a fresh Blender import.
+    import struct
+    raw = glb.read_bytes()
+    if raw[:4] != b"glTF":
+        raise RuntimeError("Exported file is not a GLB container")
+    json_length, json_type = struct.unpack_from("<I4s", raw, 12)
+    if json_type != b"JSON":
+        raise RuntimeError("GLB JSON chunk missing")
+    gltf = json.loads(raw[20:20 + json_length])
+    glb_mesh_count = len(gltf.get("meshes", []))
+    glb_skin_count = len(gltf.get("skins", []))
+    glb_joint_count = len(gltf.get("skins", [{}])[0].get("joints", [])) if glb_skin_count else 0
+    if glb_mesh_count != 1 or glb_skin_count != 1 or glb_joint_count != len(deform_bones):
+        raise RuntimeError(
+            f"Unexpected runtime GLB structure: meshes={glb_mesh_count}, skins={glb_skin_count}, "
+            f"joints={glb_joint_count}, expected_deform_bones={len(deform_bones)}"
+        )
+
     bpy.ops.object.select_all(action="SELECT")
     bpy.ops.object.delete(use_global=False)
     imp = bpy.ops.import_scene.gltf(filepath=str(glb))
     if "FINISHED" not in imp:
         raise RuntimeError("Independent GLB reload failed")
-    meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]
+    meshes = [o for o in bpy.context.scene.objects if o.type == "MESH" and o.data and len(o.data.polygons) > 0]
     arms = [o for o in bpy.context.scene.objects if o.type == "ARMATURE"]
-    if not meshes or not arms:
-        raise RuntimeError(f"Reload lost skinned mesh/armature: meshes={len(meshes)} arms={len(arms)}")
     skin_mods = [m for o in meshes for m in o.modifiers if m.type == "ARMATURE"]
-    if not skin_mods:
-        raise RuntimeError("Reloaded GLB contains no armature skin modifier")
+    if len(meshes) != 1 or len(arms) != 1 or len(skin_mods) != 1:
+        raise RuntimeError(
+            f"Reload structure mismatch: meshes={len(meshes)}, armatures={len(arms)}, skin_modifiers={len(skin_mods)}"
+        )
     return {
         "glb": glb.name,
         "glb_bytes": glb.stat().st_size,
         "glb_sha256": source_hash,
+        "glb_mesh_count": glb_mesh_count,
+        "glb_skin_count": glb_skin_count,
+        "glb_joint_count": glb_joint_count,
+        "deform_bone_count": len(deform_bones),
         "reloaded_mesh_count": len(meshes),
         "reloaded_armature_count": len(arms),
         "reloaded_skin_modifier_count": len(skin_mods),
