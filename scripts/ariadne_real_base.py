@@ -67,7 +67,9 @@ human.location.z=-zmin
 bpy.context.view_layer.objects.active=human
 human.select_set(True)
 bpy.ops.wm.save_as_mainfile(filepath=str(OUT/"MakeHuman_CC0_Female_Anatomy_Editable.blend"))
-bpy.ops.export_scene.gltf(filepath=str(OUT/"MakeHuman_CC0_Female_Anatomy_DIAGNOSTIC.glb"),export_format="GLB",use_selection=True)
+export_status=bpy.ops.export_scene.gltf(filepath=str(OUT/"MakeHuman_CC0_Female_Anatomy_DIAGNOSTIC.glb"),export_format="GLB",use_selection=True)
+assert "FINISHED" in export_status, f"GLB export was not FINISHED: {export_status}"
+assert (OUT/"MakeHuman_CC0_Female_Anatomy_DIAGNOSTIC.glb").stat().st_size>100000
 # fixed camera, physically same mesh at all angles
 world=bpy.context.scene.world
 world.color=(0.65,0.65,0.65)
