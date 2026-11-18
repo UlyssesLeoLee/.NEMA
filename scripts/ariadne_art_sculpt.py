@@ -298,7 +298,15 @@ def camera_at(angle):
 camera_at(0)
 # Save editable primary art scene, export only objects with geometry, not lights.
 bpy.ops.wm.save_as_mainfile(filepath=str(OUT/"Ariadne_Sculptural_Art_Draft.blend"))
-objects=[o for o in scene.objects if o.type in {"MESH","CURVE"}]
+# Convert curves to genuine mesh before glTF export: preserve geometry of gold cord.
+bpy.ops.object.select_all(action="DESELECT")
+for obj in list(scene.objects):
+    if obj.type=="CURVE":
+        bpy.ops.object.select_all(action="DESELECT")
+        obj.select_set(True)
+        bpy.context.view_layer.objects.active=obj
+        bpy.ops.object.convert(target="MESH")
+objects=[o for o in scene.objects if o.type=="MESH"]
 bpy.ops.object.select_all(action="DESELECT")
 for ob in objects:ob.select_set(True)
 bpy.context.view_layer.objects.active=human
