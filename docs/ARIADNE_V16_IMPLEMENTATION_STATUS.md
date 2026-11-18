@@ -1,0 +1,117 @@
+# Ariadne V16 implementation status
+
+## What is implemented in this branch
+
+- V16 production specification: `spec/Ariadne_V16_Production.yaml`
+- Reference manifest: `references/ariadne/reference_manifest.json`
+- Fail-closed P02 validator: `scripts/ariadne_v16_reference_gate.py`
+- GitHub Actions P02 gate: `.github/workflows/ariadne-v16-production.yml`
+
+## Current verified source state
+
+The repository contains one original front artwork source:
+
+- `website/assets/ariadne-hero-texture.png`
+
+It is recorded as approved front art direction, but it is **not certified as a calibrated orthographic model sheet**.
+
+The repository does not currently contain independently approved right-side or back artwork, the 24 approved angle anchors, or the 256 semantic landmark correspondences.
+
+## Expected reference files
+
+Place independently reviewed artwork in:
+
+- `references/ariadne/front.png`
+- `references/ariadne/right_side.png`
+- `references/ariadne/back.png`
+
+Then update `reference_manifest.json` with:
+- the exact relative path;
+- SHA-256;
+- `approval_state: APPROVED`;
+- `projection: ORTHOGRAPHIC`;
+- a source/provenance note.
+
+Do not mirror the front image to create a side or back view. Do not label a generated guess as an approved view.
+
+The 24 anchor SVGs must be separate approved files under `references/ariadne/anchors/`. The 256 landmark registry must contain stable semantic IDs and actual observations or explicit occlusion states.
+
+## Current gate result expected
+
+P02 must remain **BLOCKED** until all three primary views, 24 independently approved anchors, and 256 semantic landmark correspondences are supplied and verified.
+
+No rigging, sculpting, GLB export, or formal release may run while P02 is blocked. This is intentional: the legacy art-draft workflow is not allowed to bypass the V16 reference gate.
+
+## Scope not yet implemented
+
+P05-P16 production workers (full Rigify generation, anatomical pose solving, constrained hand/orb contact, garment pattern/cloth simulation, hair sculpt, multi-view sculpt, UV/PBR, independent GLB validation, and release) are not claimed as implemented by this change. They must be added and tested as real workers before the downstream workflow is unlocked.
+
+## P05A neutral Rigify prefit diagnostic (in progress)
+
+A separate CI worker has been added:
+
+- `scripts/ariadne_v16_rigify_prefit.py`
+- `.github/workflows/ariadne-v16-rigify-prefit.yml`
+
+It loads the real MakeHuman CC0 female base and morph, generates Blender's Rigify human metarig/control rig, applies a uniform-height proportional prefit, creates automatic skin weights, exports a diagnostic skinned GLB, and independently reloads that GLB.
+
+This is deliberately a **neutral rigging diagnostic only**. It does not perform landmark-by-landmark joint fitting, K-pose solving, hand/orb grip validation, clothing simulation, or final sculpture approval. P02 remains blocked and this diagnostic does not unlock P05-P16 production.
+
+## Side/back design concept
+
+A right-side and rear-view AI concept sheet was generated for human review in the conversation. It is not registered as a source view, is not orthographic-certified, and is not committed as approved artwork. It must remain `DRAFT_NOT_APPROVED` until explicitly accepted and checked against the original front art.
+
+## 256 persistent landmark IDs
+
+`references/ariadne/Landmark_ID_Correspondence.json` now registers exactly 256 stable semantic IDs across head/face, hair, torso, both arms and hands, both legs and feet, garment, gold orb/thread and pedestal.
+
+All coordinates remain null and all three-view observations remain pending. This is intentional. Each landmark must later record, for each of front/right-side/back, either:
+- `VISIBLE`: normalized image coordinates, confidence and source SHA-256; or
+- `OCCLUDED`: explicit reason and source SHA-256.
+
+The P02 validator now checks the three-view observation schema rather than accepting a non-empty placeholder. The 256 IDs are registered; their geometric correspondences are not yet claimed.
+
+## P05A baseline CI result
+
+Run `44396992144` passed the neutral Rigify prefit diagnostic:
+- MakeHuman CC0 source: 19,158 vertices / 13,378 body faces; 19,150 female morph deltas applied.
+- Rigify metarig: 159 bones; generated full control rig: 706 bones.
+- Skinning: 160 vertex groups; 19,158/19,158 vertices weighted; no unweighted vertices.
+- Weight sums after normalization: 0.99999982–1.00000016.
+- Editable BLEND saved; GLB export and independent Blender reload passed.
+
+The first successful runtime GLB carried all 706 Rigify bones as joints. That is excessive for a runtime skin asset. A follow-up change now builds a deform-only export skeleton from the 160 skinning bones, keeps the full control rig in the editable BLEND, and enforces a one-mesh/one-skin/160-joint GLB. This compact-export refinement is under CI retest; it is not yet claimed as passed.
+
+## P05A compact deform-only GLB retest
+
+Run `44398401636` passed the stricter runtime export and reload assertions.
+
+- Editable BLEND retains the complete 706-bone Rigify control rig.
+- Runtime GLB is exported from the 160 deform bones only.
+- GLB container: exactly 1 mesh, 1 primitive, 1 skin and 160 joints.
+- Runtime GLB size: 788,380 bytes.
+- All 19,158 source mesh vertices have skin weights; no unweighted vertices.
+- Normalized weight sums: 0.99999982–1.00000016.
+- Independent Blender reload: 1 armature, 1 skinned mesh and 1 armature skin modifier. Blender also reports one additional unskinned helper object named `Icosphere`; it is not a mesh/primitive in the GLB JSON and is not counted as the skinned runtime mesh.
+
+This passes only the neutral rigging/export diagnostic. It does not prove anatomical joint landmark fit, the K pose, finger joint limits, the orb grip, clothing/hair sculpt, or artistic similarity. P02 remains BLOCKED.
+
+## P05A hand and limb topology audit
+
+The Rigify diagnostic now additionally checks:
+- 10 finger chains (five digits on each hand), 30 non-zero-length finger segments;
+- eight palm parent bones and their finger-to-palm hierarchy;
+- bilateral upper-arm/forearm/hand and thigh/shin/foot/toe chains.
+
+The first attempt exposed an incorrect assumption in the validator: Rigify attaches the first finger segment to an `ORG-palm.*` parent rather than directly to `DEF-hand`. The validator has been corrected to check the actual Rigify palm hierarchy. Joint rotation limits and corrective pose constraints remain intentionally pending until approved three-view landmarks and the final Ariadne pose are fitted.
+
+## P05A hand and limb topology audit — PASS
+
+Run `44399369733` passed the added anatomical structure checks:
+- 10 finger chains: thumb, index, middle, ring and little finger on both hands.
+- 30 finger segment bones, all present and non-zero length.
+- 8 `ORG-palm` parent bones; each first finger segment attaches to its correct palm parent.
+- Both arm chains and both leg chains pass parent-continuity checks.
+- Missing bones: 0; short bones: 0; broken chains: 0.
+
+This confirms neutral skeleton topology only. It does **not** validate joint rotation limits, finger curl/abduction under motion, thumb opposition in the orb grip, or pose deformation. Those remain blocked until the approved three-view art and final pose are fitted.

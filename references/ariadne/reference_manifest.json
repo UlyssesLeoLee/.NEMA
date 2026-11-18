@@ -1,0 +1,30 @@
+{
+  "schema_version": "1.0",
+  "project": "Ariadne V16",
+  "policy": "No mirroring, no synthetic side/back truth, no unapproved interpolation.",
+  "views": {
+    "front": {
+      "path": "website/assets/ariadne-hero-texture.png",
+      "source_role": "ORIGINAL_FRONT_ART_REFERENCE",
+      "approval_state": "APPROVED",
+      "projection": "NOT_CERTIFIED_ORTHOGRAPHIC",
+      "notes": "The repository's sole original Ariadne art reference. Approved as front art direction only; not yet certified as a calibrated orthographic model sheet."
+    },
+    "right_side": null,
+    "back": null
+  },
+  "anchors": [],
+  "landmarks": {
+    "registry_path": "references/ariadne/Landmark_ID_Correspondence.json",
+    "expected_count": 256,
+    "state": "IDS_REGISTERED_OBSERVATIONS_PENDING",
+    "note": "256 stable semantic IDs exist; no 2D coordinates or 3D positions are invented. Each front/right_side/back observation must later be VISIBLE with normalized image_xy, confidence and source SHA-256, or explicitly OCCLUDED with reason and source SHA-256."
+  },
+  "known_gaps": [
+    "No independently approved right-side art reference.",
+    "No independently approved back art reference.",
+    "No calibrated three-view orthographic sheet.",
+    "No 24 independently approved 15-degree art anchors.",
+    "256 persistent semantic landmark IDs are registered, but all 768 view observations (256 × front/right-side/back) remain pending."
+  ]
+}

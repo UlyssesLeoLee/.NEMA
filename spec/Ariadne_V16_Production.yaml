@@ -1,0 +1,194 @@
+ariadne_v16:
+  name: "Ariadne ThreeView-First Anatomical Sculpt Production"
+  version: "16.0"
+  status: "IMPLEMENTED_FAIL_CLOSED"
+  reference_policy:
+    primary: [FRONT_ORTHOGRAPHIC, RIGHT_SIDE_ORTHOGRAPHIC, BACK_ORTHOGRAPHIC]
+    secondary: [LEFT_SIDE_ORTHOGRAPHIC, APPROVED_24_ANGLE_ART_ANCHORS]
+    auxiliary: [ART_360_REFERENCE_GIF]
+    rules:
+      - "Three orthographic views are the authoritative sculpting references."
+      - "The 24-angle anchors are secondary and must be independently approved."
+      - "The 2D art GIF is auxiliary only and never defines hidden geometry."
+      - "The 2D art pipeline must not read or render a GLB."
+      - "Missing views are UNKNOWN; do not mirror, hallucinate, or interpolate them as truth."
+      - "The MakeHuman female mesh remains the body base; no Visual Hull or silhouette extrusion."
+      - "Clothing, hair, thread and pedestal must be real 3D geometry."
+      - "Technical validation and artistic approval are independent."
+  coordinate_system:
+    up_axis: Z
+    front_direction: "-Y"
+    handedness: RIGHT_HANDED
+    left_right_identity: EXPLICITLY_LOCKED
+  gate_states: [PENDING, PASS, FAIL, BLOCKED, NOT_MEASURABLE]
+  pipeline:
+    P01:
+      name: SOURCE_AND_LICENSE_AUDIT
+      outputs: [Reference_Provenance.json, Asset_License_Registry.json]
+      gate: ALL_SOURCE_HASHES_AND_LICENSES_VERIFIED
+    P02:
+      name: THREE_VIEW_ART_MASTER_AND_24_ANGLE_ANCHORS
+      inputs: [P01, layered_reference_paths]
+      required_views: [front, right_side, back]
+      actions:
+        - "Lock orthographic scale, canvas, ground line, center axis and left/right identity."
+        - "Annotate anatomy, hairline, palm, thumb, fingers, orb, garment attachment points and folds."
+        - "Create 256 persistent semantic landmark IDs with visibility, occlusion and confidence."
+        - "Create 24 independent 15-degree art anchors only from approved evidence."
+        - "Unknown geometry remains UNKNOWN and blocks the affected region."
+      outputs: [THREE_VIEW_ART_MASTER, Art_24SVG_Anchors, Landmark_ID_Correspondence.json, Landmark_Occlusion_Registry.json]
+      gate: FRONT_RIGHT_BACK_APPROVED_AND_LANDMARKS_VALID_AND_NO_UNVERIFIED_MIRRORING
+    P03:
+      name: OPTIONAL_2D_ART_360_REFERENCE_GIF
+      blocking: false
+      inputs: [P02, approved_2d_breakdowns]
+      actions:
+        - "Generate only from 2D artwork; no GLB renderer or 3D render inputs."
+        - "Use approved keyframes and artist-drawn breakdowns."
+        - "No optical-flow geometry distortion."
+        - "Lock canvas, center, scale and part identities."
+        - "Reject invalid frames; never fabricate replacements."
+      outputs: [ART_360_REFERENCE.gif, ART_360_REFERENCE_frames, Art_360_Quality.json, Art_360_Rejected_Frames]
+      gate: EXACT_360_VALIDATED_FRAMES_AND_359_TO_0_CONTINUITY
+      failure_effect: BLOCK_GIF_RELEASE_ONLY
+    P04:
+      name: ART_TARGET_LOCK_AND_K_GOLDEN_RATIO_AUDIT
+      inputs: [P02]
+      optional_inputs: [P03]
+      outputs: [Approved_ThreeView_Art_Lock.json, Approved_Art_24_Lock.json, K_Composition_Guides.svg, Golden_Ratio_Analysis.json]
+      gate: THREE_VIEW_ART_AND_ANATOMY_AND_COMPOSITION_PASS
+    P05A:
+      name: NEUTRAL_RIGIFY_PREFIT_DIAGNOSTIC
+      status: "IMPLEMENTED_DIAGNOSTIC_ONLY"
+      inputs: [MakeHuman_CC0]
+      outputs: [Ariadne_V16_Neutral_Rigify_Prefit_DIAGNOSTIC.blend, Ariadne_V16_Neutral_Rigify_Prefit_DIAGNOSTIC.glb, Rigify_Prefit_QA.json]
+      actions:
+        - "Load the verified MakeHuman CC0 female base and morph."
+        - "Generate the Blender Rigify human metarig and uniformly prefit it to the source mesh height."
+        - "Generate the Rigify control rig and automatic skin weights."
+        - "Keep the full 706-bone Rigify control rig in the editable BLEND."
+        - "Export a deform-only runtime skin skeleton and independently reload the GLB."
+        - "Assert exactly one skinned mesh, one skin and only deform joints in the runtime GLB."
+        - "Validate both arm and leg deform-bone chains, plus 10 finger chains containing 30 non-zero-length finger segments."
+        - "Validate the eight Rigify palm parent bones and the anatomical finger-to-palm hierarchy."
+        - "Keep motion limits pending until approved 3-view landmarks and the Ariadne pose are fitted."
+        - "Report all limitations; this is not anatomical joint fitting or the final Ariadne pose."
+      gate: "RIGIFY_GENERATION_SKIN_WEIGHTS_FINGER_LIMB_CHAINS_AND_INDEPENDENT_RELOAD_PASS"
+      unlocks: []
+      limitations:
+        - "No individual joint landmark fitting."
+        - "No approved 3-view references."
+        - "No K pose, hand/orb contact or release approval."
+    P05:
+      name: REAL_HUMAN_MESH_AND_FULL_RIGIFY_SKELETON
+      inputs: [MakeHuman_CC0, P04, Landmark_ID_Correspondence.json]
+      outputs: [Rig_Master.blend, Bone_Axes_Limits.json, SkinWeights_QA.json, Anatomy_Base_QA.json]
+      gate: REAL_HUMAN_MESH_AND_FULL_RIG_AND_REST_LENGTHS_AND_WEIGHTS_PASS
+    P06:
+      name: ANATOMICAL_K_POSE_AND_CORRECTIVE_SCULPT
+      inputs: [P05, P04]
+      outputs: [K_Pose_Rig_Action.blend, Anatomical_Correctives.blend, Anatomical_8View_QA]
+      gate: SHOULDER_ELBOW_FOREARM_WRIST_FINGER_LIMITS_AND_8VIEW_ANATOMY_PASS
+    P07:
+      name: FULL_HAND_ORB_CONTACT_CONSTRAINED_IK
+      inputs: [P06, actual_orb_geometry]
+      outputs: [Grip_Constraint_Data.json, Hand_Ball_Closeups_8Views, Contact_Patch_Registry.json]
+      gate: PALM_SUPPORT_AND_THUMB_OPPOSITION_AND_FINGER_PAD_GRIP_PASS
+    P08:
+      name: COMPLETE_HAIRLINE_BRAIDS_AND_BACK_CHIGNON
+      inputs: [P06, P04, THREE_VIEW_ART_MASTER]
+      outputs: [True_Hair_Sculpt.blend, Hairline_Registry.json, Hair_8View_QA]
+      gate: COMPLETE_HAIRLINE_BRAIDS_BACK_CHIGNON_NO_BALD_CROWN
+    P09:
+      name: CHITON_HIMATION_VEIL_PATTERN_AND_CLOTH_SOLVE
+      inputs: [P06, P04, THREE_VIEW_ART_MASTER, historical_dress_studies]
+      outputs: [Garment_Patterns, Cloth_Sim_Cache, Drapery_Contact_QA, Garment_Sculpt.blend]
+      gate: PATTERNS_SEAMS_THICKNESS_COLLISIONS_GRAVITY_AND_8VIEW_PASS
+    P10:
+      name: TRUE_3D_MULTI_VIEW_ART_SCULPT
+      inputs: [P02, P04, P07, P08, P09]
+      optional_inputs: [P03]
+      outputs: [Sculpt_HighPoly.blend, Surface_256_Landmarks, 24View_ArtDiff, Cross_Angle_Regression.json]
+      gate: TRUE_GEOMETRY_AND_THREE_VIEW_MATCH_AND_CROSS_ANGLE_REGRESSION_PASS
+    P11:
+      name: SINGLE_CONTINUOUS_GOLD_THREAD_AND_PEDESTAL
+      inputs: [P10, P07, P04]
+      outputs: [Gold_Path_3D.json, Support_Contact_QA]
+      gate: SINGLE_CONTINUOUS_PATH_AND_NO_DETACHED_GOLD_OR_PEDESTAL_INTERSECTIONS
+    P12:
+      name: UV_PBR_PRODUCTION_AND_NO_TEXTURE_CHEATS
+      inputs: [P11, geometry_freeze]
+      outputs: [UV_Atlas, BaseColor, Normal, RoughMetal, Occlusion, Material_Audit.md, UV_Seam_QA.png]
+      gate: UV_PBR_CHANNELS_SPACES_AND_TRUE_GEOMETRY_PASS
+    P13:
+      name: GLB_EXPORT_AND_INDEPENDENT_SCENE_RELOAD
+      inputs: [P12]
+      outputs: [Ariadne_Final_Candidate.glb, Independent_Import_Report.json]
+      gate: TWO_INDEPENDENT_VIEWERS_AND_ALL_GEOMETRY_MATERIALS_SKINNING_PASS
+    P14:
+      name: GLB_360_VALIDATION_GIF_FROM_FINAL_FILE
+      inputs: [P13]
+      outputs: [GLB_360_VALIDATION.gif, GLB_360_PNGs_360, GLB_24Views, GLB_Camera_Lock.json]
+      gate: FIXED_CAMERA_360_ONE_DEGREE_FRAMES_AND_NO_DRIFT_AND_WRAP_PASS
+    P15:
+      name: MULTI_VIEW_ART_COMPARISON_AND_THREE_ROUND_ADVERSARIAL_QA
+      inputs: [P02, P04, P10, P13, P14]
+      outputs: [Art_24Scorecard.json, ThreeView_ArtScorecard.json, ThreeRound_Adversarial_QA.md]
+      gate: THREE_VIEW_ART_AND_ANATOMICAL_HARD_GATES_AND_ALL_APPROVED_24_ANGLE_SCORES_PASS
+    P16:
+      name: FORMAL_RELEASE_OR_EXPLICIT_BLOCK
+      inputs: [P15]
+      outputs: [Release_Manifest.json, SHA256SUMS.txt, Final_Production_Package.zip]
+      gate: ALL_HARD_GATES_PASS_OTHERWISE_DIAGNOSTIC_ONLY
+  independent_validation:
+    art_provenance:
+      three_view_primary_required: true
+      source_sha256_required: true
+      no_3d_renderer_in_2d_art_pipeline: true
+      24_anchors_independently_approved: true
+      unknown_views_not_mirrored: true
+    skeleton:
+      real_human_mesh_required: true
+      full_bones_and_weights: true
+      local_joint_axes_and_limits: true
+      rest_lengths_invariant: true
+      pose_correctives_validated: true
+      8_view_anatomy_review: true
+    contact:
+      min_real_contact_regions: 3
+      required_regions: [PALM_SUPPORT, THUMB_OPPOSITION, FINGER_PAD_GRIP]
+      no_intersections: true
+      no_detached_orb: true
+      no_thumb_failure: true
+      8_view_projection_consistency: true
+    art_consistency:
+      256_persistent_semantic_landmarks: true
+      no_bald_crown: true
+      no_fake_cloth: true
+      K_shape_graceful_all_views: true
+      golden_ratio_is_soft_guide: true
+      anatomy_overrides_phi: true
+      24_angle_score:
+        mode: PER_ANGLE_NOT_AVERAGE
+        strictly_greater_than: 0.95
+        only_if_anchor_independently_approved: true
+        unmeasurable_is_failure: true
+    glb:
+      independent_viewers: 2
+      no_external_textures: true
+      same_final_glb_for_validation_gif_and_release: true
+    adversarial_rounds:
+      - "A: 2D art provenance, three views, K composition, phi, pose and hand identity."
+      - "B: anatomy, rig, contact, cloth collision and hair."
+      - "C: side/back, 24 angles, independent GLB and 360 loop regression."
+  release:
+    finger_dislocation_tolerance: 0
+    supported_ball_gate: HARD
+    no_baldness_gate: HARD
+    no_fake_cloth_gate: HARD
+    cannot_prove: BLOCK_NO_FORMAL_RELEASE
+  current_known_input_state:
+    repository_contains_only_one_original_front_art_reference: true
+    side_art: MISSING
+    back_art: MISSING
+    policy: "P02 must remain BLOCKED until right-side and back art are supplied and approved. Never fabricate them."
