@@ -8,6 +8,10 @@ on:
       - ".github/workflows/ariadne-v16-rigify-prefit.yml"
   workflow_dispatch:
 
+concurrency:
+  group: ariadne-v16-rigify-prefit-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
