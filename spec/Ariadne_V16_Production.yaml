@@ -66,7 +66,9 @@ ariadne_v16:
         - "Load the verified MakeHuman CC0 female base and morph."
         - "Generate the Blender Rigify human metarig and uniformly prefit it to the source mesh height."
         - "Generate the Rigify control rig and automatic skin weights."
-        - "Export a diagnostic skinned GLB and independently reload it."
+        - "Keep the full 706-bone Rigify control rig in the editable BLEND."
+        - "Export a deform-only runtime skin skeleton and independently reload the GLB."
+        - "Assert exactly one skinned mesh, one skin and only deform joints in the runtime GLB."
         - "Report all limitations; this is not anatomical joint fitting or the final Ariadne pose."
       gate: "RIGIFY_GENERATION_SKIN_WEIGHTS_AND_INDEPENDENT_RELOAD_PASS"
       unlocks: []
