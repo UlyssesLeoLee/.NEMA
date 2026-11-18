@@ -64,3 +64,14 @@
 | Overall art lock | PENDING | |
 
 **Approval rule:** P02 remains BLOCKED until the three orthographic views and all required landmark/anchor evidence pass. This checklist does not itself approve the generated concept image.
+
+## 7. Required 24-angle SVG anchor manifest fields
+
+Each anchor entry must provide:
+- `path`: repository-relative SVG path;
+- `angle_degrees`: exact sequence 0, 15, 30, …, 345;
+- `sha256`: exact SHA-256 of the SVG bytes;
+- `approval_state: APPROVED`;
+- `projection: ORTHOGRAPHIC`.
+
+Each SVG must parse successfully and contain a valid `viewBox`. The P02 gate verifies all of these fields and the file hash; merely creating 24 filenames is not sufficient.
