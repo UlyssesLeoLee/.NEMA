@@ -74,6 +74,7 @@ for v in verts:
         drift=.026*sin(pi*(z-.53)/.8)
         v[0]+=drift*(1-.35*smooth(1.20,1.36,z))
 human=meshobj("01_TRUE_FEMALE_ANATOMY_CC0_K_POSE_DRAFT",verts,faces,ivory)
+human.location.z=.113  # support foot seated on upper pedestal, rather than hidden inside stone
 human["anatomy_source"]="MakeHuman CC0 19158 original mesh vertices / 13378 body quads"
 human["morph_source"]="caucasian-female-young.target"
 human["sculpt_status"]="UNAPPROVED_ARTISTIC_DRAFT"
@@ -135,7 +136,7 @@ def radii(theta,z):
     return rx,ry,out
 n=256;m=90;sv=[];sf=[]
 for iz in range(m+1):
-    t=iz/m;z=.16+t*.90
+    t=iz/m;z=.13+t*.93
     for j in range(n):
         a=2*pi*j/n
         rx,ry,depth=radii(a,z)
@@ -214,8 +215,8 @@ ribbon("36_Main_Sculpted_Sash",[(.12,-.28,.94),(.01,-.36,.69),(-.13,-.39,.43),(-
 # A second lower wrap from left hip into center front diagonal
 ribbon("37_Lower_Fabric_Sweep",[(-.25,-.18,.52),(-.24,-.28,.38),(-.11,-.34,.26),(.07,-.28,.21)], [.075,.11],marble)
 # Draped panels attached from back of shoulders; actual 3D with hanging arcs.
-ribbon("38_Back_Veil_Left",[(-.085,.05,1.52),(-.20,.16,1.36),(-.25,.20,1.11),(-.30,.19,.83),(-.26,.15,.59)], [.15,.17],ivory)
-ribbon("39_Back_Veil_Right",[(.095,.045,1.51),(.18,.15,1.35),(.23,.23,1.06),(.29,.24,.78),(.30,.18,.50)], [.14,.19],marble)
+ribbon("38_Back_Veil_Left",[(-.078,.09,1.52),(-.16,.13,1.37),(-.205,.17,1.15),(-.22,.16,.89),(-.21,.11,.62)], [.065,.11],ivory)
+ribbon("39_Back_Veil_Right",[(.080,.09,1.52),(.17,.13,1.37),(.20,.20,1.14),(.235,.19,.88),(.23,.14,.61)], [.07,.11],marble)
 # waist braid/belt with actual raised roped texture
 curve("40_Waist_Braided_Gold",[(.19*cos(2*pi*i/180)+.025,.136*sin(2*pi*i/180)-.015,1.035+.012*sin(2*pi*i/180*2)) for i in range(180)],.005,darkgold,True)
 curve("41_Necklace_Cowl_Gold",[(-.20,-.085,1.32),(-.13,-.176,1.285),(0,-.197,1.26),(.13,-.160,1.30),(.20,-.08,1.34)],.006,brightgold)
@@ -236,13 +237,29 @@ for j in range(6):
         z=1.569-.09*t
         pts.append((x,y,z))
     curve("Braided_Curl_%02d"%j,pts,.0033,hairmat)
+# Classical ringlet braids framing cheeks, sculpted as full 3D continuous tubes.
+for side in (-1,1):
+    for k in range(3):
+        pts=[]
+        for i in range(94):
+            u=i/93
+            taper=(1-.18*u)
+            x=side*(.075+.013*k)+.010*cos(u*8*pi+side*1.4)*taper
+            y=-.064-.008*k+.010*sin(u*8*pi+side*1.4)*taper
+            z=1.57-.20*u
+            pts.append((x,y,z))
+        curve("Classical_Face_Framing_Braid_"+str(side)+"_"+str(k),pts,.0043,hairmat)
+# Raised chignon bun as rounded authentic sculptural knots (not a smooth bald sphere).
+for i in range(15):
+    a=2*pi*i/15
+    UVsphere("Carved_Chignon_Lock_%02d"%i,(.045*cos(a),.095+.035*sin(a),1.572+.029*cos(3*a)),(.018,.018,.028),hairmat,16,10)
 # golden circlet and small filigree ornaments
 curve("51_Gold_Forehead_Diadem",[(.096*cos(2*pi*i/120),.014+.08*sin(2*pi*i/120),1.582) for i in range(120)],.006,gold,True)
 for n in range(24):
     a=n*2*pi/24
     UVsphere("Tiara_Pearl_%02d"%n,(.096*cos(a),.014+.08*sin(a),1.583),(.006,.006,.006),brightgold,10,8)
 # Orb with 3D criss-cross threads. Ball held above raised hand.
-ball=Vector((.72,-.085,1.48))
+ball=Vector((.665,-.085,1.52))
 UVsphere("60_Ariadne_Golden_Thread_Orb",ball,(.089,.089,.089),darkgold,64,40)
 for k in range(14):
     a=k*pi/14
@@ -256,7 +273,7 @@ for k in range(14):
         pts.append(tuple(ball+Vector((x,y,z))))
     curve("Orb_Real_Wound_Gold_%02d"%k,pts,.0028,brightgold,True)
 # gold cord a SINGLE spatial 3D curve (bevel creates real mesh on export)
-cord=[(.69,-.136,1.407),(.70,-.150,1.28),(.72,-.17,1.13),(.73,-.185,.96),(.71,-.22,.78),(.63,-.265,.68),
+cord=[(.645,-.135,1.435),(.70,-.150,1.28),(.72,-.17,1.13),(.73,-.185,.96),(.71,-.22,.78),(.63,-.265,.68),
  (.48,-.34,.60),(.23,-.39,.52),(-.015,-.39,.43),(-.24,-.36,.34),(-.405,-.31,.23),(-.46,-.23,.14),
  (-.45,-.19,.06),(-.36,-.29,.035),(-.25,-.39,.026),(-.35,-.46,.035),(-.49,-.28,.035),
  (-.44,.05,.038),(-.30,.29,.04),(-.03,.36,.04)]
@@ -271,20 +288,21 @@ cord_points.append(cord[-1])
 curve("61_SINGLE_3D_GOLDEN_THREAD",cord_points,.0044,brightgold)
 # visual pearl in palm touching ball edge
 # improve hand-to-ball contact: art draft first, not anatomical hand IK validation
-UVsphere("62_Palm_Orb_Contact_Highlight",(.662,-.106,1.430),(.026,.014,.022),ivory,24,16)
+UVsphere("62_Palm_Orb_Contact_Highlight",(.635,-.106,1.455),(.021,.014,.023),ivory,24,16)
 # lighting and camera for beautiful studio, 24-angle sample
 world=bpy.context.scene.world;world.color=(.10,.10,.10)
 def area(name,loc,energy,color,size):
     data=bpy.data.lights.new(name,"AREA");data.energy=energy;data.color=color;data.shape="DISK";data.size=size
     ob=bpy.data.objects.new(name,data);bpy.context.collection.objects.link(ob);ob.location=loc
     ob.rotation_euler=(Vector((0,0,1.03))-ob.location).to_track_quat("-Z","Y").to_euler()
-area("Warm_Key",(-3.2,-4,4.8),750,(1,.86,.73),4)
-area("Cool_Fill",(3,-3,2.5),500,(.64,.77,1),3)
-area("Golden_Rim",(1,3,3.0),1000,(1,.86,.55),3)
+area("Warm_Key",(-3.2,-4,4.8),630,(1,.86,.73),4)
+area("Cool_Fill",(3,-3,2.5),330,(.64,.77,1),3)
+area("Golden_Rim",(1,3,3.0),760,(1,.86,.55),3)
 camdata=bpy.data.cameras.new("Locked_Orthographic_Camera")
 cam=bpy.data.objects.new("Locked_Orthographic_Camera",camdata);bpy.context.collection.objects.link(cam)
-camdata.type="ORTHO";camdata.ortho_scale=2.03
-scene=bpy.context.scene;scene.camera=cam;scene.render.engine="CYCLES";scene.cycles.samples=16
+camdata.type="ORTHO";camdata.ortho_scale=2.37
+scene=bpy.context.scene;scene.camera=cam;scene.render.engine="CYCLES";scene.cycles.samples=32
+bpy.context.view_layer.cycles.use_denoising=True
 scene.render.resolution_x=560;scene.render.resolution_y=760;scene.render.resolution_percentage=100
 scene.render.image_settings.file_format="PNG"
 scene.render.film_transparent=False
