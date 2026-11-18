@@ -112,16 +112,45 @@ def main() -> int:
             issues.append(f"ANCHOR_{idx:02d}_MISSING_OR_NOT_APPROVED")
 
     landmarks = load_json(LANDMARK_PATH)
-    landmark_count = len(landmarks.get("landmarks", [])) if isinstance(landmarks, dict) else 0
+    landmark_items = landmarks.get("landmarks", []) if isinstance(landmarks, dict) else []
+    landmark_count = len(landmark_items)
     if landmark_count != REQUIRED_LANDMARKS:
         issues.append(f"EXPECTED_256_SEMANTIC_LANDMARKS_FOUND_{landmark_count}")
     else:
-        ids = [x.get("id") for x in landmarks["landmarks"]]
+        ids = [x.get("id") for x in landmark_items]
         if len(set(ids)) != REQUIRED_LANDMARKS:
             issues.append("LANDMARK_IDS_NOT_UNIQUE")
-        for item in landmarks["landmarks"]:
-            if not item.get("semantic_name") or not item.get("view_observations"):
-                issues.append(f"LANDMARK_{item.get('id')}_MISSING_SEMANTIC_OR_VIEW_OBSERVATION")
+        missing_semantics = [x.get("id") for x in landmark_items if not x.get("semantic_name") or not x.get("region")]
+        if missing_semantics:
+            issues.append(f"LANDMARKS_MISSING_SEMANTIC_DEFINITION_{len(missing_semantics)}")
+        missing_view_observations = []
+        invalid_view_observations = []
+        required_observation_views = ("front", "right_side", "back")
+        for item in landmark_items:
+            observations = item.get("view_observations") or {}
+            for view in required_observation_views:
+                obs = observations.get(view)
+                if not isinstance(obs, dict):
+                    missing_view_observations.append(f"{item.get('id')}:{view}")
+                    continue
+                state = obs.get("state")
+                if state == "VISIBLE":
+                    xy = obs.get("image_xy")
+                    confidence = obs.get("confidence")
+                    if (not isinstance(xy, list) or len(xy) != 2
+                        or not all(isinstance(v, (int, float)) and 0.0 <= v <= 1.0 for v in xy)
+                        or not isinstance(confidence, (int, float)) or not 0.0 < confidence <= 1.0
+                        or not obs.get("source_sha256")):
+                        invalid_view_observations.append(f"{item.get('id')}:{view}:VISIBLE_SCHEMA")
+                elif state == "OCCLUDED":
+                    if not obs.get("reason") or not obs.get("source_sha256"):
+                        invalid_view_observations.append(f"{item.get('id')}:{view}:OCCLUDED_SCHEMA")
+                else:
+                    invalid_view_observations.append(f"{item.get('id')}:{view}:STATE")
+        if missing_view_observations:
+            issues.append(f"LANDMARKS_MISSING_VIEW_OBSERVATIONS_{len(missing_view_observations)}")
+        if invalid_view_observations:
+            issues.append(f"LANDMARKS_INVALID_VIEW_OBSERVATIONS_{len(invalid_view_observations)}")
 
     # P02 cannot pass unless all three orthographic references, all approved
     # anchors, and real semantic landmark observations are present.
