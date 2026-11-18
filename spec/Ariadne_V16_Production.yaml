@@ -57,6 +57,23 @@ ariadne_v16:
       optional_inputs: [P03]
       outputs: [Approved_ThreeView_Art_Lock.json, Approved_Art_24_Lock.json, K_Composition_Guides.svg, Golden_Ratio_Analysis.json]
       gate: THREE_VIEW_ART_AND_ANATOMY_AND_COMPOSITION_PASS
+    P05A:
+      name: NEUTRAL_RIGIFY_PREFIT_DIAGNOSTIC
+      status: "IMPLEMENTED_DIAGNOSTIC_ONLY"
+      inputs: [MakeHuman_CC0]
+      outputs: [Ariadne_V16_Neutral_Rigify_Prefit_DIAGNOSTIC.blend, Ariadne_V16_Neutral_Rigify_Prefit_DIAGNOSTIC.glb, Rigify_Prefit_QA.json]
+      actions:
+        - "Load the verified MakeHuman CC0 female base and morph."
+        - "Generate the Blender Rigify human metarig and uniformly prefit it to the source mesh height."
+        - "Generate the Rigify control rig and automatic skin weights."
+        - "Export a diagnostic skinned GLB and independently reload it."
+        - "Report all limitations; this is not anatomical joint fitting or the final Ariadne pose."
+      gate: "RIGIFY_GENERATION_SKIN_WEIGHTS_AND_INDEPENDENT_RELOAD_PASS"
+      unlocks: []
+      limitations:
+        - "No individual joint landmark fitting."
+        - "No approved 3-view references."
+        - "No K pose, hand/orb contact or release approval."
     P05:
       name: REAL_HUMAN_MESH_AND_FULL_RIGIFY_SKELETON
       inputs: [MakeHuman_CC0, P04, Landmark_ID_Correspondence.json]
