@@ -17,13 +17,14 @@
   "landmarks": {
     "registry_path": "references/ariadne/Landmark_ID_Correspondence.json",
     "expected_count": 256,
-    "state": "NOT_CREATED_NO_COORDINATES_INVENTED"
+    "state": "IDS_REGISTERED_OBSERVATIONS_PENDING",
+    "note": "256 stable semantic IDs exist; no 2D coordinates or 3D positions are invented. Each front/right_side/back observation must later be VISIBLE with normalized image_xy, confidence and source SHA-256, or explicitly OCCLUDED with reason and source SHA-256."
   },
   "known_gaps": [
     "No independently approved right-side art reference.",
     "No independently approved back art reference.",
     "No calibrated three-view orthographic sheet.",
     "No 24 independently approved 15-degree art anchors.",
-    "No 256 semantic 3D landmark correspondences."
+    "256 persistent semantic landmark IDs are registered, but all 768 view observations (256 × front/right-side/back) remain pending."
   ]
 }
