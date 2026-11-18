@@ -95,3 +95,12 @@ Run `44398401636` passed the stricter runtime export and reload assertions.
 - Independent Blender reload: 1 armature, 1 skinned mesh and 1 armature skin modifier. Blender also reports one additional unskinned helper object named `Icosphere`; it is not a mesh/primitive in the GLB JSON and is not counted as the skinned runtime mesh.
 
 This passes only the neutral rigging/export diagnostic. It does not prove anatomical joint landmark fit, the K pose, finger joint limits, the orb grip, clothing/hair sculpt, or artistic similarity. P02 remains BLOCKED.
+
+## P05A hand and limb topology audit
+
+The Rigify diagnostic now additionally checks:
+- 10 finger chains (five digits on each hand), 30 non-zero-length finger segments;
+- eight palm parent bones and their finger-to-palm hierarchy;
+- bilateral upper-arm/forearm/hand and thigh/shin/foot/toe chains.
+
+The first attempt exposed an incorrect assumption in the validator: Rigify attaches the first finger segment to an `ORG-palm.*` parent rather than directly to `DEF-hand`. The validator has been corrected to check the actual Rigify palm hierarchy. Joint rotation limits and corrective pose constraints remain intentionally pending until approved three-view landmarks and the final Ariadne pose are fitted.
