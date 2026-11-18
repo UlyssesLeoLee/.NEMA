@@ -104,3 +104,14 @@ The Rigify diagnostic now additionally checks:
 - bilateral upper-arm/forearm/hand and thigh/shin/foot/toe chains.
 
 The first attempt exposed an incorrect assumption in the validator: Rigify attaches the first finger segment to an `ORG-palm.*` parent rather than directly to `DEF-hand`. The validator has been corrected to check the actual Rigify palm hierarchy. Joint rotation limits and corrective pose constraints remain intentionally pending until approved three-view landmarks and the final Ariadne pose are fitted.
+
+## P05A hand and limb topology audit — PASS
+
+Run `44399369733` passed the added anatomical structure checks:
+- 10 finger chains: thumb, index, middle, ring and little finger on both hands.
+- 30 finger segment bones, all present and non-zero length.
+- 8 `ORG-palm` parent bones; each first finger segment attaches to its correct palm parent.
+- Both arm chains and both leg chains pass parent-continuity checks.
+- Missing bones: 0; short bones: 0; broken chains: 0.
+
+This confirms neutral skeleton topology only. It does **not** validate joint rotation limits, finger curl/abduction under motion, thumb opposition in the orb grip, or pose deformation. Those remain blocked until the approved three-view art and final pose are fitted.
