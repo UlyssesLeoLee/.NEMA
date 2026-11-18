@@ -1,0 +1,70 @@
+name: Ariadne sculpture art draft
+on:
+  push:
+    branches: [ariadne-real-sculpt-execution-20261118]
+    paths: ['scripts/ariadne_art_sculpt.py', '.github/workflows/ariadne-art-sculpt.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  sculpt-actual-geometry:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Blender and textures tool
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq blender python3-numpy
+          python -m pip install --user --break-system-packages pillow imageio
+      - name: Produce actual Hellenic artistic 3D sculpture
+        run: |
+          blender -b -t 4 --python scripts/ariadne_art_sculpt.py > art_blender.log 2>&1 || { tail -150 art_blender.log; exit 1; }
+          tail -35 art_blender.log
+      - name: Create 24-angle montage and animation from actual reloaded exported model
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from PIL import Image,ImageDraw
+          root=Path("ariadne_art_output")
+          images=[]
+          sheet=Image.new("RGB",(560*6,790*4),(230,231,232))
+          for i,angle in enumerate(range(0,360,15)):
+              p=root/f"angle_{angle:03d}.png"
+              im=Image.open(p).convert("RGB")
+              images.append(im.resize((280,380)))
+              x=i%6*560;y=i//6*790
+              sheet.paste(im,(x,y))
+              ImageDraw.Draw(sheet).text((x+12,y+765),str(angle)+" degrees - geometry draft",(36,36,36))
+          sheet.save(root/"Ariadne_24_Angle_Geometry_Art_Draft.png",optimize=True)
+          # 24-angle 15-degree GIF is expressly a diagnostic (NOT a 360-frame animation)
+          images[0].save(root/"Ariadne_24Step_DIAGNOSTIC.gif",save_all=True,append_images=images[1:],duration=190,loop=0,optimize=False)
+          PY
+      - name: Real independent GLB reload audit
+        run: |
+          python -m pip install --user --break-system-packages trimesh numpy
+          python - <<'PY'
+          import trimesh,json
+          from pathlib import Path
+          p=Path("ariadne_art_output/Ariadne_Sculptural_Art_Draft.glb")
+          assert p.exists() and p.stat().st_size>300000
+          scene=trimesh.load(p,force="scene")
+          names=list(scene.geometry.keys())
+          print("GLB_RELOAD_GEOMETRY_COUNT",len(names))
+          print("GLB_RELOAD_MESHES",names[:15])
+          print("GLB_RELOAD_TRIANGLES",sum(len(x.faces) for x in scene.geometry.values()))
+          assert len(names)>30, "missing physical detailed parts from GLB"
+          assert sum(len(x.faces) for x in scene.geometry.values())>70000
+          audit={"status":"GLB_RELOADED_GEOMETRY_DIAGNOSTIC","geometry_count":len(names),"triangle_count":sum(len(x.faces) for x in scene.geometry.values()),"file_bytes":p.stat().st_size}
+          (p.parent/"Independent_GLB_QA.json").write_text(json.dumps(audit,indent=2))
+          PY
+      - name: Upload sculpture and actual multiview images
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Ariadne-Sculptural-Art-Draft-DIAGNOSTIC
+          path: |
+            ariadne_art_output/**
+            art_blender.log
+          if-no-files-found: warn
+          retention-days: 14
