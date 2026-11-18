@@ -1,0 +1,63 @@
+name: Ariadne V16 neutral Rigify prefit diagnostic
+
+on:
+  push:
+    branches: [ariadne-v16-implementation-20261118]
+    paths:
+      - "scripts/ariadne_v16_rigify_prefit.py"
+      - ".github/workflows/ariadne-v16-rigify-prefit.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  neutral-rigify-prefit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Blender
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq blender
+          blender --version | head -2
+
+      - name: Build neutral MakeHuman body and generate Rigify prefit
+        run: |
+          blender -b -t 2 --python scripts/ariadne_v16_rigify_prefit.py > rigify_prefit.log 2>&1 || {
+            tail -180 rigify_prefit.log
+            exit 1
+          }
+          tail -40 rigify_prefit.log
+
+      - name: Enforce diagnostic-only status and independent reload evidence
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path("ariadne_v16_rig_prefit/Rigify_Prefit_QA.json")
+          assert p.exists(), "Rigify QA report missing"
+          d=json.loads(p.read_text())
+          assert d["status"] == "PASS_NEUTRAL_RIGIFY_PREFIT_DIAGNOSTIC_ONLY"
+          assert d["production_approved"] is False
+          assert d["fit_status"] == "PROPORTIONAL_PREFIT_ONLY"
+          assert d["joint_landmark_fit"] is False
+          assert d["skin_weight_audit"]["unweighted_vertex_count"] == 0
+          assert d["reload_audit"]["reloaded_mesh_count"] >= 1
+          assert d["reload_audit"]["reloaded_armature_count"] >= 1
+          assert d["reload_audit"]["reloaded_skin_modifier_count"] >= 1
+          print(json.dumps(d, indent=2))
+          PY
+
+      - name: Upload neutral rig diagnostic evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Ariadne-V16-Neutral-Rigify-Prefit-DIAGNOSTIC
+          path: |
+            ariadne_v16_rig_prefit/**
+            rigify_prefit.log
+          if-no-files-found: warn
+          retention-days: 30
