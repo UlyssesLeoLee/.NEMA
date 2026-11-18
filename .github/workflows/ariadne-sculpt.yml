@@ -1,0 +1,22 @@
+name: Ariadne true-mesh production audit
+on:
+  push:
+    branches: [ariadne-real-sculpt-execution-20261118]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify-environment:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Source mesh and Blender availability
+        run: |
+          python -V
+          curl -fL --retry 3 --connect-timeout 20 -o /tmp/base.obj https://raw.githubusercontent.com/makehumancommunity/makehuman/master/makehuman/data/3dobjs/base.obj
+          test "$(grep -c '^v ' /tmp/base.obj)" -ge 13380
+          echo "SOURCE_MESH_BYTES=$(wc -c < /tmp/base.obj)"
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq blender
+          blender --version | head -1
