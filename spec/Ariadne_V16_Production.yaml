@@ -70,6 +70,7 @@ ariadne_v16:
         - "Export a deform-only runtime skin skeleton and independently reload the GLB."
         - "Assert exactly one skinned mesh, one skin and only deform joints in the runtime GLB."
         - "Validate both arm and leg deform-bone chains, plus 10 finger chains containing 30 non-zero-length finger segments."
+        - "Validate the eight Rigify palm parent bones and the anatomical finger-to-palm hierarchy."
         - "Keep motion limits pending until approved 3-view landmarks and the Ariadne pose are fitted."
         - "Report all limitations; this is not anatomical joint fitting or the final Ariadne pose."
       gate: "RIGIFY_GENERATION_SKIN_WEIGHTS_FINGER_LIMB_CHAINS_AND_INDEPENDENT_RELOAD_PASS"
