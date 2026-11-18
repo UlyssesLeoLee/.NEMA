@@ -278,8 +278,10 @@ def export_and_reload(human, rig):
             f"joints={glb_joint_count}, expected_deform_bones={len(deform_bones)}"
         )
 
-    bpy.ops.object.select_all(action="SELECT")
-    bpy.ops.object.delete(use_global=False)
+    # Remove every object datablock, including hidden Rigify widget meshes,
+    # so the independent reload audit cannot count stale scene objects.
+    for obj in list(bpy.data.objects):
+        bpy.data.objects.remove(obj, do_unlink=True)
     imp = bpy.ops.import_scene.gltf(filepath=str(glb))
     if "FINISHED" not in imp:
         raise RuntimeError("Independent GLB reload failed")
