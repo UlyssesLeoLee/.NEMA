@@ -15,7 +15,7 @@ jobs:
       - name: Install Blender and textures tool
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y -qq blender python3-numpy
+          sudo apt-get install -y -qq blender python3-numpy libegl1 libgl1-mesa-dri xvfb
           python -m pip install --user --break-system-packages pillow imageio
       - name: Produce actual Hellenic artistic 3D sculpture
         run: |
@@ -60,7 +60,7 @@ jobs:
           PY
       - name: Render 360 distinct one-degree frames from reloaded GLB
         run: |
-          blender -b -t 4 --python scripts/ariadne_render_360_from_glb.py > art_360.log 2>&1 || { tail -120 art_360.log; exit 1; }
+          xvfb-run -a -s '-screen 0 1024x768x24' blender -b -t 4 --python scripts/ariadne_render_360_from_glb.py > art_360.log 2>&1 || { tail -120 art_360.log; exit 1; }
           tail -12 art_360.log
       - name: Assemble 360 frame lossless-source GIF and continuity audit
         run: |
