@@ -10,6 +10,7 @@ import hashlib
 import json
 import os
 import struct
+import xml.etree.ElementTree as ET
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -102,14 +103,45 @@ def main() -> int:
 
     anchors = manifest.get("anchors", [])
     anchor_valid = []
+    expected_angles = list(range(0, 360, 15))
     if len(anchors) != 24:
         issues.append(f"EXPECTED_24_ANCHORS_FOUND_{len(anchors)}")
-    for idx, anchor in enumerate(anchors):
-        p = ROOT / anchor.get("path", "")
-        valid = p.is_file() and anchor.get("approval_state") == "APPROVED"
+    for idx, expected_angle in enumerate(expected_angles):
+        anchor = anchors[idx] if idx < len(anchors) else {}
+        p = (ROOT / anchor.get("path", "")).resolve() if anchor.get("path") else ROOT / "__missing_anchor__"
+        valid = True
+        if not p.is_file():
+            issues.append(f"ANCHOR_{expected_angle:03d}_FILE_MISSING")
+            valid = False
+        else:
+            if ROOT.resolve() not in p.parents:
+                issues.append(f"ANCHOR_{expected_angle:03d}_PATH_INVALID")
+                valid = False
+            if p.suffix.lower() != ".svg":
+                issues.append(f"ANCHOR_{expected_angle:03d}_NOT_SVG")
+                valid = False
+            digest = sha256(p)
+            if anchor.get("sha256") != digest:
+                issues.append(f"ANCHOR_{expected_angle:03d}_SHA256_MISSING_OR_MISMATCH")
+                valid = False
+            try:
+                root = ET.parse(p).getroot()
+                if not root.tag.endswith("svg") or not root.attrib.get("viewBox"):
+                    issues.append(f"ANCHOR_{expected_angle:03d}_SVG_OR_VIEWBOX_INVALID")
+                    valid = False
+            except Exception:
+                issues.append(f"ANCHOR_{expected_angle:03d}_SVG_PARSE_FAILED")
+                valid = False
+        if anchor.get("angle_degrees") != expected_angle:
+            issues.append(f"ANCHOR_{expected_angle:03d}_ANGLE_METADATA_MISMATCH")
+            valid = False
+        if anchor.get("approval_state") != "APPROVED":
+            issues.append(f"ANCHOR_{expected_angle:03d}_NOT_APPROVED")
+            valid = False
+        if anchor.get("projection") != "ORTHOGRAPHIC":
+            issues.append(f"ANCHOR_{expected_angle:03d}_NOT_ORTHOGRAPHIC")
+            valid = False
         anchor_valid.append(valid)
-        if not valid:
-            issues.append(f"ANCHOR_{idx:02d}_MISSING_OR_NOT_APPROVED")
 
     landmarks = load_json(LANDMARK_PATH)
     landmark_items = landmarks.get("landmarks", []) if isinstance(landmarks, dict) else []
