@@ -70,3 +70,14 @@ All coordinates remain null and all three-view observations remain pending. This
 - `OCCLUDED`: explicit reason and source SHA-256.
 
 The P02 validator now checks the three-view observation schema rather than accepting a non-empty placeholder. The 256 IDs are registered; their geometric correspondences are not yet claimed.
+
+## P05A baseline CI result
+
+Run `44396992144` passed the neutral Rigify prefit diagnostic:
+- MakeHuman CC0 source: 19,158 vertices / 13,378 body faces; 19,150 female morph deltas applied.
+- Rigify metarig: 159 bones; generated full control rig: 706 bones.
+- Skinning: 160 vertex groups; 19,158/19,158 vertices weighted; no unweighted vertices.
+- Weight sums after normalization: 0.99999982–1.00000016.
+- Editable BLEND saved; GLB export and independent Blender reload passed.
+
+The first successful runtime GLB carried all 706 Rigify bones as joints. That is excessive for a runtime skin asset. A follow-up change now builds a deform-only export skeleton from the 160 skinning bones, keeps the full control rig in the editable BLEND, and enforces a one-mesh/one-skin/160-joint GLB. This compact-export refinement is under CI retest; it is not yet claimed as passed.
