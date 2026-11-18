@@ -233,6 +233,8 @@ def main():
     rig = generate_rig(meta)
     arm_mods = bind_weights(human, rig)
     weights = weight_audit(human)
+    meta_bone_count = len(meta.data.bones)
+    rig_bone_count = len(rig.data.bones)
     # Save editable prefit before independent GLB reload clears the scene.
     blend = OUT / "Ariadne_V16_Neutral_Rigify_Prefit_DIAGNOSTIC.blend"
     bpy.ops.wm.save_as_mainfile(filepath=str(blend))
@@ -250,8 +252,8 @@ def main():
         "female_morph_delta_count": morph_deltas,
         "body_bounds_min": list(lo),
         "body_bounds_max": list(hi),
-        "metarig_bone_count": len(meta.data.bones),
-        "generated_rig_bone_count": len(bpy.data.objects.get("Ariadne_V16_Rigify_Neutral_Prefit", rig).data.bones) if bpy.data.objects.get("Ariadne_V16_Rigify_Neutral_Prefit", rig) else None,
+        "metarig_bone_count": meta_bone_count,
+        "generated_rig_bone_count": rig_bone_count,
         "fit_method": "UNIFORM_HEIGHT_SCALE_AND_CENTER_ALIGNMENT",
         "fit_status": "PROPORTIONAL_PREFIT_ONLY",
         "joint_landmark_fit": False,
