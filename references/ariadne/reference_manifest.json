@@ -1,0 +1,29 @@
+{
+  "schema_version": "1.0",
+  "project": "Ariadne V16",
+  "policy": "No mirroring, no synthetic side/back truth, no unapproved interpolation.",
+  "views": {
+    "front": {
+      "path": "website/assets/ariadne-hero-texture.png",
+      "source_role": "ORIGINAL_FRONT_ART_REFERENCE",
+      "approval_state": "APPROVED",
+      "projection": "NOT_CERTIFIED_ORTHOGRAPHIC",
+      "notes": "The repository's sole original Ariadne art reference. Approved as front art direction only; not yet certified as a calibrated orthographic model sheet."
+    },
+    "right_side": null,
+    "back": null
+  },
+  "anchors": [],
+  "landmarks": {
+    "registry_path": "references/ariadne/Landmark_ID_Correspondence.json",
+    "expected_count": 256,
+    "state": "NOT_CREATED_NO_COORDINATES_INVENTED"
+  },
+  "known_gaps": [
+    "No independently approved right-side art reference.",
+    "No independently approved back art reference.",
+    "No calibrated three-view orthographic sheet.",
+    "No 24 independently approved 15-degree art anchors.",
+    "No 256 semantic 3D landmark correspondences."
+  ]
+}
