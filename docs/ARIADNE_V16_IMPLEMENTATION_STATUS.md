@@ -60,3 +60,13 @@ This is deliberately a **neutral rigging diagnostic only**. It does not perform 
 ## Side/back design concept
 
 A right-side and rear-view AI concept sheet was generated for human review in the conversation. It is not registered as a source view, is not orthographic-certified, and is not committed as approved artwork. It must remain `DRAFT_NOT_APPROVED` until explicitly accepted and checked against the original front art.
+
+## 256 persistent landmark IDs
+
+`references/ariadne/Landmark_ID_Correspondence.json` now registers exactly 256 stable semantic IDs across head/face, hair, torso, both arms and hands, both legs and feet, garment, gold orb/thread and pedestal.
+
+All coordinates remain null and all three-view observations remain pending. This is intentional. Each landmark must later record, for each of front/right-side/back, either:
+- `VISIBLE`: normalized image coordinates, confidence and source SHA-256; or
+- `OCCLUDED`: explicit reason and source SHA-256.
+
+The P02 validator now checks the three-view observation schema rather than accepting a non-empty placeholder. The 256 IDs are registered; their geometric correspondences are not yet claimed.
