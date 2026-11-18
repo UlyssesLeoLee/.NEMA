@@ -162,6 +162,11 @@ def bind_weights(human, rig):
         raise RuntimeError("Skinning failed: no Armature modifier targets generated rig")
     if len(human.vertex_groups) < 20:
         raise RuntimeError(f"Insufficient generated vertex groups: {len(human.vertex_groups)}")
+    # Blender's heat-weight solver can leave non-normalized totals on complex
+    # imported meshes. Normalize the generated weights explicitly before QA.
+    activate(human)
+    bpy.ops.object.vertex_group_normalize_all(lock_active=False)
+    bpy.context.view_layer.update()
     return arm_mods
 
 def weight_audit(human):
