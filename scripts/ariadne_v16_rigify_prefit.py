@@ -219,9 +219,8 @@ def export_and_reload(human, rig):
     edit_map = {}
     for bone in deform_bones:
         eb = export_data.edit_bones.new(bone.name)
-        eb.head = bone.head_local
-        eb.tail = bone.tail_local
-        eb.roll = bone.roll
+        # Copy the complete rest matrix; Bone exposes matrix_local, not roll.
+        eb.matrix = bone.matrix_local.copy()
         eb.use_deform = True
         edit_map[bone.name] = eb
     for bone in deform_bones:
