@@ -22,10 +22,13 @@ jobs:
         timeout-minutes: 8
         run: |
           sudo apt-get update -qq -o Acquire::Retries=2 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30
-          sudo apt-get install -y -qq blender
+          sudo apt-get install -y -qq blender python3-numpy
           blender --version | head -2
+          python3 -c "import numpy; print('System NumPy', numpy.__version__)"
 
       - name: Build neutral MakeHuman body and generate Rigify prefit
+        env:
+          PYTHONPATH: /usr/lib/python3/dist-packages
         run: |
           blender -b -t 2 --python scripts/ariadne_v16_rigify_prefit.py > rigify_prefit.log 2>&1 || {
             tail -180 rigify_prefit.log
