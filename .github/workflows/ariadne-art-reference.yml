@@ -1,0 +1,19 @@
+name: Ariadne original art reference export
+on:
+  push:
+    branches: [ariadne-real-sculpt-execution-20261118]
+permissions:
+  contents: read
+jobs:
+  export-art-reference:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          file website/assets/ariadne-hero-texture.png
+          sha256sum website/assets/ariadne-hero-texture.png
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Ariadne-Actual-Front-Art-Reference
+          path: website/assets/ariadne-hero-texture.png
+          retention-days: 7
