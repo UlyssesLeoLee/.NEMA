@@ -1,4 +1,4 @@
-name: Ariadne true-mesh production audit
+name: Ariadne real anatomical GLB build
 on:
   push:
     branches: [ariadne-real-sculpt-execution-20261118]
@@ -6,17 +6,42 @@ on:
 permissions:
   contents: read
 jobs:
-  verify-environment:
+  build-neutral-female-geometry:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
-      - name: Source mesh and Blender availability
+      - name: Install Blender
         run: |
-          python -V
-          curl -fL --retry 3 --connect-timeout 20 -o /tmp/base.obj https://raw.githubusercontent.com/makehumancommunity/makehuman/master/makehuman/data/3dobjs/base.obj
-          test "$(grep -c '^v ' /tmp/base.obj)" -ge 13380
-          echo "SOURCE_MESH_BYTES=$(wc -c < /tmp/base.obj)"
           sudo apt-get update -qq
           sudo apt-get install -y -qq blender
           blender --version | head -1
+      - name: Build CC0 female topology and independent 24-angle evidence
+        run: |
+          blender -b -t 2 --python scripts/ariadne_real_base.py > ariadne_blender.log 2>&1 || { tail -120 ariadne_blender.log; exit 1; }
+          tail -30 ariadne_blender.log
+      - name: Generate 24-angle contact sheet
+        run: |
+          python -m pip install --user --break-system-packages pillow
+          python - <<'PY'
+          from PIL import Image,ImageOps,ImageDraw
+          from pathlib import Path
+          root=Path("ariadne_real_artifacts")
+          sheet=Image.new("RGB",(360*6,520*4),(242,241,238))
+          for i,angle in enumerate(range(0,360,15)):
+              img=Image.open(root/f"neutral_{angle:03d}.png").convert("RGB")
+              x=(i%6)*360;y=(i//6)*520
+              sheet.paste(img,(x,y))
+              ImageDraw.Draw(sheet).text((x+12,y+484),f"{angle:03d} degrees / unapproved reference",(50,50,50))
+          sheet.save(root/"MakeHuman_24_Angles_DIAGNOSTIC.png")
+          PY
+      - name: Upload actual Blender outputs even if later checks fail
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Ariadne-CC0-Real-Base-DIAGNOSTIC
+          path: |
+            ariadne_real_artifacts/**
+            ariadne_blender.log
+          if-no-files-found: warn
+          retention-days: 14
