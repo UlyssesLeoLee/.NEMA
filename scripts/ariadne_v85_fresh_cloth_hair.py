@@ -276,7 +276,7 @@ lo=bpy.data.objects.new("Large_Area_Light",light);bpy.context.collection.objects
 lo.location=(1.5,-2.0,3.5);lo.rotation_euler=(Vector((0,0,.8))-lo.location).to_track_quat("-Z","Y").to_euler()
 camera=bpy.data.objects.new("Fixed_Camera",bpy.data.cameras.new("FixedCamera"));bpy.context.collection.objects.link(camera)
 camera.data.type="ORTHO";camera.data.ortho_scale=1.95;scene.camera=camera
-scene.render.engine="CYCLES";scene.cycles.samples=7
+scene.render.engine="BLENDER_WORKBENCH";scene.display.shading.light="STUDIO";scene.display.shading.color_type="MATERIAL";scene.display.shading.show_shadows=True;scene.display.shading.show_cavity=True
 scene.render.resolution_x=480;scene.render.resolution_y=640;scene.render.resolution_percentage=100
 scene.render.image_settings.file_format="PNG";scene.view_settings.view_transform="Standard"
 scene.render.film_transparent=False
