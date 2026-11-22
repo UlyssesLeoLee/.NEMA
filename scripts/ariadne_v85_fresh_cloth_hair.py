@@ -256,6 +256,7 @@ bpy.ops.export_scene.gltf(filepath=str(glb),export_format="GLB",use_selection=Tr
 assert glb.exists() and glb.stat().st_size>250000
 # Reimport in new scene to check Blender glTF compatibility
 bpy.ops.object.select_all(action="SELECT");bpy.ops.object.delete(use_global=False)
+bpy.ops.object.select_all(action="SELECT");bpy.ops.object.delete(use_global=False)
 bpy.ops.import_scene.gltf(filepath=str(glb))
 objects=[o for o in scene.objects if o.type=="MESH"]
 assert len(objects)>=22,len(objects)
