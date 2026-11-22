@@ -1,0 +1,192 @@
+name: Ariadne V86 DESIGN FIRST - guarded Blender and 24 views
+
+on:
+  push:
+    branches:
+      - ariadne_v86_design_first
+    paths:
+      - 'ariadne_v86/**'
+      - '.github/workflows/ariadne_v86_design_first.yml'
+  workflow_dispatch:
+    inputs:
+      release_check:
+        description: 'Also assess independent 24-view artwork proof (will fail without verified proof)'
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ariadne-v86-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  policy-tests:
+    name: V86 design-first policy regression tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install deterministic V86 policy test dependencies
+        run: python -m pip install --disable-pip-version-check 'pytest==8.4.1' 'PyYAML==6.0.2' 'Pillow==11.3.0'
+      - name: Validate design-first gates, negative fixtures, Python compile and workflow
+        run: python -m pytest -q ariadne_v86/tests/
+      - name: Create static evidence receipt
+        run: |
+          mkdir -p ariadne_v86/output
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('ariadne_v86/output/static_validation.json')
+          p.write_text(json.dumps({'status':'PASS','scope':'policy tests only',
+                                   'model_rendered':False,'final_art_approved':False},indent=2)+'\n')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: Ariadne-V86-Static-Policy-Tests
+          path: ariadne_v86/output/static_validation.json
+          if-no-files-found: warn
+          retention-days: 14
+
+  design-input-gate:
+    name: Mandatory design sources and primary-fold evidence gate
+    needs: policy-tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install deterministic image validation dependency
+        run: python -m pip install --disable-pip-version-check 'Pillow==11.3.0'
+      - name: Fail closed if approved primary garment .blend, artwork or fold evidence is absent
+        run: python ariadne_v86/src/gates.py --stage design --strict
+      - name: Publish design gate detail even on failure
+        if: always()
+        run: |
+          if [ -f ariadne_v86/output/design_gate_report.json ]; then
+            echo '## Ariadne V86 independent design input gate' >> "$GITHUB_STEP_SUMMARY"
+            echo '\`BLOCKED\` means no Blender model was started. This is intentional.' >> "$GITHUB_STEP_SUMMARY"
+            cat ariadne_v86/output/design_gate_report.json >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: Ariadne-V86-Design-Input-Audit
+          path: ariadne_v86/output/design_gate_report.json
+          if-no-files-found: error
+          retention-days: 14
+
+  blender-design-first:
+    name: Actual CC0 body, protected garment, controlled CLOTH and real 24 renders
+    needs: [policy-tests, design-input-gate]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install Blender dependencies, Cairo is not needed in runner
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq libgl1 libxi6 libxxf86vm1 libxfixes3 libxrender1 libsm6 libxkbcommon-x11-0 xvfb
+          python -m pip install --disable-pip-version-check 'Pillow==11.3.0'
+      - uses: actions/cache@v4
+        with:
+          path: /tmp/nema_blender_45
+          key: blender-4.5.15-linux-x64
+      - name: Install previously tested official Blender 4.5.15 LTS
+        run: |
+          if [ ! -x /tmp/nema_blender_45/blender-4.5.15-linux-x64/blender ]; then
+            mkdir -p /tmp/nema_blender_45
+            curl --retry 3 --fail --location --silent --show-error \
+              https://download.blender.org/release/Blender4.5/blender-4.5.15-linux-x64.tar.xz \
+              -o /tmp/blender-4.5.15.tar.xz
+            tar -xJf /tmp/blender-4.5.15.tar.xz -C /tmp/nema_blender_45
+          fi
+          /tmp/nema_blender_45/blender-4.5.15-linux-x64/blender --version
+      - name: Download and verify MakeHuman female CC0 anatomical base (not sculpt approval)
+        run: python ariadne_v86/src/prepare_body.py
+      - name: S00 genuine MakeHuman graybox from verified CC0 mesh
+        run: |
+          xvfb-run -a /tmp/nema_blender_45/blender-4.5.15-linux-x64/blender \
+            --background --factory-startup --python-exit-code 3 \
+            --python ariadne_v86/src/blender_build.py -- graybox
+      - name: G03-G04 validate authored folds and pin protected 3D geometry before real cloth solver
+        run: |
+          xvfb-run -a /tmp/nema_blender_45/blender-4.5.15-linux-x64/blender \
+            --background --factory-startup --python-exit-code 3 \
+            --python ariadne_v86/src/blender_build.py -- simulate
+      - name: G06 render 24 actual, locked, same-camera angles from solved Blender scene
+        run: |
+          xvfb-run -a /tmp/nema_blender_45/blender-4.5.15-linux-x64/blender \
+            --background --factory-startup --python-exit-code 3 \
+            --python ariadne_v86/src/blender_build.py -- render
+          python ariadne_v86/src/contact_sheet.py
+      - name: Reimport only engineering proof GLB; never claim V20 art approval
+        run: |
+          xvfb-run -a /tmp/nema_blender_45/blender-4.5.15-linux-x64/blender \
+            --background --factory-startup --python-exit-code 3 \
+            --python ariadne_v86/src/blender_build.py -- reimport
+      - name: Check proof is real and final status is NOT ART
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('ariadne_v86/output')
+          a=json.loads((p/'cloth_solver_audit.json').read_text())
+          d=json.loads((p/'protected_shape_drift.json').read_text())
+          r=json.loads((p/'render_24_audit.json').read_text())
+          assert a['real_bpy_modifier'] and a['cache_baked'] and not a['issues']
+          assert d['secondary_only_role'] and d['status']=='PASS'
+          assert r['count']==24 and len(list((p/'render_24').glob('VIEW_*.png')))==24
+          assert (p/'V86_Controlled_Cloth_Engineering_Proof_Not_Art.glb').stat().st_size>100_000
+          print('DESIGN-FIRST PHYSICS AND ENGINEERING RENDER PASS; ART RELEASE BLOCKED')
+          PY
+      - name: Upload real Blender .blend + GLB + 24-render evidence even if solver fails
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: Ariadne-V86-Real-Blender-DesignFirst-ENGINEERING-NOT-ART
+          path: |
+            ariadne_v86/output/*.json
+            ariadne_v86/output/*.glb
+            ariadne_v86/output/*.blend
+            ariadne_v86/output/*.png
+            ariadne_v86/output/render_24/
+            ariadne_v86/assets/base/source_provenance.json
+          if-no-files-found: warn
+          retention-days: 14
+
+  optional-independent-art-release-check:
+    name: Optional 24-angle 95-percent artwork gate (cannot pass from model renders alone)
+    if: github.event_name == 'workflow_dispatch' && inputs.release_check == true
+    needs: blender-design-first
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Download verified engineering evidence
+        uses: actions/download-artifact@v4
+        with:
+          name: Ariadne-V86-Real-Blender-DesignFirst-ENGINEERING-NOT-ART
+          path: ariadne_v86/output
+      - run: python -m pip install --disable-pip-version-check 'Pillow==11.3.0'
+      - name: Require independent 24-angle measurements and human approval
+        run: python ariadne_v86/src/gates.py --stage release --strict
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: Ariadne-V86-Independent-Art-Release-Audit
+          path: ariadne_v86/output/release_gate_report.json
+          if-no-files-found: warn

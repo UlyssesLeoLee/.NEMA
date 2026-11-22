@@ -1,0 +1,24 @@
+{
+  "design_principle": "designed_drapery_not_free_hanging_cloth",
+  "no_free_drop_base": true,
+  "garment_object_name": "Garment_DesignFirst",
+  "pattern_revision": "PLACEHOLDER_REPLACE_WITH_ACTUAL_APPROVED_REVISION",
+  "artist_review": {"reviewed": false, "reviewer": ""},
+  "base_shape_hint": "sculpted_authored_garment_pattern",
+  "primary_regions_authored": [
+    "chest_bodice_u_drape", "shoulder_to_waist_diagonal_drape",
+    "waist_gathering_and_belt_zone", "hip_major_folds",
+    "back_veil_primary_falls", "sleeve_and_elbow_fold_logic"
+  ],
+  "required_vertex_groups": [
+    "PIN", "PRIMARY_OUTLINE_LOCK", "PRIMARY_FOLD_LOCK", "SECONDARY_SIM_ZONE",
+    "WAIST_GATHER", "SHOULDER_DRAPE", "CHEST_U_DRAPE", "BACK_VEIL_ANCHOR"
+  ],
+  "source_sha256": {"garment_pattern":"", "front_art":"", "turnaround":""},
+  "design_evidence": {
+    "garment_design_map.yaml": {"path":"assets/pattern/garment_design_map.yaml", "sha256":""},
+    "fold_flow_map.svg": {"path":"assets/pattern/fold_flow_map.svg", "sha256":""},
+    "layer_structure_map.svg": {"path":"assets/pattern/layer_structure_map.svg", "sha256":""},
+    "primary_fold_review_sheet.png": {"path":"assets/pattern/primary_fold_review_sheet.png", "sha256":""}
+  }
+}

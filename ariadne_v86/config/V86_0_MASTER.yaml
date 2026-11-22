@@ -1,0 +1,162 @@
+project:
+  name: NEMA_Ariadne_V86_DesignFirst_Garment_Master
+  objective: >
+    将服装从“自由下垂布料”路线切换为“设计优先的古希腊王室服饰”路线。
+    主外轮廓、主褶路径、层叠逻辑、腰部束结、肩部披挂必须先被设计和雕刻，
+    Blender Cloth 只允许用于补充次级褶皱、局部松弛和层间接触修正。
+  final_outputs:
+    - final_glb
+    - 24view_same_camera_contact_sheet
+    - garment_design_maps
+    - primary_fold_sculpt_review
+    - controlled_cloth_solver_proof
+    - adversarial_audit_report
+    - reproducible_github_actions_bundle
+
+garment_modeling_principle:
+  concept: designed_drapery_not_free_hanging_cloth
+  statement: >
+    阿里阿德涅服饰外观首先是被设计出来的服装造型，而不是柔软布料在重力下自然下垂的结果。
+    Cloth solver 只能服务于次级细节，不能决定主外观。
+
+hard_rules:
+  - primary_silhouette_must_be_authored_not_simulated
+  - major_fold_paths_must_be_sculpted_or_pattern_driven_before_any_cloth_sim
+  - cloth_sim_must_not_define_final_outer_shape
+  - cloth_sim_is_only_for_secondary_wrinkles_and_local_relaxation
+  - no_direct_gravity_drop_from_simple_tube_or_sheet
+  - no_cylindrical_skirt_as_final_base_shape
+  - shoulder_to_waist_main_drape_must_be_explicitly_designed
+  - waist_binding_and_fold_gathering_must_be_explicitly_designed
+  - chest_bodice_and_upper_drape_must_be_explicitly_designed
+  - back_veil_must_follow_designed_attachment_and_layering_logic
+  - if_simulation_breaks_designed_shape_then_simulation_result_is_invalid
+  - no_texture_only_cheating_for_geometry_errors
+  - final_delivery_only_after_24_view_adversarial_review
+
+camera_system:
+  principle: single_source_of_truth
+  rules:
+    - create_canonical_camera_table_for_24_views_at_15_degree_steps
+    - lock focal_length sensor_size target_distance object_origin and world_up
+    - generate 2d_reference_render current_3d_render silhouette_overlay semantic_region_overlay for each view
+  outputs:
+    - CameraTable24.json
+    - LockedCameraRenders24
+    - PerViewOverlay24
+
+pipeline:
+  - id: S00
+    name: PROJECT_RESET_AND_BASELINE_LOCK
+    outputs: [clean_graybox_scene.blend, CameraTable24.json, baseline_readme.md]
+
+  - id: G01
+    name: GARMENT_DESIGN_DECOMPOSITION
+    goal: >
+      先建立服装设计意图：外轮廓、主褶路径、层叠关系、束腰点、披挂点、受力点。
+    outputs:
+      - garment_design_map.yaml
+      - fold_flow_map.svg
+      - layer_structure_map.svg
+    gate:
+      - design_intent_recorded
+      - royal_costume_readable
+
+  - id: G02
+    name: PATTERN_AND_STRUCTURAL_BLOCKOUT
+    goal: >
+      建立服装结构母版。先锁定造型与结构，不做自由下垂。
+    outputs:
+      - garment_structural_blockout.blend
+      - primary_silhouette_locked.json
+    gate:
+      - primary_outer_contour_locked
+      - no_free_drop_tube_shape
+
+  - id: G03
+    name: PRIMARY_FOLD_SCULPT
+    goal: >
+      手工雕刻或受控程序化雕刻主褶皱。主褶属于设计本身，必须在解算前完成。
+    required_regions:
+      - chest_bodice_u_drape
+      - shoulder_to_waist_diagonal_drape
+      - waist_gathering_and_belt_zone
+      - hip_major_folds
+      - back_veil_primary_falls
+      - sleeve_and_elbow_fold_logic
+    outputs:
+      - garment_primary_fold_sculpt.blend
+      - primary_fold_review_sheet.png
+    gate:
+      - major_fold_paths_authored
+      - waist_gathering_visible
+      - shoulder_structure_visible
+
+  - id: G04
+    name: CONTROLLED_SECONDARY_CLOTH_SIMULATION
+    goal: >
+      仅在不破坏既定造型的前提下，为局部补充小褶皱、松弛感、边缘轻微起伏和层间接触反应。
+    allowed:
+      - secondary_wrinkles
+      - local_relaxation
+      - hem_micro_variation
+      - layer_contact_adjustment
+    forbidden:
+      - redefining_outer_silhouette
+      - redefining_major_fold_paths
+      - removing_waist_gathering
+      - collapsing_shoulder_structure
+    outputs:
+      - cloth_simulated_base.glb
+      - cloth_solver_cache
+      - cloth_solver_audit.json
+      - protected_shape_drift.json
+    gate:
+      - solver_runs_successfully
+      - primary_shape_drift_within_limit
+      - primary_fold_drift_within_limit
+
+  - id: G05
+    name: POST_SIM_SHAPE_RECOVERY
+    goal: >
+      若布料解算削弱了设计感，必须回收并重塑造型，以设计意图优先。
+    outputs:
+      - garment_postsim_corrected.blend
+      - recovery_audit.json
+    gate:
+      - designed_silhouette_restored
+      - designed_fold_ridges_restored
+
+  - id: G06
+    name: GARMENT_24_VIEW_DESIGN_AUDIT
+    goal: >
+      从24视角检查服装设计是否成立。重点是设计褶皱与层叠外观是否稳定成立。
+    outputs:
+      - garment_24view_audit_sheet.png
+      - garment_24view_audit.json
+    gate:
+      - silhouette_consistency
+      - major_fold_path_consistency
+      - royal_garment_design_readability
+
+acceptance_criteria:
+  silhouette:
+    - primary_outer_shape_matches_design_intent
+    - no_free_hanging_tube_look
+  folds:
+    - major_folds_are_designed_and_readable
+    - fold_rhythm_is_stable_across_views
+    - folds_do_not_collapse_into_random_soft_cloth
+  structure:
+    - shoulder_drape_is_structural
+    - waist_zone_has_designed_gathering
+    - back_veil_has_designed_attachment_and_fall
+  simulation:
+    - simulation_only_adds_secondary_detail
+    - simulation_does_not_override_design
+  rejection_conditions:
+    - garment_looks_like_gravity_dropped_sheet
+    - garment_becomes_cylindrical_or_bag_like
+    - major_folds_only_appear_in_one_view
+    - waist_design_disappears_after_sim
+    - shoulder_drape_collapses_after_sim

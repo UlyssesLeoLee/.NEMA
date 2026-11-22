@@ -1,0 +1,128 @@
+{
+  "version": "86.0",
+  "phase": "DESIGN_FIRST_IMPLEMENTED_INPUTS_BLOCKED",
+  "model_height_m": 1.7,
+  "camera": {
+    "projection": "PERSP",
+    "focal_length_mm": 50.0,
+    "sensor_width_mm": 36.0,
+    "sensor_fit": "HORIZONTAL",
+    "distance_m": 4.2,
+    "target_xyz_m": [
+      0.0,
+      0.0,
+      0.88
+    ],
+    "world_up": [
+      0,
+      0,
+      1
+    ],
+    "image_px": [
+      768,
+      1024
+    ],
+    "view_angles_deg": [
+      0,
+      15,
+      30,
+      45,
+      60,
+      75,
+      90,
+      105,
+      120,
+      135,
+      150,
+      165,
+      180,
+      195,
+      210,
+      225,
+      240,
+      255,
+      270,
+      285,
+      300,
+      315,
+      330,
+      345
+    ],
+    "front_axis": "-Y",
+    "turn_positive": "camera_orbit_+Z",
+    "calibration_status": "PROVISIONAL_NO_ORIGINAL_ART_CAMERA_EXIF"
+  },
+  "reference_sources": {
+    "front_art": "assets/reference/V20_Original_Front_Art_Reference.png",
+    "turnaround": "assets/reference/V20_24Art_Turnaround.png",
+    "cc0_body": "assets/base/MakeHuman_CC0_female.obj",
+    "garment_pattern": "assets/pattern/garment_design_first.blend",
+    "solver_proof": "assets/reference/V84_Cloth_Solver_Proof_Not_Art.glb",
+    "approval_manifest": "assets/reference/art_approval.json",
+    "landmarks": "assets/reference/landmarks_256.json",
+    "cc0_body_provenance": "assets/base/source_provenance.json",
+    "garment_design_manifest": "assets/pattern/garment_design_manifest.json"
+  },
+  "quality_gates": {
+    "min_silhouette_iou_each_view": 0.95,
+    "max_keypoint_error_image_fraction": 0.02,
+    "min_verified_landmarks": 256,
+    "required_approved_views": 24,
+    "require_human_art_approval": true,
+    "require_cloth_simulation": true,
+    "min_major_region_score": 0.95,
+    "require_sculpt_not_texture_only": true,
+    "require_primary_garment_design_before_sim": true,
+    "max_primary_shape_drift_m": 0.012,
+    "max_primary_fold_drift_m": 0.01
+  },
+  "simulation": {
+    "frames": 60,
+    "quality": 8,
+    "collision_distance_m": 0.008,
+    "self_collision": true,
+    "role": "secondary_only",
+    "max_primary_shape_drift_m": 0.012,
+    "max_primary_fold_drift_m": 0.01,
+    "required_vertex_groups": [
+      "PIN",
+      "PRIMARY_OUTLINE_LOCK",
+      "PRIMARY_FOLD_LOCK",
+      "SECONDARY_SIM_ZONE",
+      "WAIST_GATHER",
+      "SHOULDER_DRAPE",
+      "CHEST_U_DRAPE",
+      "BACK_VEIL_ANCHOR"
+    ],
+    "forbidden_behaviors": [
+      "free_gravity_drop_defines_outer_shape",
+      "simulation_redefines_major_fold_paths",
+      "simulation_removes_waist_gathering",
+      "simulation_collapses_shoulder_structure"
+    ]
+  },
+  "garment_design": {
+    "principle": "designed_drapery_not_free_hanging_cloth",
+    "primary_shape_authored": true,
+    "structural_layers_allowed_only_if_justified": true,
+    "forbid_tube_skirt": true,
+    "required_primary_regions": [
+      "chest_bodice_u_drape",
+      "shoulder_to_waist_diagonal_drape",
+      "waist_gathering_and_belt_zone",
+      "hip_major_folds",
+      "back_veil_primary_falls",
+      "sleeve_and_elbow_fold_logic"
+    ],
+    "required_design_evidence": [
+      "garment_design_map.yaml",
+      "fold_flow_map.svg",
+      "layer_structure_map.svg",
+      "primary_fold_review_sheet.png"
+    ]
+  },
+  "render": {
+    "engine": "BLENDER_EEVEE_NEXT",
+    "samples": 48
+  }
+}
