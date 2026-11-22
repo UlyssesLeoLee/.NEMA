@@ -127,26 +127,45 @@ def main_chiton(fabric):
     ob['source']='historical V20 art fold flow (not camera calibrated)'
     return ob,groups
 
-def front_sash(fabric,name,starts,ends,width=.12,stages=88,sections=17):
-    # Physically separate draped fabric band with explicit endpoints, width,
-    # folds, and free edges; never added as fake ridges to repair old shells.
+def garment_front_depth(x,z):
+    # Sample a continuous authored chiton frontal volume rather than suspending
+    # a free panel in the air. This is a design-space approximation, not raycast.
+    skirt=1.-smooth(.15,1.00,z)
+    waist=math.exp(-((z-1.04)/.17)**2)
+    rx=.245+.148*skirt-.040*waist
+    ry=.183+.105*skirt-.019*waist
+    normalized=min(.998,abs(x)/max(.001,rx))
+    return -ry*math.sqrt(max(.0,1-normalized*normalized))
+
+def front_sash(fabric,name,starts,ends,width=.12,stages=88,sections=19,surface_wrap=False):
+    # Hand-designed 3D sewn drape sheet. The cross section has controlled
+    # shallow folds, never four rectangular bands floating in front of body.
     pts=[];fs=[]
+    tangent=Vector((ends[0]-starts[0],0,ends[2]-starts[2])).normalized()
+    across=Vector((tangent.z,0,-tangent.x))
     for j in range(stages):
         t=j/(stages-1)
-        c=Vector(((1-t)*starts[0]+t*ends[0],
-                  (1-t)*starts[1]+t*ends[1]-.035*math.sin(math.pi*t),
-                  (1-t)*starts[2]+t*ends[2]-.055*math.sin(math.pi*t)))
-        tangent=Vector((ends[0]-starts[0],0,ends[2]-starts[2])).normalized()
-        across=Vector((tangent.z,0,-tangent.x))
+        x0=(1-t)*starts[0]+t*ends[0]
+        z0=(1-t)*starts[2]+t*ends[2]-.070*math.sin(math.pi*t)
+        # The material widens softly toward the center and tapers into seams.
+        taper=.27+.73*math.sin(math.pi*t)**.43
         for i in range(sections):
             s=(i/(sections-1)-.5)*2
-            flare=width*(1+.16*math.sin(2*math.pi*t))
-            ridge=.014*math.cos(4*math.pi*s)*math.sin(math.pi*t)+.008*math.cos(8*math.pi*t)*s
-            point=c+across*flare*s+Vector((0,-ridge,0))
-            pts.append(tuple(point))
+            xx=x0+across.x*width*taper*s
+            zz=z0+across.z*width*taper*s
+            if surface_wrap:
+                # Maintain real contact with the outer dress profile as x turns
+                # around the hip; this avoids floating plank-like fabric bands.
+                yy=garment_front_depth(xx,zz)-.018
+            else:
+                yy=(1-t)*starts[1]+t*ends[1]-.018*math.sin(math.pi*t)
+            # Low-amplitude *sculpted* bias folds, consistent through the sheet.
+            yy-=.0045*math.cos(2*math.pi*s+2.2*t)*math.sin(math.pi*t)
+            pts.append((xx,yy,zz))
     for j in range(stages-1):
         for i in range(sections-1):
-            a=j*sections+i;fs.append((a,a+1,a+sections+1,a+sections))
+            a=j*sections+i
+            fs.append((a,a+1,a+sections+1,a+sections))
     o=mesh(name,pts,fs,fabric)
     o['structural_layer']=True
     o['primary_fold_sculpt_locked']=True
@@ -164,7 +183,7 @@ def veil(fabric):
             s=(i/(cols-1)-.5)*2
             x=breadth*s+.035*math.sin(math.pi*t)*s
             yy=.10+.17*t+.070*(1-s*s)*math.sin(math.pi*t)
-            yy+=.022*math.cos(6*math.pi*s+1.3*t)*(t**.4)
+            yy+=.010*math.cos(4*math.pi*s+1.3*t)*(t**.5)
             zz=z+.08*(s*s)+(.046*math.sin(3*math.pi*s) if t>.95 else 0)
             v.append((x,yy,zz))
     for j in range(rows-1):
@@ -178,10 +197,10 @@ def veil(fabric):
 def add_design_layers(fabric):
     # Image evidence at V20: front shoulder U, diagonal across bodice, hip swag,
     # side sleeves and distinctive back veil form physically justified layers.
-    front_sash(fabric,'HimationChestDiagonal_U_CrossDrape',(.23,-.235,1.34),(-.25,-.30,1.02),.085)
-    front_sash(fabric,'HimationCrossHipDrape',(.245,-.29,1.035),(-.33,-.35,.65),.12)
-    front_sash(fabric,'LeftShoulderDrape',(-.22,-.10,1.42),(-.33,.09,.99),.090)
-    front_sash(fabric,'RightShoulderDrape',(.22,-.07,1.42),(.32,.08,1.00),.083)
+    # Chest diagonal is carved in the continuous chiton; no independent fake panel.
+    front_sash(fabric,'HimationCrossHipDrape',(.245,-.26,1.03),(-.305,-.25,.68),.115,surface_wrap=True)
+    front_sash(fabric,'LeftShoulderDrape',(-.22,-.10,1.42),(-.29,.08,.99),.095)
+    front_sash(fabric,'RightShoulderDrape',(.22,-.07,1.42),(.28,.08,1.01),.080)
     veil(fabric)
 
 def modifier_primary_protection(chiton,groups):
