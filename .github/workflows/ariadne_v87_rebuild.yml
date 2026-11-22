@@ -1,0 +1,100 @@
+name: Ariadne V87 Reference-Recovered Design-First Engineering
+on:
+  push:
+    branches:
+      - ariadne_v86_design_first
+    paths:
+      - 'ariadne_v87/**'
+      - '.github/workflows/ariadne_v87_rebuild.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ariadne-v87-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  design-first-regressions:
+    name: Recovered independent 2D sources and authored fold constraints
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install pytest==8.4.1 Pillow==11.3.0
+      - run: python -m pytest -q ariadne_v87/tests
+
+  real-blender-primary-sculpt:
+    name: Real CC0 anatomy, authored primary folds, controlled cloth, 24 actual renders
+    needs: design-first-regressions
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install Blender headless dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq libgl1 libxi6 libxxf86vm1 libxfixes3 libxrender1 libsm6 libxkbcommon-x11-0 xvfb
+          python -m pip install Pillow==11.3.0
+      - uses: actions/cache@v4
+        with:
+          path: /tmp/nema_blender_45
+          key: blender-4.5.15-linux-x64
+      - name: Verify official Blender 4.5.15 installation
+        run: |
+          if [ ! -x /tmp/nema_blender_45/blender-4.5.15-linux-x64/blender ]; then
+            mkdir -p /tmp/nema_blender_45
+            curl --retry 3 --fail --location --silent --show-error \
+              https://download.blender.org/release/Blender4.5/blender-4.5.15-linux-x64.tar.xz \
+              -o /tmp/blender-4.5.15.tar.xz
+            tar -xJf /tmp/blender-4.5.15.tar.xz -C /tmp/nema_blender_45
+          fi
+          /tmp/nema_blender_45/blender-4.5.15-linux-x64/blender --version
+      - name: Retrieve official MakeHuman CC0 original topology and female morph
+        run: python ariadne_v85/prepare_cc0.py
+      - name: Build authored 3D garment PRIMARY folds before physics and render actual 24 angles
+        run: |
+          xvfb-run -a /tmp/nema_blender_45/blender-4.5.15-linux-x64/blender \
+            --background --factory-startup --python-exit-code 3 --python ariadne_v87/blender_build.py
+      - name: Assemble proof images strictly from Blender render PNGs
+        run: python ariadne_v87/make_contact_sheets.py
+      - name: Diagnostic comparison against independent historical 24-art masks
+        run: python ariadne_v87/compare_art.py
+      - name: Check engineering evidence and forbid false final-art claim
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          out=Path('ariadne_v87/output')
+          b=json.loads((out/'BUILD_AUDIT.json').read_text())
+          c=json.loads((out/'controlled_cloth_audit.json').read_text())
+          d=json.loads((out/'art_diagnostic.json').read_text())
+          assert b['actual_24_views']==24
+          assert b['garment_primary_sculpt_before_sim'] is True
+          assert b['final_art_approved'] is False
+          assert c['actual_modifier_evaluated'] is True
+          assert c['primary_fold_geometry_authored_before_solver'] is True
+          assert d['all_24_art_pass'] is False
+          assert len(list((out/'render_24').glob('VIEW_*.png')))==24
+          assert (out/'Ariadne_V87_DesignFirst_Engineering_NOT_ART.glb').stat().st_size>300000
+          assert (out/'V87_PrimaryFold_BeforeCloth.blend').is_file()
+          assert (out/'Ariadne_V87_24View_Engineering.png').is_file()
+          print('Actual Blender design-first engineering evidence PASS; artist approval remains BLOCKED')
+          PY
+      - name: Upload model, before-solver sculpt, editable blend, render and audit even on failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Ariadne-V87-Actual-DesignFirst-Engineering-NOT-ART
+          path: |
+            ariadne_v87/output/*.json
+            ariadne_v87/output/*.blend
+            ariadne_v87/output/*.glb
+            ariadne_v87/output/*.png
+            ariadne_v87/output/render_24/
+          retention-days: 14
+          if-no-files-found: warn
