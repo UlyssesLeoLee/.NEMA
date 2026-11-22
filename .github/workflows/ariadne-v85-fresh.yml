@@ -1,0 +1,50 @@
+name: Ariadne V85 Fresh Cloth Hair 24-angle diagnostic
+on:
+  push:
+    branches: [ariadne-v84-cloth-exec-20261122]
+    paths:
+      - scripts/ariadne_v85_fresh_cloth_hair.py
+      - .github/workflows/ariadne-v85-fresh.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  v85-actual-blender-physics:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Blender and NumPy
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq blender python3-numpy
+          blender --version | head -1
+      - name: Run actual cloth simulation and art graybox build
+        run: |
+          blender -b -t 2 --python-exit-code 1 --python scripts/ariadne_v85_fresh_cloth_hair.py > v85_blender.log 2>&1 || { tail -160 v85_blender.log; exit 1; }
+          tail -50 v85_blender.log
+      - name: Verify source, actual simulated displacement, GLB reimport and 24 pictures
+        run: |
+          python3 - <<'PY'
+          import pathlib,json
+          root=pathlib.Path("ariadne_v85_artifacts")
+          d=json.loads((root/"Actual_Solver_And_GLB_Audit.json").read_text())
+          assert len(d["cloth"])==8,d["cloth"].keys()
+          assert d["physics_pass"] and d["reimport_mesh_count"]>=22
+          assert all(x["maximum_vertex_motion_m"]>0.0001 for x in d["cloth"].values())
+          p=root/"Ariadne_V85_Fresh_ClothSolved_HairStructure_DIAGNOSTIC.glb"
+          assert p.read_bytes()[:4]==b"glTF" and p.stat().st_size>250000
+          images=list(root.glob("V85_CameraLocked_*.png"))
+          assert len(images)==24,len(images)
+          print("V85 VERIFIED",json.dumps(d,indent=2))
+          PY
+      - name: Preserve diagnostic outputs and failed logs
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: Ariadne-V85-FRESH-CLOTH-HAIR-24VIEW-DIAGNOSTIC
+          path: |
+            ariadne_v85_artifacts/**
+            v85_blender.log
+          if-no-files-found: warn
+          retention-days: 14
