@@ -88,10 +88,13 @@ def dress():
         else:r=.263+(z-1.32)*.06
         for i in range(N):
             phi=2*math.pi*i/N
+            # Sculpt the neckline on this SAME connected fabric shell.
+            neckline=(t**18)*(.070*abs(math.cos(phi))**10-.090*max(0.,-math.sin(phi))**8)
+            z_at_phi=z+neckline
             pleat=(.013+.024*(1-t)**1.5)*math.cos(12*phi+2.0*t)
             secondary=.009*math.cos(19*phi-4*t)
             radius=r+pleat+secondary
-            vv.append((radius*math.cos(phi), radius*.83*math.sin(phi)-.008, z))
+            vv.append((radius*math.cos(phi), radius*.83*math.sin(phi)-.008, z_at_phi))
     for j in range(M-1):
         for i in range(N):
             a=j*N+i; b=j*N+(i+1)%N
@@ -184,12 +187,13 @@ def add_detail(body):
     circ=[(.117*math.cos(a),.119*math.sin(a)+.045,top-.116+.012*math.cos(a*2))
           for a in [2*math.pi*i/24 for i in range(25)]]
     tube("Golden_Circlet",circ,.005,gold)
-    armpts=[v.co for v in body.data.vertices if v.co.x>.50 and v.co.z>1.22]
+    # Include the distal wrist/finger region: it is lower than the shoulder.
+    armpts=[v.co for v in body.data.vertices if v.co.x>.50 and v.co.z>1.00]
     if len(armpts)<15:
         ball_center=(.62,-.02,1.63)
     else:
         far=max(armpts,key=lambda v:v.x)
-        ball_center=(float(far.x)-.030,float(far.y)-.015,float(far.z)+.092)
+        ball_center=(float(far.x)-.055,float(far.y)-.015,float(far.z)+.090)
     sphere("Ariadne_Golden_Ball_Pose_Unverified",ball_center,(.098,)*3,gold,48)
     curve=[ball_center, (ball_center[0]+.10,ball_center[1]+.025,ball_center[2]-.10),
            (.44,.12,1.35),(.38,.13,1.07),(.42,.1,.72),(.43,.11,.38),
