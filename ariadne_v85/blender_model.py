@@ -57,14 +57,14 @@ def load_body():
         x,y,z=p
         if x>.19 and z>1.05:
             w=smooth(.19,.35,x)*smooth(1.05,1.23,z)
-            a=.66*w
+            a=.28*w
             dx=x-.205; dz=z-1.38
             nx=.205+math.cos(a)*dx-math.sin(a)*dz
             nz=1.38+math.sin(a)*dx+math.cos(a)*dz
             p[0]=nx;p[2]=nz
         elif x<-.19 and z>1.05:
             w=smooth(.19,.34,-x)*smooth(1.05,1.23,z)
-            a=-.26*w
+            a=-.20*w
             dx=x+.205;dz=z-1.38
             p[0]=-.205+math.cos(a)*dx-math.sin(a)*dz
             p[2]=1.38+math.sin(a)*dx+math.cos(a)*dz
@@ -80,7 +80,7 @@ def dress():
     N=72; M=62; vv=[];ff=[]
     for j in range(M):
         t=j/(M-1)
-        z=.09+1.35*t
+        z=.09+1.19*t
         if z<.48: r=.445-(z-.09)*.25
         elif z<.89:r=.347-(z-.48)*.20
         elif z<1.10:r=.265-(z-.89)*.21
@@ -108,11 +108,11 @@ def himation():
     rows=38; cols=9; vv=[];ff=[]
     for i in range(rows):
         t=i/(rows-1)
-        c=Vector((-.22+.49*t,-.20-.070*math.sin(math.pi*t),1.46-.55*t))
-        width=.17+.06*math.sin(math.pi*t)
+        c=Vector((-.19+.42*t,-.19-.035*math.sin(math.pi*t),1.33-.29*t))
+        width=.095+.025*math.sin(math.pi*t)
         for k in range(cols):
             s=(k/(cols-1)-.5)
-            vv.append((c.x+.09*s,c.y-.025*math.sin(6*math.pi*t)*s,c.z+width*s))
+            vv.append((c.x+.035*s,c.y-.012*math.sin(4*math.pi*t)*s,c.z+width*s))
     for i in range(rows-1):
         for k in range(cols-1):
             q=i*cols+k
@@ -184,12 +184,12 @@ def add_detail(body):
     circ=[(.117*math.cos(a),.119*math.sin(a)+.045,top-.116+.012*math.cos(a*2))
           for a in [2*math.pi*i/24 for i in range(25)]]
     tube("Golden_Circlet",circ,.005,gold)
-    armpts=[v.co for v in body.data.vertices if v.co.x>.40 and v.co.z>1.33]
+    armpts=[v.co for v in body.data.vertices if v.co.x>.50 and v.co.z>1.22]
     if len(armpts)<15:
         ball_center=(.62,-.02,1.63)
     else:
-        far=sorted(armpts,key=lambda v:v.x)[int(len(armpts)*.96)]
-        ball_center=(float(far.x)-.015,float(far.y)-.02,float(far.z)+.115)
+        far=max(armpts,key=lambda v:v.x)
+        ball_center=(float(far.x)-.030,float(far.y)-.015,float(far.z)+.092)
     sphere("Ariadne_Golden_Ball_Pose_Unverified",ball_center,(.098,)*3,gold,48)
     curve=[ball_center, (ball_center[0]+.10,ball_center[1]+.025,ball_center[2]-.10),
            (.44,.12,1.35),(.38,.13,1.07),(.42,.1,.72),(.43,.11,.38),
@@ -255,6 +255,8 @@ def main():
     scene.display.shading.color_type="MATERIAL"
     scene.display.shading.show_shadows=True
     scene.display.shading.show_cavity=True
+    scene.display.shading.background_type="VIEWPORT"
+    scene.display.shading.background_color=(.11,.12,.14)
     scene.render.image_settings.file_format="PNG"
     scene.render.film_transparent=False
     scene.render.image_settings.color_mode="RGBA"
