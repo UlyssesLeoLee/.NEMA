@@ -17,11 +17,11 @@ jobs:
       - name: Install Blender and NumPy
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y -qq blender python3-numpy
+          sudo apt-get install -y -qq blender python3-numpy libegl1 libgl1-mesa-dri libopengl0 xvfb
           blender --version | head -1
       - name: Run actual cloth simulation and art graybox build
         run: |
-          blender -b -t 2 --python-exit-code 1 --python scripts/ariadne_v85_fresh_cloth_hair.py > v85_blender.log 2>&1 || { tail -160 v85_blender.log; exit 1; }
+          xvfb-run -a -s '-screen 0 1024x768x24' blender -b -t 2 --python-exit-code 1 --python scripts/ariadne_v85_fresh_cloth_hair.py > v85_blender.log 2>&1 || { tail -160 v85_blender.log; exit 1; }
           tail -50 v85_blender.log
       - name: Verify source, actual simulated displacement, GLB reimport and 24 pictures
         run: |
