@@ -75,11 +75,11 @@ def ribbon(name,nu,nv,fn,mt,pin="TOP",mass=.31):
  else:ids=[]
  if ids:grp.add(ids,1,"REPLACE")
  mod=ob.modifiers.new("REAL_CLOTH_SOLVER","CLOTH")
- mod.settings.quality=5;mod.settings.mass=mass
+ mod.settings.quality=3;mod.settings.mass=mass
  if ids:mod.settings.vertex_group_mass=grp.name
  mod.collision_settings.use_collision=True;mod.collision_settings.distance_min=.006
- mod.collision_settings.use_self_collision=True;mod.collision_settings.self_distance_min=.006
- mod.point_cache.frame_start=1;mod.point_cache.frame_end=60
+ mod.collision_settings.use_self_collision=("HIP" in name or "BODICE" in name);mod.collision_settings.self_distance_min=.006
+ mod.point_cache.frame_start=1;mod.point_cache.frame_end=32
  ob["art_status"]="UNAPPROVED_2D_MATCH"
  ob["cloth_origin"]="CONNECTED_PATTERN_SURFACE"
  return ob
@@ -95,7 +95,7 @@ def skirt(u,w):
          (ry+.65*pleat)*sin(a),z+.014*sin(3*a)*w)
 # use closed cylinder rim via ring mesh, with pinned top ring
 def skirt_obj():
- nu=96;nv=94
+ nu=60;nv=56
  pts=[skirt(i/nu,j/(nv-1)) for j in range(nv) for i in range(nu)]
  fs=[]
  for j in range(nv-1):
@@ -103,10 +103,10 @@ def skirt_obj():
    a=j*nu+i;b=j*nu+(i+1)%nu;fs.append((a,b,b+nu,a+nu))
  ob=obj("10_CHITON_ONE_CONNECTED_SKIRT",pts,fs,clothmat)
  grp=ob.vertex_groups.new(name="WAIST_PIN");grp.add(list(range(nu)),1,"REPLACE")
- mo=ob.modifiers.new("REAL_CLOTH_SOLVER","CLOTH");mo.settings.vertex_group_mass=grp.name;mo.settings.quality=5;mo.settings.mass=.33
+ mo=ob.modifiers.new("REAL_CLOTH_SOLVER","CLOTH");mo.settings.vertex_group_mass=grp.name;mo.settings.quality=3;mo.settings.mass=.33
  mo.collision_settings.use_collision=True;mo.collision_settings.distance_min=.006
  mo.collision_settings.use_self_collision=True;mo.collision_settings.self_distance_min=.006
- mo.point_cache.frame_start=1;mo.point_cache.frame_end=60
+ mo.point_cache.frame_start=1;mo.point_cache.frame_end=32
  ob["cloth_origin"]="SINGLE_CONTINUOUS_CIRCUMFERENTIAL_MESH"
  return ob
 cloth.append(skirt_obj())
@@ -118,14 +118,14 @@ def chest(u,w):
  ridge=(.007*cos((4*u+1.4*w)*pi)+.004*cos((9*u-1.2*w)*pi))*w
  y=-.199-.020*(1-(2*u-1)**2)+ridge-.010*sin(pi*w)
  return(x,y,z)
-cloth.append(ribbon("11_BODICE_U_FOLD_CONTINUOUS",72,64,chest,cloth2))
+cloth.append(ribbon("11_BODICE_U_FOLD_CONTINUOUS",50,40,chest,cloth2))
 # broad actual diagonal, continuous warp of mesh, not overlay ribbons for mock fold
 def diagonal(u,w):
  center_x=.20-.35*w;center_z=1.285-.28*w
  width=.055+.041*sin(pi*w)
  return (center_x+(u-.5)*.04,-.248-.008*cos(8*u*pi)*sin(pi*w),
          center_z+(u-.5)*width*2)
-cloth.append(ribbon("12_SHOULDER_TO_WAIST_CONTINUOUS_DRAPE",34,84,lambda u,w:diagonal(u,w),clothmat))
+cloth.append(ribbon("12_SHOULDER_TO_WAIST_CONTINUOUS_DRAPE",22,45,lambda u,w:diagonal(u,w),clothmat))
 # deep hip diagonal fold panel: authored from actual folded sewing cloth
 def hip(u,w):
  x=-.285+.56*u
@@ -134,7 +134,7 @@ def hip(u,w):
  z=top-drop*w
  y=-.308-.018*sin(pi*u)-.015*w+.012*sin(pi*6*u)*sin(pi*w)
  return x,y,z
-cloth.append(ribbon("13_HIP_CROSS_SWAG_CONTINUOUS",78,55,hip,clothmat))
+cloth.append(ribbon("13_HIP_CROSS_SWAG_CONTINUOUS",48,35,hip,clothmat))
 # two separate layers only where 2D explicitly shows cape and underlayer
 def veil(u,w,layer):
  spread=.18+.18*w +.04*layer
@@ -143,7 +143,7 @@ def veil(u,w,layer):
  y=.205+.046*layer+.13*w+.016*sin(11*pi*u)*(w**.55)
  return x,y,z
 for layer in [0,1]:
- cloth.append(ribbon("14_BACK_VEIL_CONTINUOUS_LAYER_"+str(layer),56,96,lambda u,w,ly=layer:veil(u,w,ly), clothmat if layer==0 else cloth2))
+ cloth.append(ribbon("14_BACK_VEIL_CONTINUOUS_LAYER_"+str(layer),36,50,lambda u,w,ly=layer:veil(u,w,ly), clothmat if layer==0 else cloth2))
 # side drape panels attached to each shoulder
 for sign in (-1,1):
  def sleeve(u,w,s=sign):
@@ -151,7 +151,7 @@ for sign in (-1,1):
   y=-.10+.16*u-.025*w
   z=1.295-w*(.24+.23*u)+.006*cos(8*pi*u)*w
   return(x,y,z)
- cloth.append(ribbon("15_SHOULDER_SLEEVE_"+str(sign),28,50,sleeve,cloth2))
+ cloth.append(ribbon("15_SHOULDER_SLEEVE_"+str(sign),20,32,sleeve,cloth2))
 # Curves for independently grounded real 3D hair and gold ornament
 def curve(name,coords,rad,mt,res=3):
  cu=bpy.data.curves.new(name,"CURVE");cu.dimensions="3D";cu.resolution_u=16
@@ -217,14 +217,14 @@ for name,r,depth,z,mt in [
  ("43_BASE_TOP",.429,.035,.068,base_mat)]:
  bpy.ops.mesh.primitive_cylinder_add(vertices=96,radius=r,depth=depth,location=(0,0,z))
  ob=bpy.context.object;ob.name=name;ob.data.materials.append(mt)
-scene=bpy.context.scene;scene.frame_start=1;scene.frame_end=60
+scene=bpy.context.scene;scene.frame_start=1;scene.frame_end=32
 report={"version":"V85","source":"fresh MakeHuman CC0, no V52-V83 dressed mesh",
  "status":"UNAPPROVED_ARTISTIC_DIAGNOSTIC","blender_version":bpy.app.version_string,
- "reference_2d_alignment":"NOT_VERIFIED","frame_count":60,"cloth":{}}
+ "reference_2d_alignment":"NOT_VERIFIED","frame_count":32,"cloth":{}}
 # Real physics solver on ALL connected cloth surfaces, record actual displacements
-for frame in range(1,61):
+for frame in range(1,33):
  scene.frame_set(frame)
- if frame in (1,15,30,45,60):print("SOLVER_FRAME",frame,flush=True)
+ if frame in (1,8,16,24,32):print("SOLVER_FRAME",frame,flush=True)
 deps=bpy.context.evaluated_depsgraph_get()
 for ob in cloth:
  ev=ob.evaluated_get(deps);me=ev.to_mesh()
@@ -241,7 +241,7 @@ for ob in cloth:
  bpy.context.collection.objects.link(frozen)
  frozen.data.materials.append(ob.data.materials[0])
  frozen["actual_blender_cloth_solver"]=True
- frozen["frame_number"]=60
+ frozen["frame_number"]=32
  ev.to_mesh_clear()
  ob.hide_render=True;ob.hide_set(True)
 # Save physically editable scene, not claiming full disk-baked cache
