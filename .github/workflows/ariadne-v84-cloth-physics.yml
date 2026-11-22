@@ -1,0 +1,48 @@
+name: Ariadne V84 GitHub Blender cloth solver proof
+on:
+  push:
+    branches:
+      - ariadne-v84-cloth-exec-20261122
+    paths:
+      - scripts/ariadne_v84_cloth_physics_proof.py
+      - .github/workflows/ariadne-v84-cloth-physics.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  solve-real-cloth:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install actual Blender physics engine
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq blender
+          blender --version | head -1
+      - name: Run actual Blender cloth simulation for MakeHuman CC0 collider and three continuous cloth panels
+        run: |
+          blender -b -t 2 --python scripts/ariadne_v84_cloth_physics_proof.py > v84_cloth_physics.log 2>&1 || { tail -120 v84_cloth_physics.log; exit 1; }
+          tail -40 v84_cloth_physics.log
+      - name: Strictly verify moving cloth, glTF export and audit
+        run: |
+          python3 - <<'PY'
+          import json, pathlib
+          r=pathlib.Path("ariadne_v84_cloth_smoke_artifacts")
+          doc=json.loads((r/"Actual_Physics_Audit.json").read_text())
+          assert len(doc["cloth"])==3
+          assert all(v["max_motion_m"]>0.0001 for v in doc["cloth"].values())
+          glb=r/"V84_Cloth_Solver_Proof_Not_Art.glb"
+          assert glb.read_bytes()[:4]==b"glTF" and glb.stat().st_size>100000
+          print("VERIFIED REAL PHYSICS AND EXPORTED GLB",doc)
+          PY
+      - name: Upload actual solver artifacts and diagnostic log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Ariadne-V84-Real-Blender-Cloth-PHYSICS-PROOF-NOT-ART
+          path: |
+            ariadne_v84_cloth_smoke_artifacts/**
+            v84_cloth_physics.log
+          if-no-files-found: warn
+          retention-days: 14
