@@ -1,0 +1,82 @@
+name: Ariadne V85 real MakeHuman cloth model and render
+on:
+  push:
+    branches:
+      - ariadne_v85_github_blender
+    paths:
+      - 'ariadne_v85/**'
+      - '.github/workflows/ariadne_v85_blender.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  blender-model-and-render:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install headless render libraries
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq libgl1 libxi6 libxxf86vm1 libxfixes3 libxrender1 libsm6 libxkbcommon-x11-0 xvfb
+          python -m pip install --disable-pip-version-check Pillow==11.3.0
+      - uses: actions/cache@v4
+        with:
+          path: /tmp/nema_blender_45
+          key: blender-4.5.15-linux-x64
+      - name: Download and verify official Blender 4.5.15 LTS
+        run: |
+          if [ ! -x /tmp/nema_blender_45/blender-4.5.15-linux-x64/blender ]; then
+            mkdir -p /tmp/nema_blender_45
+            curl --retry 3 --fail --location --silent --show-error \
+              https://download.blender.org/release/Blender4.5/blender-4.5.15-linux-x64.tar.xz \
+              -o /tmp/blender-4.5.15.tar.xz
+            tar -xJf /tmp/blender-4.5.15.tar.xz -C /tmp/nema_blender_45
+          fi
+          /tmp/nema_blender_45/blender-4.5.15-linux-x64/blender --version
+      - name: Download verified official CC0 body and female target
+        run: python ariadne_v85/prepare_cc0.py
+      - name: Real Blender geometry, 42-frame cloth solver, GLB export, round trip, 24 renders
+        run: |
+          xvfb-run -a /tmp/nema_blender_45/blender-4.5.15-linux-x64/blender \
+            --background --factory-startup --python-exit-code 3 \
+            --python ariadne_v85/blender_model.py
+      - name: Build contact sheets from actual Blender PNGs
+        run: python ariadne_v85/make_contact_sheets.py
+      - name: Verify evidence before upload
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('ariadne_v85/output')
+          a=json.loads((p/'BUILD_AUDIT.json').read_text())
+          assert a['actual_24_renders']==24
+          assert a['actual_key_renders']==6
+          assert a['release_approved'] is False
+          assert a['cloth_solver_evaluated'] is True
+          assert len(list((p/'render_24').glob('VIEW_*.png')))==24
+          assert (p/'Ariadne_V85_Engineering_NOT_ART.glb').stat().st_size>300000
+          print('Engineering evidence PASS, art approval BLOCKED by design')
+          PY
+      - name: Upload GLB screenshots blend and solver proof even on failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Ariadne-V85-Real-Blender-Evidence
+          path: |
+            ariadne_v85/output/BUILD_AUDIT.json
+            ariadne_v85/output/cloth_solver_proof.json
+            ariadne_v85/output/source_provenance.json
+            ariadne_v85/output/*.glb
+            ariadne_v85/output/*.blend
+            ariadne_v85/output/*ContactSheet.png
+            ariadne_v85/output/Ariadne_6KeyViews_REAL_Blender.png
+            ariadne_v85/output/render_24/
+            ariadne_v85/output/key_views/
+          retention-days: 14
+          if-no-files-found: warn
