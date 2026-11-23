@@ -1,0 +1,24 @@
+{
+  "status": "UNANNOTATED_TEMPLATE_NOT_EVIDENCE",
+  "source_art_sha256": "70afb89b37e4d06c2ac6fe42eb128cd9b7b608f0fe488aedb312027c486ab0e3",
+  "independent_art": true,
+  "registered_neutral_front": false,
+  "neutral_head_pose_approved": false,
+  "expression_independently_approved": false,
+  "human_review_2d_loop_approved": false,
+  "face_mesh_object": null,
+  "registered_front_camera": null,
+  "shape_key_names": [],
+  "identity_shape_key_names": [],
+  "expression_shape_key_names": [],
+  "landmarks": [],
+  "landmark_fields_example": {
+    "vertex_id": null,
+    "region": "eye",
+    "target_uv_bottom_left": null,
+    "confidence": null,
+    "occluded": null,
+    "source_2D_point_id": null
+  },
+  "important": "Provide independently registered real original-art face points and a real 3D morph-capable anatomical mesh. Never auto-mark approvals true."
+}

@@ -1,0 +1,11 @@
+{
+  "status": "NOT_CALIBRATED_NOT_ART_APPROVED",
+  "derived_from_independent_24_art": false,
+  "neck_rotation_approved": false,
+  "hair_and_headwear_follow_head": false,
+  "rig_object": null,
+  "neck_bone": null,
+  "neck_local_euler_deg": [null, null, null],
+  "face_shape_locked_reference": "output/face2d_loop_execution.json",
+  "important": "One single approved 3D neck/head joint rotation is shared by all 24 camera views; do not invent Euler angles."
+}

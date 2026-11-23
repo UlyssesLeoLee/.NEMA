@@ -1,0 +1,19 @@
+{
+  "source": "V20_Original_Front_Art_Reference.png",
+  "source_sha256": "70afb89b37e4d06c2ac6fe42eb128cd9b7b608f0fe488aedb312027c486ab0e3",
+  "source_dimensions": [
+    1086,
+    1448
+  ],
+  "pixel_crop_xyxy": [
+    424,
+    32,
+    664,
+    281
+  ],
+  "crop_is_independent_art": true,
+  "has_registered_canonical_camera": false,
+  "manual_landmark_approval": false,
+  "expression_approval": false,
+  "notes": "The crop is the original supplied art, not a synthesized/AI generated neutral face. Do not use as approved canonical frontal geometry until camera/head yaw registration is provided."
+}

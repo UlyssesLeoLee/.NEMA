@@ -1,0 +1,68 @@
+name: Ariadne V90 face-first 2D loop A/B and real GLB preflight
+on:
+  push:
+    branches:
+      - ariadne_v90_face_2d_loop
+    paths:
+      - 'ariadne_v90/**'
+      - '.github/workflows/ariadne_v90_face_loop.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  face-2d-loop-ab-and-source-capability:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install numerical test dependencies
+        run: python -m pip install --disable-pip-version-check 'numpy>=1.26,<3' 'PyYAML>=6,<7' 'pytest>=8,<10'
+      - name: Restore immutable source from verified V89 branch
+        run: |
+          mkdir -p ariadne_v90/assets ariadne_v90/baseline
+          cp ariadne_v89_ab/references/V20_Original_Front_Art_Reference.png ariadne_v90/assets/V20_Original_Front_Art_Reference.png
+          cp ariadne_v89_ab/NEMA_Ariadne_V89_AB_Optimized_Master.yaml ariadne_v90/baseline/V89_MASTER.yaml
+          echo '70afb89b37e4d06c2ac6fe42eb128cd9b7b608f0fe488aedb312027c486ab0e3  ariadne_v90/assets/V20_Original_Front_Art_Reference.png' | sha256sum -c -
+          echo '4cc6721e46bfbd15394e2c92bdb24272561bc809dd9fc4c175f5bc1a2c79c3cc  ariadne_v90/baseline/V89_MASTER.yaml' | sha256sum -c -
+      - name: Download pin-sha original V87.1 model
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh run download 45062111861 --repo "$GITHUB_REPOSITORY" \
+            --name Ariadne-V87-Actual-DesignFirst-Engineering-NOT-ART --dir /tmp/ariadne-v90-base
+          cp /tmp/ariadne-v90-base/Ariadne_V87_DesignFirst_Engineering_NOT_ART.glb ariadne_v90/baseline/V89_source_V87_1.glb
+          echo '4e9eb8ca64891ed63aae2a7a32297bf60f9b757f9c1873a7d67480827d11c948  ariadne_v90/baseline/V89_source_V87_1.glb' | sha256sum -c -
+      - name: Real-source, fail-closed capability preflight
+        run: python ariadne_v90/src/preflight.py
+      - name: Real code 2D loop synthetic A/B benchmark
+        run: python ariadne_v90/src/ab_synthetic.py > /tmp/face-ab.json
+      - name: Run conformance tests
+        run: python -m pytest -q ariadne_v90/tests/test_face_2d_loop.py
+      - name: Verify A/B is not represented as art approval
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=Path('ariadne_v90/report')
+          a=json.loads((r/'V90_preflight.json').read_text())
+          b=json.loads((r/'face2d_AB_numeric.json').read_text())
+          assert a['status']=='BLOCKED' and a['source_model_skins']==0
+          assert a['source_model_morph_targets']==0
+          assert b['B_beats_A_on_toy_data'] and b['B_fit_rounds']>=2
+          assert b['real_24_view_art_approval'] is False
+          print('PASS engineering and synthetic algorithm; real sculpture still BLOCKED')
+          PY
+      - name: Upload A/B and blocker evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Ariadne-V90-FaceLoop-AB-Engineering-Evidence-Not-Art
+          path: |
+            ariadne_v90/report/face2d_AB_numeric.json
+            ariadne_v90/report/V90_preflight.json
+          retention-days: 14
+          if-no-files-found: warn
