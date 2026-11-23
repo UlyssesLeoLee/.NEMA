@@ -1,0 +1,44 @@
+name: Ariadne V104 Official MakeHuman Rig Assets
+on:
+  push:
+    branches:
+      - ariadne_v104_official_asset_ab
+    paths:
+      - '.github/workflows/ariadne_v104_official_assets.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  retrieve-and-verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download official MakeHuman CC0 mesh, female target, skeleton, skin weights
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts/makehuman
+          BASE=https://raw.githubusercontent.com/makehumancommunity/makehuman/master/makehuman/data
+          curl --fail --retry 4 --location "$BASE/3dobjs/base.obj" -o artifacts/makehuman/base.obj
+          curl --fail --retry 4 --location "$BASE/targets/macrodetails/caucasian-female-young.target" -o artifacts/makehuman/caucasian-female-young.target
+          curl --fail --retry 4 --location "$BASE/rigs/default.mhskel" -o artifacts/makehuman/default.mhskel
+          curl --fail --retry 4 --location "$BASE/rigs/default_weights.mhw" -o artifacts/makehuman/default_weights.mhw
+          python3 - <<'PYCHECK'
+          import json, hashlib, pathlib
+          d=pathlib.Path('artifacts/makehuman')
+          files={p.name: {'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()} for p in d.iterdir()}
+          sk=json.loads((d/'default.mhskel').read_text())
+          w=json.loads((d/'default_weights.mhw').read_text())
+          assert len(sk['bones']) == 163 and len(w['weights'])>=130
+          assert len([x for x in (d/'base.obj').read_text().splitlines() if x.startswith('v ')])==19158
+          assert sk.get('license')=='CC0' and w.get('license')=='CC0'
+          (d/'provenance.json').write_text(json.dumps({'github':'makehumancommunity/makehuman','license':'CC0','bones':len(sk['bones']),'weight_bones':len(w['weights']),'files':files},indent=2))
+          print(json.dumps(files,indent=2))
+          PYCHECK
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: Ariadne-V104-Official-MakeHuman-CC0-Rig-Weights
+          path: artifacts/makehuman/
+          retention-days: 7
+          if-no-files-found: error
