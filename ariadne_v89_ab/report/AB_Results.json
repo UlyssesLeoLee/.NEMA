@@ -1,0 +1,147 @@
+{
+  "experiment": "V88 A vs V89 B real-source engineering A/B",
+  "scope": "YAML optimization with real input geometry measurements and executable policy gates, NOT a sculpture A/B render",
+  "baseline_source_sha256": "34db0ddeac25849ad7654c2e2de86d45d0b48f1c9c693f8f419c15cba41a47f4",
+  "baseline_script_sha256": "e61a1e469d6954d04ba7b56ab2f0066afc9f5e85dd63bcede1ac2eed0fee5549",
+  "input_glb_sha256": "4e9eb8ca64891ed63aae2a7a32297bf60f9b757f9c1873a7d67480827d11c948",
+  "input_glb_bytes": 1316876,
+  "input_glb_meshes": 6,
+  "body_vertices": 19158,
+  "body_faces": 36972,
+  "gltf_skins": 0,
+  "gltf_animations": 0,
+  "source_axis": "glTF Y-up; explicitly transformed X,-Z,Y to Blender Z-up for geometry test",
+  "anchor_evidence": {
+    "found": 24,
+    "manifest_records": 24,
+    "distinct_sha256": 24,
+    "mismatches": [],
+    "all_hashes_match": true,
+    "front_art_sha256": "70afb89b37e4d06c2ac6fe42eb128cd9b7b608f0fe488aedb312027c486ab0e3",
+    "turnaround_sha256": "afc42aabbb060617b2f3b693b8865dc6022142864a070029463d8c4bd17f2632"
+  },
+  "ball_surface_proxy": {
+    "metric": "nearest hand-candidate vertex distance minus sphere radius (m)",
+    "radius_m": 0.095,
+    "hand_candidate_vertex_count": 1951,
+    "A_fixed_center_zup_m": [
+      0.58,
+      -0.02,
+      1.58
+    ],
+    "A_gap_to_hand_candidate_m": 0.365881,
+    "B_candidate_center_zup_m": [
+      0.603201,
+      -0.103232,
+      1.028269
+    ],
+    "B_gap_to_hand_candidate_m": 0.003978,
+    "B_gap_to_all_body_vertices_m": 0.003978,
+    "B_proxy_contact_10mm": true,
+    "B_palm_anatomy_pass": null,
+    "B_joint_pose_pass": null,
+    "limitations": [
+      "No semantic palm/finger vertex mapping",
+      "No posed/rigged body mesh",
+      "Vertex proximity is NOT exact mesh-triangle clearance",
+      "No 0/45/90 camera contact proof"
+    ]
+  },
+  "cases": [
+    {
+      "id": "AB01",
+      "kind": "observed",
+      "A_v88": "NO_SKIN",
+      "B_v89": "NO_SKIN -> RIG_BIND_REQUIRED",
+      "finding": "V88 pose() cannot execute on actual source; B explicitly routes to validated binding rather than claiming an edited pose",
+      "source": "glTF JSON skins count",
+      "test_state": "PASS_ENGINEERING"
+    },
+    {
+      "id": "AB02",
+      "kind": "observed",
+      "A_v88": 0.365881,
+      "B_v89": 0.003978,
+      "finding": "Ball surface-proximity candidate moves from floating to near-contact, but palm support remains unverified",
+      "source": "V87 GLB MakeHuman vertices; scipy cKDTree",
+      "test_state": "PASS_PROXY_ONLY"
+    },
+    {
+      "id": "AB03",
+      "kind": "observed",
+      "A_v88": "MESH_ONLY_SELECT",
+      "B_v89": "CURVE_TO_MESH_AND_ROUNDTRIP_REQUIRED",
+      "finding": "V88 selects only MESH objects during GLB export: thread remains CURVE and is omitted by selection; B prevents this",
+      "source": "V88 source: export_glb and gold",
+      "test_state": "PASS_CODE_AUDIT"
+    },
+    {
+      "id": "AB04",
+      "kind": "observed",
+      "A_v88": "24_LABELS_NO_HASH_ASSERT",
+      "B_v89": "24_ANCHORS_SHA256_VERIFIED",
+      "finding": "Actual independent 2D anchor bytes verified against historical manifest",
+      "source": "anchor_manifest.json and 24 PNG files",
+      "test_state": "PASS_ASSET_INTEGRITY"
+    },
+    {
+      "id": "AB05",
+      "kind": "observed",
+      "A_v88": "24_PENDINGS_NO_LOSS",
+      "B_v89": "24_STRICT_PER_VIEW_LOSS_REQUIRED",
+      "finding": "B does not count pending views as measured; requires camera-registered independent art",
+      "source": "V88 refine() vs V89 YAML execution_contract",
+      "test_state": "PASS_POLICY_NOT_VISUAL"
+    },
+    {
+      "id": "AB06",
+      "kind": "observed",
+      "A_v88": "FIXED_3D_COORDINATES",
+      "B_v89": "GEOMETRY_DERIVED_AFTER_POSE",
+      "finding": "B forbids committing unposed ball coordinates as final contact",
+      "source": "V88 gold() hardcoded sphere center vs V89 YAML",
+      "test_state": "PASS_POLICY"
+    },
+    {
+      "id": "AB07",
+      "kind": "not_executed",
+      "A_v88": "NOT_RUN",
+      "B_v89": "NOT_RUN",
+      "finding": "No Blender pose correction or actual B GLB has been rendered in this A/B trial",
+      "source": "No new output/GLB and no verified rig",
+      "test_state": "BLOCKED_NOT_EXECUTED"
+    },
+    {
+      "id": "AB08",
+      "kind": "not_executed",
+      "A_v88": "NOT_MEASURED",
+      "B_v89": "NOT_MEASURED",
+      "finding": "24 angles each >95% artistic similarity not proven for A or B; no comparative art superiority claimed",
+      "source": "Independent art and actual camera registration missing",
+      "test_state": "BLOCKED_ART_QA"
+    },
+    {
+      "id": "AB09",
+      "kind": "not_executed",
+      "A_v88": "NOT_MEASURED",
+      "B_v89": "NOT_MEASURED",
+      "finding": "No signed palm/finger/contact landmarks; surface proximity cannot pass anatomical support test",
+      "source": "256 registered landmarks not supplied for this model",
+      "test_state": "BLOCKED_ANATOMY"
+    },
+    {
+      "id": "AB10",
+      "kind": "policy",
+      "A_v88": "UNSPECIFIED",
+      "B_v89": "NO_SCOPE_EXPANSION",
+      "finding": "B preserves garment and hair geometry unless explicitly affected by validated pose binding",
+      "source": "V89 hard_rules and scope_lock",
+      "test_state": "PASS_POLICY"
+    }
+  ],
+  "engineering_ab_conclusion": "B recommended for safer, executable future model pipeline and coarse ball-placement initialization",
+  "artistic_quality_conclusion": "NO_WINNER_MEASURED. Both A and B unverified; B prototype proximity cannot pass anatomical and 24-view art gates.",
+  "new_GLb_produced": false,
+  "blender_pose_executed": false,
+  "release_status": "BLOCKED_ART_AND_RIG"
+}

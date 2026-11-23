@@ -1,0 +1,43 @@
+name: Ariadne V89 AB real-GLB engineering reproducibility
+on:
+  push:
+    branches: [ariadne_v89_ab_yaml]
+    paths:
+      - 'ariadne_v89_ab/**'
+      - '.github/workflows/ariadne_v89_ab.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  ab-real-v87-geometry:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Python benchmark dependencies
+        run: python -m pip install --disable-pip-version-check 'numpy>=1.26,<3' 'scipy>=1.12,<2' 'trimesh>=4,<5' 'PyYAML>=6,<7'
+      - name: Download original V87.1 real GLB from pinned historical GitHub run
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p ariadne_v89_ab/references
+          gh run download 45062111861 --repo "$GITHUB_REPOSITORY" \
+            --name Ariadne-V87-Actual-DesignFirst-Engineering-NOT-ART \
+            --dir /tmp/ariadne_v87_artifact
+          cp /tmp/ariadne_v87_artifact/Ariadne_V87_DesignFirst_Engineering_NOT_ART.glb ariadne_v89_ab/references/
+      - name: A/B run from real unchanged GLB (engineering-only)
+        run: python ariadne_v89_ab/src/github_smoke.py
+      - name: Upload engineering A/B evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Ariadne-V89-AB-Real-GLB-Geometry-Only
+          path: ariadne_v89_ab/report/GitHub_AB_Geometry_Proof.json
+          if-no-files-found: warn
+          retention-days: 14

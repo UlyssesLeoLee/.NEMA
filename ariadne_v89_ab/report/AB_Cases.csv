@@ -1,0 +1,11 @@
+id,kind,A_v88,B_v89,finding,source,test_state
+AB01,observed,NO_SKIN,NO_SKIN -> RIG_BIND_REQUIRED,V88 pose() cannot execute on actual source; B explicitly routes to validated binding rather than claiming an edited pose,glTF JSON skins count,PASS_ENGINEERING
+AB02,observed,0.365881,0.003978,"Ball surface-proximity candidate moves from floating to near-contact, but palm support remains unverified",V87 GLB MakeHuman vertices; scipy cKDTree,PASS_PROXY_ONLY
+AB03,observed,MESH_ONLY_SELECT,CURVE_TO_MESH_AND_ROUNDTRIP_REQUIRED,V88 selects only MESH objects during GLB export: thread remains CURVE and is omitted by selection; B prevents this,V88 source: export_glb and gold,PASS_CODE_AUDIT
+AB04,observed,24_LABELS_NO_HASH_ASSERT,24_ANCHORS_SHA256_VERIFIED,Actual independent 2D anchor bytes verified against historical manifest,anchor_manifest.json and 24 PNG files,PASS_ASSET_INTEGRITY
+AB05,observed,24_PENDINGS_NO_LOSS,24_STRICT_PER_VIEW_LOSS_REQUIRED,B does not count pending views as measured; requires camera-registered independent art,V88 refine() vs V89 YAML execution_contract,PASS_POLICY_NOT_VISUAL
+AB06,observed,FIXED_3D_COORDINATES,GEOMETRY_DERIVED_AFTER_POSE,B forbids committing unposed ball coordinates as final contact,V88 gold() hardcoded sphere center vs V89 YAML,PASS_POLICY
+AB07,not_executed,NOT_RUN,NOT_RUN,No Blender pose correction or actual B GLB has been rendered in this A/B trial,No new output/GLB and no verified rig,BLOCKED_NOT_EXECUTED
+AB08,not_executed,NOT_MEASURED,NOT_MEASURED,24 angles each >95% artistic similarity not proven for A or B; no comparative art superiority claimed,Independent art and actual camera registration missing,BLOCKED_ART_QA
+AB09,not_executed,NOT_MEASURED,NOT_MEASURED,No signed palm/finger/contact landmarks; surface proximity cannot pass anatomical support test,256 registered landmarks not supplied for this model,BLOCKED_ANATOMY
+AB10,policy,UNSPECIFIED,NO_SCOPE_EXPANSION,B preserves garment and hair geometry unless explicitly affected by validated pose binding,V89 hard_rules and scope_lock,PASS_POLICY

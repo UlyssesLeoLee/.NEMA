@@ -1,0 +1,66 @@
+project:
+  name: NEMA_Ariadne_V88_Pose_MultiView_GoldThread_Only
+  goal: >
+    在现有工程模型基础上，仅收敛处理三类问题：多角度精修、姿态调整、加入金线与金球。
+    暂不重做服装体系、头发体系或整套拓扑。
+  outputs:
+    - refined_glb
+    - 24view_render_sheet
+    - 6key_view_sheet
+    - pose_audit_report
+    - gold_thread_ball_audit_report
+
+scope:
+  in_scope:
+    - multi_view_refinement
+    - pose_adjustment
+    - gold_thread_and_ball_integration
+  out_of_scope:
+    - full_garment_redesign
+    - full_head_hair_redesign
+    - full_topology_rebuild
+    - new_pipeline_restart
+    - free_hanging_cloth_experiment
+    - texture_led_fake_improvement
+
+hard_constraints:
+  - preserve_current_working_pipeline
+  - preserve_existing_body_base_as_much_as_possible
+  - do_not_restart_from_scratch
+  - every_change_must_be_checked_in_multiple_views
+  - front_improvement_must_not_break_side_or_back_views
+  - gold_thread_must_be_single_continuous_3d_curve
+  - gold_ball_must_be_physically_and_visually_integrated_with_hand_pose
+
+priority_order:
+  - pose_adjustment
+  - gold_ball_hand_relationship
+  - gold_thread_composition
+  - multi_view_sculpt_refinement
+
+pipeline:
+  - id: P01
+    name: pose_adjustment_first
+    goal: 优先把整体姿态调近目标优雅姿态，恢复 K 字动态趋势。
+    outputs: [pose_refined.blend, pose_audit_front_side_back_oblique.json]
+    gate: [hand_ball_contact_plausible, wrist_anatomy_plausible, k_composition_improved, front_side_back_not_degraded]
+  - id: P02
+    name: gold_ball_integration
+    goal: 在姿态确定后重新定位金球，使其与掌心、手指、手腕和整体构图统一。
+    outputs: [gold_ball_integrated.blend, gold_ball_contact_views.png]
+    gate: [visible_support_relationship_exists, no_major_intersection, multi_view_contact_is_readable]
+  - id: P03
+    name: single_continuous_gold_thread
+    goal: 加入单一连续的三维金线，且金线要服务构图。
+    outputs: [gold_thread_integrated.blend, gold_thread_path_audit.json]
+    gate: [continuity_verified, body_intersection_controlled, composition_enhanced, view_stability_verified]
+  - id: P04
+    name: multi_view_refinement
+    goal: 在姿态、金球和金线都确定后，对模型做 24 视角定向精修。
+    outputs: [multiview_refined.blend, 24view_comparison_sheet.png, per_view_deviation_log.json]
+    gate: [no_single_view_only_fix, front_45_90_135_180_all_improved_or_preserved, no_new_major_anatomy_error, no_new_major_pose_break]
+  - id: P05
+    name: export_and_validation
+    goal: 导出本轮收敛版 GLB，并做重新导入检查与渲染核对。
+    outputs: [Ariadne_V88_Pose_MultiView_GoldThread.glb, reimport_validation.json, final_24view_sheet.png, final_6key_sheet.png]
+    gate: [glb_reimport_success, thread_and_ball_present, pose_changes_preserved, multi_view_render_complete]

@@ -1,0 +1,351 @@
+project:
+  name: NEMA_Ariadne_V89_AB_Optimized_3Focus_Master
+  version: '89.0'
+  baseline:
+    source_version: '88.0'
+    file: baseline/V88_0_MASTER.yaml
+    script: baseline/blender_v88.py
+  objective: >
+    在现有 V87.1 真实工程 GLB 上，以 A/B 实测重新设计 V88 的执行与验收门槛。
+    只处理姿态、多角度精修、金球与单一金线，不扩大到服装或头发重建。
+    独立 V20 原画比任何 3D 自生成参考都更权威。不得把工程测试通过描述成艺术验收通过。
+  output_contract:
+    - V89_pose_bound_candidate.blend
+    - V89_contact_ball_and_thread.blend
+    - 24_actual_Blender_views
+    - per_view_art_registration_and_losses.json
+    - V89_candidate_NOT_APPROVED.glb
+    - glb_roundtrip_audit.json
+    - A_B_engineering_results.json
+
+scope:
+  in_scope:
+    - anatomically_valid_pose_adjustment
+    - multi_view_refinement
+    - gold_ball_hand_contact
+    - one_continuous_3d_gold_thread
+  out_of_scope:
+    - full_garment_redesign
+    - full_head_hair_redesign
+    - new_body_topology_reconstruction
+    - free_fall_cloth_simulation
+    - new_texture_only_replacement
+    - adding_unrelated_accessories
+  preserve:
+    - MakeHuman_authentic_anatomical_topology
+    - connected_design_first_chiton_primary_folds
+    - existing_structurally_justified_drape_layers
+    - original_independent_24_art_anchors
+    - source_glb_provenance
+  exception: >
+    随骨架姿态必须做的真实衣身蒙皮/接触修正是允许的；不允许借此添加伪装轮廓的悬空片。
+
+hard_constraints:
+  - no_false_rig_assumption
+  - do_not_fake_armature_from_mesh_name
+  - gold_ball_contact_after_pose_not_fixed_world_coordinates
+  - palm_finger_wrist_anatomy_required
+  - convert_gold_thread_curve_to_mesh_before_glb_export
+  - verify_reimported_glb_contains_one_continuous_thread_and_gold_ball
+  - every_angle_strictly_above_0_95_after_art_camera_registration
+  - source_2d_art_must_be_independent_of_3d_render
+  - fail_closed_if_any_art_gate_unverified
+  - preserve_pre_sculpted_garment_folds
+  - no_out_of_scope_garment_hair_rebuild
+  - prohibit_a_24_view_pending_label_as_a_numeric_art_score
+  - prohibit_a_distance_to_any_arm_vertex_as_proof_of_correct_palm_support
+  - preserve_body_mesh_vertex_ids_and_surface_continuity_during_pose
+  - no_geometry_edit_without_all_view_regression
+  - never_use_mean_24_view_score_to_hide_a_failed_view
+  - all_256_landmark_IDs_must_have_consistent_3D_correspondence
+  - all_gold_thread_segments_must_be_exterior_or_explicitly_occluded_by_physical_geometry
+  - no_artistically_unapproved_candidate_is_named_Final
+
+reference_assets:
+  base_model:
+    file: references/Ariadne_V87_DesignFirst_Engineering_NOT_ART.glb
+    provenance: prior_GitHub_V87_1
+    format: glTF_2_0_GLBl
+    up_axis_in_file: Y
+    blender_world_up_axis: Z
+    axis_transform: 'X_blender=X_glTF; Y_blender=-Z_glTF; Z_blender=Y_glTF'
+    notes: >
+      现有六个网格，人体使用 MakeHuman 女性拓扑，但原模型没有 skin/armature；
+      坐标轴转换和蒙皮能力必须明确检测，不能假设存在。
+  source_art:
+    canonical_front: references/V20_Original_Front_Art_Reference.png
+    turnaround_overview: references/V20_24Art_Turnaround.png
+    independent_24_views_glob: references/anchors24/art_*.png
+    sha256_manifest: references/anchor_manifest.json
+    source_image_registration_required: true
+    must_not_substitute_3d_renders_for_art: true
+    audit_image_count: 24
+    audit_angle_step_deg: 15
+  landmark_protocol:
+    persistent_3d_landmarks: 256
+    per_view_records: 24
+    required_per_landmark:
+      - unique_3d_mesh_binding
+      - visible_or_occluded
+      - confidence
+      - corresponding_2d_art_point_or_explicitly_unobservable
+    no_placeholder_zero_confidence_auto_pass: true
+
+ab_experiment:
+  purpose: >
+    比较 A(V88) 与 B(V89) 在当前实际 GLB 上的工程可执行性、金球初始定位、
+    导出保真、来源完整性和错误验收防护；独立艺术质量需要新实际 GLB 渲染后再做第二轮 A/B。
+  A_control:
+    yaml: baseline/V88_0_MASTER.yaml
+    blender_script: baseline/blender_v88.py
+    pose: requires_existing_armature
+    gold_ball: fixed_world_coordinates
+    gold_thread: blender_CURVE_not_selected_by_MESH_only_GLTF_export
+    multiview: PENDING_VISUAL_REVIEW_without_independent_loss_computation
+    known_risks:
+      - unrigged_input_makes_pose_fail
+      - ball_far_from_existing_hand
+      - curve_omitted_by_selected_mesh_only_export
+      - placeholder_refine_does_not_improve_sculpture
+  B_candidate:
+    yaml: NEMA_Ariadne_V89_AB_Optimized_Master.yaml
+    pose: check_capability_then_validated_binding_then_actual_joint_edit
+    gold_ball: after_pose_palm_contact_fit_and_multiview_verify
+    gold_thread: single_curve_3d_clearance_then_mesh_conversion_and_GLTF_roundtrip
+    multiview: registered_24view_art_loss_with_rollback
+  controls:
+    - same_exact_V87_1_input_GLB_sha256
+    - same_24_original_anchor_files_and_hash_manifest
+    - same_24_camera_angles_and_intrinsics_once_calibrated
+    - same_body_topology_and_existing_garment_design
+    - same_artistic_release_gate
+    - same_render_engine_when_actual_A_B_GLb_available
+  engineering_metrics:
+    - base_GLB_structural_integrity
+    - armature_skin_count
+    - reachable_pose_edit_route
+    - ball_to_candidate_right_hand_surface_gap_m
+    - selected_GLTF_export_preserves_thread_mesh
+    - independent_art_sha256_24_of_24
+    - absence_of_unearned_art_pass
+  artistic_metrics_to_measure_after_two_real_GLBs_exist:
+    - per_view_registered_silhouette_iou
+    - per_view_256_landmark_projection_error
+    - wrist_finger_ball_contact_error_and_penetration
+    - K_composition_keyline_deviation
+    - thread_curve_3d_clearance_and_visibility
+    - global_regression_at_all_24_angles
+  design_rule:
+    - A_and_B_must_be_run_on_same_fixed_assets
+    - never_present_static_policy_pass_as_Blender_visual_success
+    - B_is_a_workflow_recommendation_not_a_verified_final_model
+    - if_comparative_art_outputs_missing_then_art_winner_is_UNDETERMINED
+  evidence_files:
+    - report/AB_Results.json
+    - report/AB_Cases.csv
+    - report/AB_Adversarial_Audit.md
+
+execution_contract:
+  rig_route:
+    import_probe:
+      - parse_GLBl_JSON_meshes_nodes_skins_animations
+      - inspect_blender_armature_bone_hierarchy_and_vertex_weights
+      - confirm_authentic_MakeHuman_human_topology_and_original_hash
+      - inspect_actual_correspondence_of_256_landmarks
+    if_rig_exists: P01_EVALUATE_EXISTING_RIG_WITH_ANATOMY_GATE
+    unrigged_mesh: P00_BIND_VALIDATED_ARMATURE_OR_EXPLICIT_POSE_DEFORMER
+    unrigged_without_validated_binding: BLOCK_POSE
+    deformation_requirements:
+      - correct_elbow_wrist_knuckle_joint_placement
+      - physically_plausible_joint_rotation_limits
+      - all_fingers_support_correct_ball_side
+      - preserve_face_and_major_cloth_fold_geometry
+      - preserve_vertex_IDs_or_write_bijective_mapping
+      - produce_0_45_90_180_270_pose_evidence_before_continue
+    reject:
+      - rotate_entire_distal_arm_by_distance_mask_and_call_it_valid_rig
+      - use_smooth_volume_warp_without_joint_correspondence
+      - proceed_with_ball_placement_before_anatomy_validation
+  gold_ball:
+    stage: P02_AFTER_POSE
+    search_space: artist_and_anatomy_derived_palm_support_candidates
+    pilot_proxy_search_allowed: true
+    pilot_proxy_limitation: geometric_gap_only_not_palm_support
+    true_contact_requirements:
+      - palm_faces_upward_toward_ball
+      - pad_of_fingers_and_palm_support_ball
+      - wrist_joint_angles_within_human_range
+      - no_free_floating_center
+      - no_hand_or_ball_mesh_penetration
+      - contact_visually_legible_at_0_45_90_degrees
+    require_true_triangle_surface_distance: true
+    reject_center_if_contact_is_only_an_arm_or_elbow_vertex: true
+    nominal_ball_radius_m: 0.095
+    design_range_from_original_art: calibrated_not_hardcoded
+  gold_thread:
+    stage: P03_AFTER_HAND_BALL_APPROVAL
+    one_continuous_parametric_curve: true
+    seeded_from_2d_design_cross_angle_correspondence: true
+    body_exterior_constraint: true
+    shoulder_waist_drape_collision_avoidance: true
+    sampled_3d_clearance_threshold_m: 0.005
+    2d_occluded_spans_need_actual_depth_evidence: true
+    no_fixed_random_control_points: true
+    no_gltf_texture_only_gold_line: true
+  glb_export:
+    curve_mesh_conversion_required: true
+    exporter_must_select_explicit_whitelist:
+      - human_skinned_mesh
+      - existing_cloth_design_meshes
+      - verified_gold_sphere_mesh
+      - converted_single_gold_thread_mesh
+      - retained_base_geometry
+    check_one_and_only_one_thread_mesh_after_reimport: true
+    verify_reimport_geometry_against_source_hash_and_required_names: true
+    verify_material_textures_and_y_up_conversion: true
+  quality:
+    per_view_threshold: 0.95
+    per_view_threshold_operator: '>'
+    view_count: 24
+    angle_step_deg: 15
+    all_24_individually_required: true
+    silhouette_iou_necessary_not_sufficient: true
+    camera_registration_verified_before_loss: true
+    silhouette_and_internal_features_both_required: true
+    subjective_art_approval_required: true
+    block_if_camera_intrinsics_still_provisional: true
+    independent_2d_art_not_3d_reprojection: true
+    zero_synthetic_art_scores: true
+  release:
+    art_approved_on_AB_trial: false
+    early_release_status: BLOCKED_ART_AND_RIG
+    never_infer_visual_pass_from_AB_policy_or_proxy: true
+    no_final_artifact_without_approved_24view_evidence: true
+
+pipeline:
+  - id: P00
+    name: ACTUAL_GLTF_CAPABILITY_AND_REFERENCE_PREFLIGHT
+    actions:
+      - verify_SHA256_all_24_independent_art_sources
+      - parse_actual_GLB_skin_armature_and_world_axes
+      - verify_256_real_landmark_correspondence
+      - if_no_armature_require_validated_binding_before_pose
+      - block_if_annotation_is_placeholder_or_self_generated
+    outputs:
+      - rig_capability.json
+      - anchor_integrity.json
+      - pose_edit_route.json
+    gate:
+      - input_asset_integrity_pass
+      - pose_route_is_actually_executable
+      - no_fabricated_rig_or_landmarks
+  - id: P01
+    name: GLOBAL_K_POSE_AND_ANATOMICAL_HAND_SCULPT
+    depends_on: [P00]
+    method:
+      - use_full_skeleton_or_explicit_validated_deformer
+      - optimize_body_balance_pelvis_ribcage_shoulder_neck_first
+      - solve_elbow_wrist_palm_finger_support_as_joint_chain
+      - solve_opposite_arm_as_composition_counterbalance
+      - recompute_garment_contact_without_redesigning_folds
+      - render_0_45_90_180_270_geometry_only_and_art_overlay
+    prohibited:
+      - disconnected_primitive_pose_patches
+      - local_arm_warp_without_joint_gate
+      - unverified_mirror_flip_or_front_only_improvement
+    outputs:
+      - V89_pose_bound_candidate.blend
+      - joint_limits_and_bone_weights.json
+      - body_5view_anatomy_audit.json
+    gate:
+      - rig_actually_deforms_mesh
+      - palm_normal_and_wrist_joint_direction_approved
+      - silhouette_regression_absent_in_all_available_angles
+  - id: P02
+    name: GOLD_BALL_PALM_SUPPORT_FIT
+    depends_on: [P01]
+    method:
+      - derive_palm_and_fingerpad_surface_from_registered_3d_landmarks
+      - fit_sphere_radius_and_center_to_approved_2d_ball_location
+      - enforce_palm_finger_contact_and_nonpenetration
+      - render_0_45_90_and_measure_contact_each
+    outputs:
+      - V89_contact_ball.blend
+      - palm_ball_3d_contact_report.json
+      - palm_ball_0_45_90_views.png
+    gate:
+      - actual_palm_support_not_arm_surface_proxy
+      - wrists_and_fingers_anatomically_plausible
+      - ball_and_hand_no_interpenetration
+  - id: P03
+    name: SINGLE_GOLD_THREAD_3D_FIT
+    depends_on: [P02]
+    method:
+      - seed_line_from_independent_art_and_3d_ball
+      - optimize_cubic_curve_outside_human_and_garment_geometry
+      - evaluate_occlusion_depth_all_24_angles
+      - convert_bezier_curve_to_real_mesh_before_GLTF_export
+      - record_one_spline_provenance_and_depth_visibility
+    outputs:
+      - V89_contact_ball_and_thread.blend
+      - gold_thread_clearance_and_visibility.json
+    gate:
+      - exactly_one_3d_curve
+      - actual_geometry_clearance_checked
+      - view_visibility_consistent
+  - id: P04
+    name: ADAPTIVE_24_VIEW_SCULPT_AND_ROLLBACK
+    depends_on: [P03]
+    method:
+      - register_camera_intrinsics_extrinsics_to_independent_art
+      - render_all_24_same_model_mesh_orbit_views
+      - per_view_compare_silhouette_internal_features_and_golden_line
+      - select_worst_angle_and_semantic_region_for_next_fix
+      - re_render_all_24_and_rollback_if_any_angle_degrades
+      - do_not_optimize_average_to_hide_local_failure
+    outputs:
+      - 24_actual_Blender_views
+      - per_view_art_registration_and_losses.json
+      - all_view_regression_and_rollback.json
+    gate:
+      - all_24_views_have_verified_ground_truth
+      - all_24_views_strictly_exceed_0_95_after_registration
+      - internal_anatomy_and_folds_not_texture_faked
+  - id: P05
+    name: COMPLETE_GLTF_EXPORT_AND_REIMPORT
+    depends_on: [P04]
+    method:
+      - freeze_verified_pose_and_geometry
+      - convert_curve_to_mesh_and_select_all_expected_objects
+      - export_candidate_as_not_approved_until_full_art_gate
+      - reimport_in_clean_blender_scene
+      - count_gold_ball_thread_real_meshes_and_materials
+      - rerender_24_from_reimported_glb_for_confirmation
+    outputs:
+      - V89_candidate_NOT_APPROVED.glb
+      - glb_roundtrip_audit.json
+      - 24_actual_GLB_reimport_views
+      - final_release_gate.json
+    gate:
+      - original_model_edit_constraints_respected
+      - exactly_one_gold_ball_and_one_thread_mesh_preserved
+      - all_art_and_anatomy_gates_pass
+      - explicit_human_approval
+
+ab_result_interpretation:
+  engineering_pilot:
+    measured_from_real_v87_1_body: true
+    metrics_source: report/AB_Results.json
+    note: >
+      A 与 B 的球面间距只测量现有未重摆姿态的右侧手部“空间候选区域”，
+      不是掌面/指腹语义点，不能证明托球动作正确。
+  artistic_quality:
+    benchmark_status: NOT_RUN_ON_TWO_POSED_GLBS
+    winner: UNDETERMINED
+    reason: >
+      当前 GLB 没有可用骨架，且 B 方案没有产出新的可验收 3D 姿态和 24 视角渲染。
+      正式 A/B 的结果必须等待实际两个独立的 pose+ball+thread GLB 和独立相机配准。
+  chosen_specification: B
+  chosen_specification_reason: >
+    B 在当前真实输入的能力识别、接触候选定位、导出完整性以及错误放行防护上更可执行，
+    但尚不具备证明艺术品质优于 A 的证据。
