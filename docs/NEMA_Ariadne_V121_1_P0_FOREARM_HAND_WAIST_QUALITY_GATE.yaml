@@ -1,0 +1,75 @@
+schema_identity:
+  project: ".NEMA Ariadne"
+  version: "121.1"
+  role: "P0 GitHub companion to local V121.1 SINGLE_FULL_ACTIVE_MASTER"
+  status: "P0_REJECTED_ANATOMY_FOREARM_HAND_WAIST"
+  canonical_local_full_master: "NEMA_Ariadne_V121_1_SINGLE_FULL_MASTER.yaml"
+  note: "This repository companion records the critical P0 gates; see canonical downloaded full master for all prior V118-V121 constraints."
+actual_source_evidence:
+  input_v120_glb_sha256: "e52798b56693c3fc0288342fa6bf484ac59baa3d5cd1295570d639093f4d1132"
+  v121_baked_visual_glb_sha256: "a2ce4f6fde9df3eee836b7c60c01db9858141964406fe6bd30d6d5384882f7c2"
+  expected_source_skin_joints: 160
+  confirmed:
+    left_hand_palm_weight_sum: 0
+    right_hand_palm_weight_sum: 0
+    zero_weight_palm_and_digit_bones_both_sides: 26
+    forearm_L_weight_sum: 55.486
+    forearm_L_twist_aux_weight_sum: 16.520
+    forearm_L_aux_twist_vertices_above_weight_0p25: 0
+    forearm_R_weight_sum: 55.486
+    forearm_R_twist_aux_weight_sum: 16.520
+    forearm_R_aux_twist_vertices_above_weight_0p25: 0
+    source_rigify_weights: "historical auto-generated; not proven to be remapped official MakeHuman .mhw weights"
+    arm_solver_max_euler_abs_radians: 2.45
+    hand_patch_selected_by_xyz_instead_of_verified_surface_semantics: true
+    bodice_skirt_swag_separate_meshes_without_approved_sewn_connection: true
+    main_waist_fold_simulator_fraction: 0.065
+  unmeasured_must_not_guess:
+    - "exact left forearm cross-section collapse or volume-loss percentage"
+    - "original inverse-bind vs rest-axis misalignment per forearm/wrist/finger bone"
+    - "forearm muscle and bone contour deformation per 15 degree source art angle"
+    - "waist seam gap and penetration signed distance"
+mandatory_fail_closed_gates:
+  P0A_true_source_mesh_and_skin_vertex_mapping:
+    state: FAIL
+    requirements:
+      - "Verify CC0 MakeHuman rest topology, index correspondence, license, joint hierarchy and official weights"
+      - "Remap official bone weights only after validated source -> Rigify anatomical correspondence"
+      - "Use real vertex/face semantic IDs, not xyz boxes"
+  P0B_hand_and_fingers:
+    state: FAIL
+    requirements:
+      - "All five digits, MCP/PIP/DIP, thumb opposition, palm and dorsal wrist patch have valid nonzero and anatomically localized weights"
+      - "No thumb bone owns other fingers or large unrelated arm surfaces"
+      - "Individual finger bend with mesh continuity test; palm and three unique pads support fixed V20 orb"
+  P0C_forearm_rig_weight_and_twist:
+    state: FAIL
+    requirements:
+      - "Audit proximal forearm, distal forearm, elbow, radius/ulna, wrist rest axes and inverse-bind matrices"
+      - "Validate forearm/twist bone weight localization, influence overlap and no remote thumb or upperarm leakage"
+      - "Preserve genuine anatomical cross section and fixed segment length under supination/pronation"
+  P0D_joint_chain_rotation_and_topology:
+    state: FAIL
+    requirements:
+      - "Solve clavicle-shoulder-elbow-forearm twist-wrist-metacarpal-digits with calibrated joint-local physiological bounds"
+      - "No global +/-2.45 rad Euler clamp per independent bone"
+      - "For each pose sweep, audit volume, curvature, edge/face inversion, self-collision, cross-section and left/right parity"
+      - "Compare independent 0/90/180/270 real GLB renders; keep fixed camera and source mesh"
+  P0E_real_waist_sewing:
+    state: FAIL
+    requirements:
+      - "Rebuild bodice, chiton waist and himation swag against same body-based waistband and actual sewing seams"
+      - "Verify anchoring, seam vertex correspondence, cloth thickness and collision signed distances"
+      - "Artist-authored primary garment folds not overwritten by raw falling fabric"
+  P0F_art_release:
+    state: BLOCKED
+    requirements:
+      - "Before cloth, pass all forearm, finger, wrist and joint controls"
+      - "Rebind rest geometry, repose, contact, and then rerun garment simulation and sculpt"
+      - "24 true independent V20 views each strictly above 0.95 artistic similarity plus human art approval"
+      - "No art approval or full finished release based on successful GLB export, static screenshot, synthetic A/B/C/D score, or aggregate ball proximity"
+engineering_audit:
+  source_script: "audit_skin_binding.py in V121.1 downloadable quality-gates package"
+  result: "Strict audit returns exit code 3 on confirmed V120 source, as intended"
+  actual_24_view_V20_approved_images_available: false
+  final_status: "P0_REJECTED_DO_NOT_CLAIM_FIXED_MODEL"
