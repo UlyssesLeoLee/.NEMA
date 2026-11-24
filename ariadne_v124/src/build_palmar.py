@@ -869,6 +869,36 @@ top2d_manual={
  "index_pad":[503,434],"middle_pad":[438,416],
  "ring_pad":[365,423],"little_pad":[248,421],
  "thumb_pad":[608,475],"gold_sphere_center":[440,540]}
+# Explicit NO-MIRROR 2D alignment / top-view kinematic audit. Registration
+# may rotate/translate/scale the authored hand-local guide but MUST NOT
+# mirror it to conceal hand/back-side reversal. Sphere is a withheld point:
+# it is NEVER used to fit the top-view similarity transform.
+key_names=["wrist","palm","index_pad","middle_pad","ring_pad","little_pad","thumb_pad"]
+a=np.asarray([top2d_world[n][:2] for n in key_names],dtype=float)
+b=np.asarray([top2d_manual[n] for n in key_names],dtype=float)
+xc=a-a.mean(axis=0);yc=b-b.mean(axis=0)
+u,sg,vh=np.linalg.svd(xc.T@yc)
+rot=u@vh
+if np.linalg.det(rot)<0:rot=u@np.diag([1.,-1.])@vh
+scale=float(np.sum((xc@rot)*yc)/max(1e-9,np.sum(xc*xc)))
+trans=b.mean(axis=0)-scale*a.mean(axis=0)@rot
+fitted=scale*a@rot+trans
+errs=np.linalg.norm(fitted-b,axis=1)
+sphere_pred=scale*np.asarray(top2d_world["gold_sphere_center"][:2])@rot+trans
+sphere_err_px=float(np.linalg.norm(sphere_pred-
+ np.asarray(top2d_manual["gold_sphere_center"])))
+top2d_alignment={
+ "authored_2d_vs_actual_3d_rms_px":float(np.sqrt(np.mean(errs*errs))),
+ "per_keypoint_error_px":{n:float(e) for n,e in zip(key_names,errs)},
+ "sphere_2d_holdout_error_px":sphere_err_px,
+ "rotation_mirror_allowed":False,
+ "rotation_determinant":float(np.linalg.det(rot)),
+ "registered_2d_scale_px_per_m":scale,
+ "top_art_authority_approved":False,
+ "actual_2d_art_comparison_result":"PROVISIONAL_REQUIRES_ART_REFINEMENT",
+ "2d_target_source": "TOP2D_LEFT_PALM_UP_AUTHOR_TARGET.svg",
+ "no_fake_2d_pass":True}
+print("V124_ACTUAL_TOP2D_VS_3D_ALIGNMENT",json.dumps(top2d_alignment),flush=True)
 top2d_register={
  "status":"EXPLICIT_TOPOLOGY_LABEL_CALIBRATED_2D_TARGET_NOT_V20_APPROVED",
  "target_source":"ariadne_v124/art/TOP2D_LEFT_PALM_UP_AUTHOR_TARGET.svg",
@@ -878,6 +908,7 @@ top2d_register={
  "source_mesh_hashes":report_source_hashes if "report_source_hashes" in locals() else {},
  "palmar_normal_top_z":palm_dot,
  "anatomical_top_surface_audit":top2d_surface_audit,
+ "top2d_actual_geometry_alignment":top2d_alignment,
  "source_palmar_vertices":len(palmar_ids),
  "source_dorsal_vertices":len(dorsal_ids),
  "left_thumb_index_little_identity_verified_from_official_bone_names":True,
@@ -900,6 +931,7 @@ report={
  "top2d_author_guide":"TOP2D_LEFT_PALM_UP_AUTHOR_TARGET.svg",
  "top2d_guide_authority":"PROVISIONAL_INDEPENDENT_2D_HAND_ART_NOT_APPROVED_V20",
  "top2d_palmar_surface_classification":top2d_surface_audit,
+ "top2d_actual_geometry_alignment":top2d_alignment,
  "palmar_rest_skin_vertices":len(palmar_ids),
  "dorsal_rest_skin_vertices":len(dorsal_ids),
  "palm_cross_product_flipped_from_V123":True,
