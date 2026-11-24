@@ -24,8 +24,10 @@ jobs:
           gh run download 45310307574 --repo "$GITHUB_REPOSITORY" \
             --name Ariadne-V120-Real-Rig-Engineering-NOT-ART \
             --dir ariadne_v121/input
-          ls -lh ariadne_v121/input
-          test -f ariadne_v121/input/V120_MakeHuman_LiveSkinnedPose_ENGINEERING_NOT_ART.glb
+          find ariadne_v121/input -maxdepth 5 -type f -printf "%p %s bytes\n"
+          SOURCE=$(find ariadne_v121/input -type f -name V120_MakeHuman_LiveSkinnedPose_ENGINEERING_NOT_ART.glb | head -n 1)
+          test -n "$SOURCE"
+          cp "$SOURCE" ariadne_v121/input/V120_MakeHuman_LiveSkinnedPose_ENGINEERING_NOT_ART.glb
           python3 - <<'PY'
           import pathlib
           p=pathlib.Path('ariadne_v121/input/V120_MakeHuman_LiveSkinnedPose_ENGINEERING_NOT_ART.glb')
