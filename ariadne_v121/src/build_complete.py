@@ -62,11 +62,68 @@ for it in range(35):
  new=np.clip(theta+step,-2.3,2.3)
  theta=new
 posefit=move(best[1])
-palm_xyz=np.array(bonept("DEF-hand.L","tail"),dtype=float)
-# Contact target follows true bone coordinates; still NOT physically audited.
-ball_center=tuple((palm_xyz+np.array([.005,-.012,.075])).tolist())
+# CRITICAL: the historical proportional Rigify prefit joint positions differ
+# from the true skinned hand surface by centimetres. Never locate an orb from
+# hand-bone tail coordinates alone. Optimize the VISIBLE evaluated skin patch.
+hand_ids=[v.index for v in body.data.vertices if v.co.x>.38 and .82<v.co.z<1.045]
+if len(hand_ids)<100: raise RuntimeError("REAL_HAND_SKIN_VERTEX_CORRESPONDENCE_MISSING")
+hand_ids=hand_ids[::3]
+def evaluated_hand_points():
+ deps=bpy.context.evaluated_depsgraph_get()
+ ob=body.evaluated_get(deps)
+ mesh=ob.to_mesh()
+ pts=np.array([list(ob.matrix_world @ mesh.vertices[i].co) for i in hand_ids],dtype=float)
+ ob.to_mesh_clear()
+ return pts
+hand_target=np.array([.425,-.15,1.426],dtype=float)
+pose_base=best[1].copy()
+def actual_hand_residual(t):
+ move(t)
+ hand=evaluated_hand_points()
+ centroid=hand.mean(axis=0)
+ bone_hand=np.array(list(bonept("DEF-hand.L","tail")),dtype=float)
+ # Visual skin surface governs, bone target only provides weak stability.
+ err=np.concatenate([(centroid-hand_target),
+                     .06*(bone_hand-targets[2]),
+                     .06*(t-pose_base)])
+ return err,centroid
+param=pose_base.copy()
+best_visual=(1e6,param.copy(),None)
+for it in range(22):
+ res,cen=actual_hand_residual(param)
+ loss=float(np.dot(res,res))
+ if loss<best_visual[0]:best_visual=(loss,param.copy(),cen.copy())
+ jac=np.zeros((len(res),len(param)),dtype=float)
+ for k in range(len(param)):
+  trial=param.copy();trial[k]+=.012
+  d,_=actual_hand_residual(trial)
+  jac[:,k]=(d-res)/.012
+ step=np.linalg.lstsq(jac.T@jac+.022*np.eye(len(param)),-jac.T@res,rcond=None)[0]
+ param=np.clip(param+np.clip(step,-.12,.12),-2.45,2.45)
+visual_err,hand_centroid=actual_hand_residual(best_visual[1])
+actual_hand=evaluated_hand_points()
+# The gold orb is positioned from the actual evaluated hand skin patch.
+# A measurable nearest-surface gap is recorded; multi-pad anatomy is not
+# deemed approved until individually tagged palmar/digital triangles agree.
+top=np.quantile(actual_hand[:,2],.87)
+ballpos=np.array([float(hand_centroid[0])+.008,float(hand_centroid[1])-.004,float(top)+.074],dtype=float)
+r_ball=.072
+for _ in range(10):
+ dist=np.linalg.norm(actual_hand-ballpos,axis=1)
+ gap=float(dist.min()-r_ball)
+ if abs(gap)<.002:break
+ ballpos[2]-=np.clip(gap,-.009,.009)
+dist=np.linalg.norm(actual_hand-ballpos,axis=1)
+ball_center=tuple(ballpos.tolist())
+palm_nearest_gap_mm=float((dist.min()-r_ball)*1000)
+palm_contact_vertices_within_5mm=int(np.sum(np.abs(dist-r_ball)<.005))
+hand_target_error_m=float(np.linalg.norm(hand_centroid-hand_target))
 print("V121_TRUE_RIG_IK_TARGETS",targets.tolist(),flush=True)
 print("V121_TRUE_RIG_IK_ACTUAL",posefit.tolist(),flush=True)
+print("V121_REAL_SKIN_HAND_TARGET",hand_target.tolist(),flush=True)
+print("V121_REAL_SKIN_HAND_ACTUAL",hand_centroid.tolist(),flush=True)
+print("V121_REAL_SKIN_TARGET_ERROR_M",hand_target_error_m,flush=True)
+print("V121_REAL_SKIN_BALL_DISTANCE_MM",palm_nearest_gap_mm,palm_contact_vertices_within_5mm,flush=True)
 print("V121_BALL_CENTER",ball_center,flush=True)
 mat={}
 def material(name,col,rough=.67,metal=0):
@@ -294,7 +351,11 @@ scene=bpy.context.scene;scene.frame_start=1;scene.frame_end=32
 report={"version":"V121","source":"V120 actual MakeHuman live-skinned GLB, no new body primitive",
  "status":"COMPLETE_COMPONENT_CANDIDATE_NOT_ART_APPROVED","blender_version":bpy.app.version_string,
  "actual_joint_ik_target_coordinates":targets.tolist(),"actual_joint_ik_result":posefit.tolist(),
- "gold_sphere_center_from_real_palm_bone":ball_center,
+ "gold_sphere_center_from_evaluated_real_skin":ball_center,
+ "real_skin_hand_target_error_m":hand_target_error_m,
+ "palm_nearest_gap_mm":palm_nearest_gap_mm,
+ "skin_contact_vertices_within_5mm":palm_contact_vertices_within_5mm,
+ "real_skin_contact_must_be_audited_without_unverified_palm_label":True,
  "gold_ball_finger_contact_approved":False,"v20_independent_24_art_present":False,
  "reference_2d_alignment":"NOT_VERIFIED","frame_count":32,"cloth":{}}
 # Real physics solver on ALL connected cloth surfaces, record actual displacements
