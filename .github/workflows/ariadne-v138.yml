@@ -1,0 +1,51 @@
+name: Ariadne V138 266-view engineering render
+on:
+  push:
+    branches:
+      - feature/ariadne-v138-github-render-pipeline
+    paths:
+      - 'art/ariadne/v138/**'
+      - '.github/workflows/ariadne-v138.yml'
+  workflow_dispatch:
+jobs:
+  render:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Blender
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y blender python3-numpy libegl1 libgl1 libopengl0 libxrender1 libxext6 libsm6
+          ldconfig -p | grep 'libEGL.so.1'
+          blender --version
+          blender -b --python-exit-code 1 --python-expr "import numpy; print('Blender NumPy ready:', numpy.__version__)"
+      - name: Preflight repository paths and Python syntax
+        run: |
+          pwd
+          test -s website/assets/ariadne-relief-3d.glb
+          test -f art/ariadne/v138/render_sphere.py
+          python3 -m py_compile art/ariadne/v138/render_sphere.py art/ariadne/v138/verify_output.py
+          echo "Source GLB and build scripts verified"
+      - name: Smoke-test 6 critical camera views
+        env:
+          ARIADNE_SMOKE: "1"
+        run: |
+          blender -b -t 2 --python-exit-code 1 --python art/ariadne/v138/render_sphere.py
+          test -s artifacts/ariadne_v138/view_000_az000_el+000.png
+      - name: Render 266 calibrated spherical views
+        run: |
+          blender -b -t 2 --python-exit-code 1 --python art/ariadne/v138/render_sphere.py
+      - name: Fail closed on incomplete evidence
+        run: |
+          python3 art/ariadne/v138/verify_output.py
+      - name: Upload engineering evidence, not art approval
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Ariadne-V138-266view-engineering
+          path: artifacts/ariadne_v138/
+          if-no-files-found: error
+          retention-days: 14
