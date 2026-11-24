@@ -1,0 +1,77 @@
+schema_identity:
+  project: ".NEMA Ariadne"
+  version: "122.0"
+  document_role: GITHUB_ACTIVE_COMPANION_TO_SINGLE_FULL_LOCAL_MASTER
+  state: P0_GATES_STRICT_CLOUD_PRELIMINARY_UNAPPROVED
+  full_master: NEMA_Ariadne_V122_SINGLE_FULL_MASTER.yaml
+  action_branch: ariadne-v122-official-palmup-20261124
+verified_source:
+  library: makehumancommunity/makehuman
+  license: CC0
+  geometry: makehuman/data/3dobjs/base.obj
+  female_morph: makehuman/data/targets/macrodetails/caucasian-female-young.target
+  rig: makehuman/data/rigs/default.mhskel
+  weights: makehuman/data/rigs/default_weights.mhw
+  verified_source_action: 45160529755
+  body_vertices: 13380
+  source_vertices: 19158
+  main_quad_faces: 13378
+  skeleton_bones: 163
+  official_weighted_groups: 139
+  legacy_Rigify_bad_bind_reused: false
+preliminary_actual_blender_evidence:
+  initial_run: 45320769705
+  actual_left_palm_up_dot: 0.928432047367096
+  actual_support_orb_surface_gap_mm: 0.6419859776078396
+  actual_left_palm_near_contact_vertices_5mm: 23
+  actual_left_forearm_unique_edge_p02_before_DQS: 0.6015456362465919
+  actual_left_forearm_unique_edge_p02_with_DQS: 0.6311389702401298
+  local_42_trial_pose_search:
+    actual_GitHub_log_run: 45321103370
+    evaluated_candidates: 42
+    initially_passing_accepted_definition: 20
+    selected_unique_edge_p02: 0.6505503834764803
+    selected_palm_up_dot: 0.928432047367096
+    source_bug_fix: "Unify final and selection statistics on same unique physical mesh edges, not repeated shared edges"
+    final_cloud_build_verified: false
+  all_results_are_not_art_approvals: true
+independent_offline_poc:
+  real_MakeHuman_CC0_skin: true
+  true_source_weights_all_fingers: true
+  left_palm_up_dot: 0.9926022985686584
+  left_forearm_unique_edge_p02_ratio: 0.48458202258225674
+  fail: true
+  objective: "Diagnose why blindly applying DQS pose transforms is insufficient for source anatomy"
+  not_deliverable_as_fixed_forearm: true
+strict_quality_gates:
+  P0_source_hand_weights:
+    require: "All 30 distinct L/R source finger segment groups have nonzero anatomically localized weights"
+    source_data: PASS
+  P0_left_palm:
+    require: "Actual anatomical left palmar normal dot Blender +Z >= 0.82"
+    art_source_V20_verified: false
+  P0_forearm:
+    require:
+      - "Source official lowerarm01 + lowerarm02 + wrist independently weighted"
+      - "Dual quaternion preserve volume"
+      - "Actual posed forearm unique-edge p02 ratio >= 0.65"
+      - "Actual posed forearm unique-edge p98 ratio <= 1.60"
+      - "No off-axis forced hand pose to hide wrist damage"
+    final_glb_P0_state: AWAIT_SUCCESSFUL_CLOUD_RUN
+  P0_waist:
+    require:
+      - "One continuous torso-waist-skirt mesh for sewn chiton"
+      - "Royal cross waist drape anchored to real continuous garment"
+      - "No disconnected bodice chest plane or floating belly sash"
+    signed_surface_penetration_audit: TODO
+  P0_art:
+    require: "24 actual independent original V20 anchors all >0.95 plus artist approval"
+    state: BLOCKED_REFERENCE_MISSING
+environment_blockers:
+  apt_mirror_fail: "GitHub 2026-11-24 apt install timeout status 124; official CC0 download succeeded"
+  primary_blender_binary_distributor: "HTTP 403 on GitHub hosted runner"
+  official_mirror_binary_test: "GitHub Actions branch workflow currently reattempts alternative official mirror"
+release_status:
+  complete_art_model: NOT_APPROVED
+  independent_offline_glb: ONLY_FAILED_ANATOMY_DIAGNOSTIC
+  never_claim_complete_final_without_art_gate: true
