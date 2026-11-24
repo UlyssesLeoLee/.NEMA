@@ -1,0 +1,143 @@
+schema_identity:
+  name: ".NEMA Ariadne V120 - GitHub Real-Sculpt Execution"
+  version: "120.0"
+  format: YAML_1.2
+  role: ACTIVE_CONTRACT_SINGLE_MASTER
+  state: ENGINEERING_CLOUD_BUILD_UNVERIFIED_ART_BLOCKED
+  precedence: "V120 actual GitHub execution + V119 evidence > V118 synthetic design > V117B history"
+  final_claim_policy: "No model, render, GLB or text shall claim art approval until all 24 independently sourced V20 anchors exceed 0.95 and are artist-approved"
+historical_evidence:
+  v117b: {attempts: 30, accepted: 1, physical_fail: 4, local_or_key_angle_fail: 21, 24_view_regression: 4, repeated_parameter_vectors: 3}
+  v118:
+    scope: synthetic_known_3d_only
+    A_svg_ik_px: 0.2505
+    B_normal_clean_px: 0.1134
+    C_ray_clean_px: 0.1346
+    D_splat_proxy_clean_px: 0.0423
+    B_normal_biased_px: 0.7571
+    C_ray_biased_px: 0.2781
+    D_splat_biased_px: 2.5138
+    decision: A_PRIMARY_BC_CONFIDENCE_GATED_D_DIAGNOSTIC_ONLY
+    do_not_use_as_V20_art_measure: true
+canonical_sources:
+  human:
+    provider: "https://github.com/makehumancommunity/makehuman"
+    license: CC0
+    mesh: "makehuman/data/3dobjs/base.obj"
+    morph: "makehuman/data/targets/macrodetails/caucasian-female-young.target"
+    skeleton: "makehuman/data/rigs/default.mhskel"
+    weights: "makehuman/data/rigs/default_weights.mhw"
+    expected_source_vertices: 19158
+    expected_main_body_vertices: 13380
+    expected_body_quad_faces: 13378
+    official_bone_count: 163
+    hash_and_license_audit_required: true
+    no_sampling_no_visual_hull_no_program_body: true
+  cloud_rig:
+    github_repo: "UlyssesLeoLee/.NEMA"
+    rigify_run_id: 44399369733
+    rigify_artifact: Ariadne-V16-Neutral-Rigify-Prefit-DIAGNOSTIC
+    neutral_blend: Ariadne_V16_Neutral_Rigify_Prefit_DIAGNOSTIC.blend
+    deform_bones_expected_range: "100..249"
+    rigify_control_rig: "706 bones in historical success report, verify current artifact"
+  sources_for_audit:
+    v85_cloth_run: 45023963835
+    v87_design_run: 45062111861
+    v104_official_assets_run: 45160529755
+    earlier_github_v16_branch: ariadne-v16-implementation-20261118
+    latest_cloth_branch: ariadne-v84-cloth-exec-20261122
+  art:
+    canonical_name: "V20 original 24 independently authored 15-degree anchors"
+    expected_count: 24
+    source_hashes_required: true
+    current_github_reference_manifest_24_anchors: 0
+    256_landmark_ids_registered_without_validated_coordinates: true
+    do_not_synthesize_or_mirror_missing_art: true
+github_execution:
+  branch: ariadne-v120-github-20261124
+  baseline_branch: ariadne-v84-cloth-exec-20261122
+  workflow: ".github/workflows/ariadne-v120-github.yml"
+  script: "ariadne_v120/src/build_v120.py"
+  runner: ubuntu-24.04
+  engine: "Blender headless through GitHub Actions, no local binary download dependency"
+  inputs: "GH_TOKEN + existing GitHub Actions artifact + official CC0 sources only"
+  provenance: "artifact run id, sha256, vertex counts, bone hierarchy, skin export, independent reload"
+  upload_artifacts: true
+  diagnostics_must_remain_labelled_UNAPPROVED: true
+  do_not_modify_main_or_existing_accepted_artifacts: true
+coordinate_contract:
+  blender: Z_up
+  gltf: Y_up
+  front_in_blender: [0, -1, 0]
+  front_in_glb: [0, 0, 1]
+  camera_angle_sign_check_required: true
+  no_camera_specific_mesh_edits: true
+  no_per_view_mirror: true
+  all_24_and_360_same_mesh: true
+production:
+  P00_source_integrity:
+    gate: HASH_LICENSE_TOPOLOGY
+    status: HISTORICALLY_PROVEN_REVERIFY_RUN
+  P01_real_anatomical_rig:
+    gate: ORIGINAL_MAKEHUMAN_AND_ORIGINAL_FULL_RIG
+    requirement: preserve true anatomy, weights, hand/finger structure and joints
+    status: HISTORICALLY_PROVEN_REVERIFY_RUN
+  P02_independent_art_semantics:
+    gate: EXACTLY_24_TRUE_V20_ANCHORS_AND_256_SEMANTIC_IDS_WITH_VISIBLE_OCCLUDED_CONFIDENCE
+    status: BLOCKED_NO_AUTHENTIC_REPO_INPUTS
+    downstream_final_art_release_blocked: true
+  P05_real_skeleton_pose:
+    constraints:
+      - sternum_clavicle_shoulder_elbow_forearm_wrist_MCP_PIP_DIP_joint_chain
+      - true_joint_local_rotations_and_palm_supination_not_wrist_flattening
+      - preserve_live_skin_and_inverse_bind_matrices
+      - no_sculpt_of_forearm_as_substitute_for_rotation
+      - export_GLTF_live_skin_and_independent_reimport
+    current_experiment: small_FK_pose_proof_ONLY
+    art_target_is_not_estimated_from_missing_anchors: true
+    acceptance: REAL_RIG_POSE_MOVES_ANATOMICAL_VERTICES_AND_RELOAD_PASS
+  P06_support_hand:
+    constraints:
+      - anatomical_left_hand_screen_right_at_front
+      - palm_facing_up_and_cupping_ball
+      - three_or_more_contact_patches_including_palmar_and_finger_pads
+      - palm_dorsum_semantic_mesh_patches_must_be_approved
+      - ball_radius_surface_gap_penetration_mm_measured_separately
+      - max_penetration_mm_3
+      - ball_position_from_approved_V20_not_from_optimizer_hack
+    gate: ART_POSE_MULTIVIEW_AND_PHYSICS_PASS
+    status: BLOCKED_NEEDS_ART
+  P07_costume:
+    goal: Cretan_royal_princess_hellenic_chiton_himation
+    constraints:
+      - true_sewing_patterns_and_physical_cloth_solver
+      - U_chest_folds_shoulder_waist_diagonal_belt_upper_lower_layers
+      - rear_trapezoid_veil_with_true_depth
+      - no_plate_billboard_no_texture_instead_of_geometry
+      - rerun_cloth_if_bones_change
+    status: NEEDS_NEW_POSE_LOCK_AND_ART
+  P08_hair_head_gold:
+    constraints:
+      - original_woman_face_and_braided_hair
+      - one_single_connected_gold_thread_outside_body
+      - sphere_hand_contact_and_thread_continuity
+      - no_duplicated_face
+  P09_four_method_trials:
+    A: semantic_SVG_IK_as_base
+    B: normal_reference_confidence_gated
+    C: ray_traced_contact_and_occlusion_audit_gated
+    D: gaussian_splat_or_2DGS_reference_only_never_mesh_truth
+    test_protocol: isolate_one_variable_and_independent_holdout_angles
+    acceptance: per_region_and_per_angle_art_error_not_global_silhouette_only
+  P16_art_release:
+    24_anchor_minimum_art_similarity_each: 0.95
+    operator: STRICT_GREATER_THAN
+    plus: human_artist_review_and_4_principal_views_and_full_360_closed_loop
+    do_not_average_out_bad_angles: true
+    no_distribution_of_failed_preview_as_finished: true
+    current_state: BLOCKED
+execution_state:
+  this_commit: GITHUB_ACTIONS_BUILD_SUBMITTED_PENDING_RUN
+  no_new_final_art_GLB_approved: true
+  workflow_must_fail_closed_if_real_rig_or_mesh_is_missing: true
+  if_24_art_missing: "Allow only source/rig engineering diagnostics, never artistic full statue release"
