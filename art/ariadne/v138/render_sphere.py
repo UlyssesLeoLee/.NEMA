@@ -25,6 +25,8 @@ scene=bpy.context.scene
 scene.render.engine = "CYCLES"
 scene.cycles.device = "CPU"
 scene.cycles.samples = 12
+scene.cycles.use_denoising = False
+bpy.context.view_layer.cycles.use_denoising = False
 scene.render.resolution_x=512;scene.render.resolution_y=512
 scene.render.resolution_percentage=100
 scene.render.image_settings.file_format="PNG"
@@ -45,7 +47,9 @@ views=[]
 for el in range(-75,76,15):
  for az in range(0,360,15):views.append((az,el))
 views.extend([(0,90),(0,-90)])
-assert len(views)==266
+if os.environ.get("ARIADNE_SMOKE") == "1":
+ views = [(0,0),(90,0),(180,0),(270,0),(0,90),(0,-90)]
+assert len(views)==(6 if os.environ.get("ARIADNE_SMOKE") == "1" else 266)
 records=[]
 for i,(az,el) in enumerate(views):
  a=math.radians(az);e=math.radians(el)
@@ -57,6 +61,6 @@ for i,(az,el) in enumerate(views):
  bpy.ops.render.render(write_still=True)
  records.append({"id":i,"azimuth":az,"elevation":el,"image":file.name,"sha256":hashlib.sha256(file.read_bytes()).hexdigest(),"matrix_world":[list(row) for row in camera.matrix_world]})
  (OUT/"camera_manifest.json").write_text(json.dumps({"source_sha256":sha,"source_type":"2D_DEPTH_RELIEF_NOT_FULL_SCULPTURE","views":records},indent=2),encoding="utf-8")
-report={"source":str(SOURCE.relative_to(ROOT)),"source_sha256":sha,"views_rendered":len(records),"geometry_mesh_objects":len(meshes),"art_similarity_95pct_verified":False,"body_cc0_verified":False,"status":"ENGINEERING_RENDER_ONLY_ART_BLOCKED","reason":"Relief reference is not a full round sculpture; independent 266 approved reference views and CC0 body are missing."}
+report={"source":str(SOURCE.relative_to(ROOT)),"source_sha256":sha,"views_rendered":len(records),"smoke":os.environ.get("ARIADNE_SMOKE") == "1","geometry_mesh_objects":len(meshes),"art_similarity_95pct_verified":False,"body_cc0_verified":False,"status":"ENGINEERING_RENDER_ONLY_ART_BLOCKED","reason":"Relief reference is not a full round sculpture; independent 266 approved reference views and CC0 body are missing."}
 (OUT/"quality_gate.json").write_text(json.dumps(report,indent=2),encoding="utf-8")
 print(json.dumps(report))
