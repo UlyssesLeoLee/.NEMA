@@ -1,0 +1,60 @@
+schema_identity:
+  project: ".NEMA Ariadne"
+  version: "131.0"
+  file_role: "GitHub companion; complete historical master is in V131 delivery ZIP"
+  state: "ENGINEERING_PROPORTION_PASS_ART_NOT_APPROVED"
+  source: "V130 actual 226-mesh GLB, local source SHA e0a5a487a7446e74210506aee0d26c8cad740647c1f76f80a0bd9a3f0b42ada5"
+  actual_result_sha256: "40b1ec31028027bfa3a5af6281293d3c4c628f0d0bb7c0f0a6030756e6591bfd"
+root_cause:
+  - "V130 390-round per-detail projection cost lacks mandatory global CC0 anatomy dimension scale anchors"
+  - "Hair cap width 28.51 cm, actual skull 15.58 cm in restricted head-local slice: 1.830x"
+  - "Chiton hem 75.47 cm, corresponding leg/ankle breadth 39.91 cm: 1.891x"
+  - "Large veil width and pedestal geometry not coupled to body shoulder and hem dimensions"
+coordinate_contract:
+  glTF: {up: Y, horizontal: X, depth: Z}
+  Blender_source: {up: Z}
+  never_confuse_axes: true
+  body_source: REAL_OFFICIAL_CC0_SKINNED_BODY_POSE_BAKED
+  CC0_source_body_protected: true
+body_anchors:
+  skull: {y_m: [1.455, 1.525], local_x_abs_limit_m: 0.145, metric: 2_98_percentile_width}
+  ankle_leg: {y_m: [0.10, 0.23], metric: 2_98_percentile_width}
+  pelvis: {y_m: [0.64, 0.75], local_x_abs_limit_m: 0.30}
+  shoulders: {y_m: [1.18, 1.33], local_x_abs_limit_m: 0.30}
+real_modification:
+  method: "continuous height-dependent per-component world X/Z space transformation"
+  preserve_provenance: "Original glTF scene materials, all 226 mesh nodes, face topology"
+  geometry_modified_components: 214
+  protected_body_mesh_vertex_changes: 0
+  protected_gold_orb_vertex_changes: 0
+  protected_gold_thread_vertex_changes: 0
+  sample_face_flips: 0
+  hair_to_skull_width: {before: 1.83006615056, after: 1.27189597464}
+  chiton_hem_to_leg_width: {before: 1.89093339617, after: 1.55044760002}
+  veil_to_shoulder_width: {before: 1.41403540132, after: 1.15189562812}
+  hime_width_m: {before: 0.50342465937, after: 0.43978436786}
+  pedestal_width_m: {before: 0.85806512833, after: 0.72506503344}
+  scripts_locally_delivered:
+    - src/fit_real_anatomical_proportions.py
+    - src/render_v131_exact26.py
+    - src/compare_and_chart.py
+p0_gate_for_subsequent_30_round_2d_react:
+  - "Recalculate anatomical part ratios after each accepted proposal, not only keypoint RMS"
+  - "Reject new hair cap/skull width > 1.40 without independently approved art override"
+  - "Reject new gown hem/legs width > 1.80 without independently approved art override"
+  - "Collar/waist/shoulders and garment attachments must be changed in 3D, not masked with texture"
+  - "Move garment trims and hair ornament in the same 3D space as their supporting material"
+  - "Render exactly one GLB in all 26 cameras and independently audit geometry"
+  - "Do not move body, orb, or gold thread to improve clothing size alone"
+  - "Protect existing face winding and real anatomical deformation"
+  - "Do not claim independently calibrated full-res 26 art views where only one composite exists"
+status:
+  engineering_scale_normalization: PASS
+  actual_final_GLTF_reimport: PASS
+  same_glTF_26_camera_diagnostics: PASS
+  garment_collision_signed_distance: NOT_MEASURED
+  photo_pixellevel_reference_fit: NOT_MEASURED
+  original_all_24_15degree_similarity_gt95: NOT_MEASURED
+  formal_art_approval: BLOCKED
+  GitHub_Action_V131_run: NOT_RUN
+  local_GLTF_and_script_verified: true
