@@ -120,7 +120,7 @@ def skirt(u,w):
  z=1.08-.985*w
  a=2*pi*u
  rx=.178+.145*(w**.90);ry=.151+.104*(w**.93)
- pleat=(.005+.018*w)*cos(13*a +.21*w +.2*sin(5*a)) +.003*cos(23*a-1.7*w)
+ pleat=(.008+.028*w)*cos(8*a +1.55*w +.55*sin(2*a)*w) +.003*cos(15*a-2.2*w)
  return ((rx+pleat)*cos(a)+.014*sin(pi*w),
          (ry+.65*pleat)*sin(a),z+.014*sin(3*a)*w)
 # use closed cylinder rim via ring mesh, with pinned top ring
@@ -145,7 +145,7 @@ def chest(u,w):
  x=-.229+.458*u
  upper=1.305-.095*(1-(2*u-1)**2)
  z=upper-(upper-.985)*w
- ridge=(.007*cos((4*u+1.4*w)*pi)+.004*cos((9*u-1.2*w)*pi))*w
+ ridge=(.012*cos((3*u+1.25*w)*pi)+.003*cos((7*u-.6*w)*pi))*w
  y=-.199-.020*(1-(2*u-1)**2)+ridge-.010*sin(pi*w)
  return(x,y,z)
 cloth.append(ribbon("11_BODICE_U_FOLD_CONTINUOUS",50,40,chest,cloth2))
@@ -160,17 +160,17 @@ cloth.append(ribbon("12_SHOULDER_TO_WAIST_CONTINUOUS_DRAPE",22,45,lambda u,w:dia
 def hip(u,w):
  x=-.285+.56*u
  top=.99-.045*u
- drop=(.07+.19*sin(pi*u)+.055*u)
+ drop=(.052+.108*sin(pi*u)+.016*u)
  z=top-drop*w
- y=-.308-.018*sin(pi*u)-.015*w+.012*sin(pi*6*u)*sin(pi*w)
+ y=-.242-.035*sin(pi*u)-.007*w+.014*sin(pi*4*u)*sin(pi*w)
  return x,y,z
 cloth.append(ribbon("13_HIP_CROSS_SWAG_CONTINUOUS",48,35,hip,clothmat))
 # two separate layers only where 2D explicitly shows cape and underlayer
 def veil(u,w,layer):
- spread=.18+.18*w +.04*layer
+ spread=.062+.170*w +.018*layer
  x=(u-.5)*2*spread
- z=1.58-1.35*w+.01*sin(8*pi*u)*(w**1.4)
- y=.205+.046*layer+.13*w+.016*sin(11*pi*u)*(w**.55)
+ z=1.575-.545*w+.012*sin(5*pi*u)*(w**1.5)
+ y=.155+.019*layer+.138*w+.012*sin(7*pi*u)*(w**1.2)
  return x,y,z
 for layer in [0,1]:
  cloth.append(ribbon("14_BACK_VEIL_CONTINUOUS_LAYER_"+str(layer),36,50,lambda u,w,ly=layer:veil(u,w,ly), clothmat if layer==0 else cloth2))
@@ -204,7 +204,7 @@ for side in (-1,1):
    y=-.106 - .030*cos(1.2*pi*t + .65*k)
    z=1.535 + .050*sin(pi*t)-.045*k-.010*t
    track.append((x,y,z))
-  curve("20_HAIR_FOREHEAD_MAJOR_WAVE_%s_%d"%(side,k),track,.016-.002*k,hairmat)
+  curve("20_HAIR_FOREHEAD_MAJOR_WAVE_%s_%d"%(side,k),track,.011-.0015*k,hairmat)
  # side curls from ear to shoulder
  for q in range(2):
   pts=[]
@@ -214,7 +214,7 @@ for side in (-1,1):
    pts.append((side*(.132+.011*cos(a)+q*.010),
                -.05+.013*sin(a),
                1.455-.25*t))
-  curve("21_HAIR_EAR_TO_COLLARBONE_%s_%d"%(side,q),pts,.010,hairmat)
+  curve("21_HAIR_EAR_TO_COLLARBONE_%s_%d"%(side,q),pts,.0075,hairmat)
 # rear bun: volumetric shell at natural occipital head + interwoven directions
 sphere("22_OCCIPITAL_HAIR_MASS",(.005,.082,1.515),.105,hairmat).scale=(1.18,.60,.78)
 for k in range(9):
