@@ -217,6 +217,51 @@ actual=evaluated_body()
 rest=np.asarray([list(body.matrix_world @ v.co) for v in body.data.vertices])
 disp=np.linalg.norm(actual-rest,axis=1)
 assert np.max(disp)>.025 and np.all(np.isfinite(actual))
+# Adversarial forearm deformation audit: do not let IK fit sacrifice arm
+# cylindrical continuity to move an orb. Search small physically meaningful
+# reductions in anatomical roll, elbow bend and wrist flexion and KEEP the
+# palm-up constraint.  Do not lower the acceptance threshold.
+edge_region=set(i for name in ("lowerarm01.L","lowerarm02.L") for i,w in valid_weights[name] if w/totals[i]>.35)
+audit_edges=set()
+for f in faces:
+ if len(edge_region.intersection(f))>=3:
+  for i in range(len(f)):
+   a,b=int(f[i]),int(f[(i+1)%len(f)])
+   audit_edges.add((min(a,b),max(a,b)))
+audit_edges=sorted(audit_edges)
+ix=np.asarray([e[0] for e in audit_edges],dtype=int)
+iy=np.asarray([e[1] for e in audit_edges],dtype=int)
+rest_edge=np.linalg.norm(rest[ix]-rest[iy],axis=1)
+good_edges=rest_edge>1e-5;ix=ix[good_edges];iy=iy[good_edges];rest_edge=rest_edge[good_edges]
+assert len(ix)>=200
+seed=best[1].copy()
+candidates=[]
+for roll_fraction in (1,.85,.7,.55,.40,.25,0):
+ for elbow_fraction in (1,.90,.78):
+  for wrist_fraction in (1,.8):
+   cc=seed.copy();cc[8]*=roll_fraction;cc[6]*=elbow_fraction;cc[9]*=wrist_fraction
+   boneset(cc)
+   ee,ww,pp,nn=landmarks()
+   up=float(nn.z)
+   arr=evaluated_body()
+   ratio=np.linalg.norm(arr[ix]-arr[iy],axis=1)/rest_edge
+   q02=float(np.quantile(ratio,.02));q98=float(np.quantile(ratio,.98))
+   err=float(np.linalg.norm(np.asarray(ww)-target_wrist)+np.linalg.norm(np.asarray(ee)-target_elbow))
+   accepted=(up>=.82 and q02>=.65 and q98<=1.6 and err<.24)
+   score=err+.28*np.linalg.norm(cc-seed)+8*max(0,.82-up)+8*max(0,.65-q02)
+   candidates.append((not accepted,score,q02,q98,up,err,cc,arr))
+candidates.sort(key=lambda x:(x[0],x[1]))
+choice=candidates[0]
+print("V122_ADVERSARIAL_FOREARM_SELECTION",json.dumps({
+ "tested":len(candidates),"valid":sum(1 for c in candidates if not c[0]),
+ "selected":{"p02_edge_ratio":choice[2],"p98_edge_ratio":choice[3],
+ "palm_up_dot":choice[4],"elbow_wrist_error_m":choice[5],
+ "pose":choice[6].tolist()},"P0_pass":not choice[0]}),flush=True)
+if choice[0]:raise RuntimeError("P0_NO_SAFE_PALM_UP_FOREARM_POSE_IN_TESTED_RANGE")
+boneset(choice[6]);actual=evaluated_body()
+elbow,wrist,palm,palm_normal=landmarks();palm_dot=float(palm_normal.z)
+disp=np.linalg.norm(actual-rest,axis=1)
+assert palm_dot>=.82 and float(np.max(disp))>.025
 # Palm support surface must be actual official wrist and metacarpal semantic patch,
 # NOT an arbitrary x/y/z bounding box.
 palm_ids=set()
