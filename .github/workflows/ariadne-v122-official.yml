@@ -11,7 +11,7 @@ permissions:
   actions: read
 jobs:
   official-skin-anatomy-palm-up-garment:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 55
     steps:
       - uses: actions/checkout@v4
@@ -46,7 +46,7 @@ jobs:
           set -euo pipefail
           sudo apt-get update -qq
           sudo apt-get install -y -qq blender python3-numpy xvfb libegl1 libgl1-mesa-dri libopengl0
-          blender --version | head -1 | grep -E '^Blender (5\.|6\.)'
+          blender --version | head -1 | grep -E '^Blender (4\.|5\.|6\.)'
       - name: Rebuild official MakeHuman rig, palm-up hand, costume and actual GLB
         run: |
           set -euo pipefail
