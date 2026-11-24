@@ -1,0 +1,82 @@
+name: Ariadne V121 Full Costumed Sculpture Actual GLB and 24 Views
+on:
+  push:
+    branches: [ariadne-v121-complete-20261124]
+    paths:
+      - 'ariadne_v121/**'
+      - '.github/workflows/ariadne-v121-full.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  full-model-candidate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 65
+    steps:
+      - uses: actions/checkout@v4
+      - name: Recover actual V120 skinned anatomical GLB
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          mkdir -p ariadne_v121/input
+          gh run download 45310307574 --repo "$GITHUB_REPOSITORY" \
+            --name Ariadne-V120-Real-Rig-Engineering-NOT-ART \
+            --dir ariadne_v121/input
+          ls -lh ariadne_v121/input
+          test -f ariadne_v121/input/V120_MakeHuman_LiveSkinnedPose_ENGINEERING_NOT_ART.glb
+          python3 - <<'PY'
+          import pathlib
+          p=pathlib.Path('ariadne_v121/input/V120_MakeHuman_LiveSkinnedPose_ENGINEERING_NOT_ART.glb')
+          assert p.read_bytes()[:4]==b'glTF' and p.stat().st_size>700000
+          print('REAL_MAKEHUMAN_SKINNED_SOURCE_BYTES',p.stat().st_size)
+          PY
+      - name: Install Blender 5+ true cloth and mesh processing
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq blender python3-numpy xvfb libegl1 libgl1-mesa-dri libopengl0
+          blender --version | head -1
+          blender --version | head -1 | grep -E '^Blender (5\.|6\.)'
+      - name: Construct anatomically grounded full Ariadne candidate
+        run: |
+          xvfb-run -a -s '-screen 0 1280x800x24' \
+            blender -b -t 2 --python-exit-code 1 \
+              --python ariadne_v121/src/build_complete.py > ariadne_v121_complete.log 2>&1 || {
+                tail -170 ariadne_v121_complete.log
+                exit 1
+              }
+          tail -55 ariadne_v121_complete.log
+      - name: Verify complete component model + actual Blender physics + all 24 angles
+        run: |
+          python3 - <<'PY'
+          import pathlib, json, struct
+          root=pathlib.Path('ariadne_v121_artifacts')
+          a=json.loads((root/'Actual_Solver_And_GLB_Audit.json').read_text())
+          assert a['version']=='V121',a.get('version')
+          assert len(a['cloth'])==8,len(a['cloth'])
+          assert all(v['maximum_vertex_motion_m']>1e-4 for v in a['cloth'].values())
+          assert a['physics_pass'] is True
+          assert a['art_pass'] is False
+          assert a['reimport_mesh_count']>=22
+          assert len(list(root.glob('V121_CameraLocked_*.png')))==24
+          glb=root/'Ariadne_V121_Complete_Princess_Model_CANDIDATE_NOT_ART_APPROVED.glb'
+          raw=glb.read_bytes()
+          assert raw[:4]==b'glTF' and len(raw)>300000
+          n,t=struct.unpack_from('<I4s',raw,12)
+          d=json.loads(raw[20:20+n])
+          assert len(d.get('meshes',[]))>=15
+          assert len(d.get('skins',[]))==1, 'Anatomical live skin missing from full costume'
+          print('V121_FULL_COMPONENTS_AND_REAL_PHYSICS_VERIFIED')
+          PY
+      - name: Upload real complete model, 24 images, editable scene and audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Ariadne-V121-FULL-COSTUMED-REAL-GLB-CANDIDATE-NOT-ART
+          path: |
+            ariadne_v121_artifacts/**
+            ariadne_v121_complete.log
+          if-no-files-found: warn
+          retention-days: 30
