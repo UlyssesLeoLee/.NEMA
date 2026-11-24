@@ -71,6 +71,29 @@ environment_blockers:
   apt_mirror_fail: "GitHub 2026-11-24 apt install timeout status 124; official CC0 download succeeded"
   primary_blender_binary_distributor: "HTTP 403 on GitHub hosted runner"
   official_mirror_binary_test: "GitHub Actions branch workflow currently reattempts alternative official mirror"
+verified_real_GitHub_artifact:
+  success_run_id: 45323285707
+  CI_pipeline: SUCCESS
+  valid_official_CC0_source_weight_map: true
+  actual_model_glb_sha256: "815c2afff903588be40a2aadc4d93671731ffc64fb94f7fd4fa35df9b5f182fe"
+  model_bytes: 2274712
+  editable_blend_bytes: 5904141
+  reimported_meshes: 35
+  independent_VTK_GLTF_camera_angles: 24
+  palm_up_dot: 0.9284084439277649
+  palm_ball_surface_gap_mm: 0.6451192583118714
+  forearm_unique_edges_checked: 537
+  forearm_p02_ratio: 0.6502070934928265
+  forearm_p98_ratio: 1.3537288709411452
+  forearm_minimum_edge_ratio: 0.4416724938790655
+  forearm_edges_below_0p5_ratio: 3
+  anatomical_status: "PROVISIONAL_GATE_PASS_ONLY; few severe localized edge compression outliers remain"
+  chiton_torso_waist_skirt_continuity: ONE_MESH
+  waist_garment_overlay_offset_mm: 21.43821188710601
+  independent_V20_art_source: MISSING
+  left_palm_finger_pads_all_verified_against_V20: false
+  finished_art_release_status: BLOCKED
+  render_note: "GitHub EGL missing; same successful full GLB independently rendered into all 24 VTK views"
 release_status:
   complete_art_model: NOT_APPROVED
   independent_offline_glb: ONLY_FAILED_ANATOMY_DIAGNOSTIC
