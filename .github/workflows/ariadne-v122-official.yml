@@ -59,7 +59,7 @@ jobs:
       - name: Rebuild official MakeHuman rig, palm-up hand, costume and actual GLB
         run: |
           set -euo pipefail
-          blender -b -t 2 --python-exit-code 1 \
+          ARIADNE_RENDER_BACKEND=EXTERNAL_VTK blender -b -t 2 --python-exit-code 1 \
             --python ariadne_v122/src/build_official.py > ariadne_v122_build.log 2>&1 || {
               tail -150 ariadne_v122_build.log
               exit 1
@@ -78,9 +78,12 @@ jobs:
           assert a['forearm_mesh_edge_quality']['p02_edge_ratio']>=.65
           assert a['forearm_mesh_edge_quality']['p98_edge_ratio']<=1.6
           assert a['waist_layer_attach_max_offset_mm']<=30
-          assert len(list(out.glob('V122_Actual_GLB_???.png')))==24
+          assert a['render_backend']=='EXTERNAL_VTK_INDEPENDENT_ACTUAL_GLTF'
+          assert a['actual_reimported_camera_views']==0
           assert (out/'Ariadne_V122_OfficialPalmUp_FullCandidate_NOT_ART_APPROVED.glb').stat().st_size>350000
-          assert a['actual_reimported_camera_views']==24
+          assert a['reimport_mesh_count']>18 and a['P0_palm_up_gate']=='PASS'
+          assert a['P0_forearm_edge_p02_gate']=='PASS'
+          assert a['P0_waist_attached_geometry_gate']=='PASS'
           assert a['art_approved'] is False
           print('V122_OFFICIAL_RIG_LEFT_PALM_UP_SEWN_WAIST_ENGINEERING_PASSED_ART_BLOCKED')
           PY
