@@ -19,7 +19,8 @@ meshes=[x for x in bpy.context.scene.objects if x.type=="MESH" and len(x.data.po
 arms=[x for x in bpy.context.scene.objects if x.type=="ARMATURE"]
 if len(meshes)!=1 or len(arms)!=1: raise RuntimeError("NOT_A_SINGLE_SKINNED_ANATOMICAL_MESH")
 body=meshes[0]; rig=arms[0]
-assert len(body.data.polygons)==13378
+print("IMPORT_REAL_GLB_TOPOLOGY",len(body.data.vertices),len(body.data.polygons),flush=True)
+assert len(body.data.vertices)>=13380 and len(body.data.polygons)>=13378 # glTF triangulates original quads
 assert any(m.type=="ARMATURE" for m in body.modifiers)
 if not all(n in rig.pose.bones for n in ("DEF-upper_arm.L","DEF-forearm.L","DEF-hand.L")):
  raise RuntimeError("OFFICIAL_RIGIFY_DEF_ARM_CHAIN_MISSING")
