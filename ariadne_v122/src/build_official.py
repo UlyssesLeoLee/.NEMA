@@ -110,6 +110,8 @@ for name,entries in valid_weights.items():
  for i,w in entries:vg.add([i],float(w/totals[i]),"REPLACE")
 skin=body.modifiers.new("OFFICIAL_MAKEHUMAN_LBS_SKIN","ARMATURE")
 skin.object=rig;skin.use_vertex_groups=True;skin.use_bone_envelopes=False
+# DQS preserves cylindrical forearm cross-section during pronation/supination.
+skin.use_deform_preserve_volume=True
 def official_weight_audit():
  out={}
  for side in ("L","R"):
@@ -436,6 +438,7 @@ if forearm_quality["p02_edge_ratio"]<.65 or forearm_quality["p98_edge_ratio"]>1.
 report={
  "version":"122.0","status":"COMPLETE_COMPONENT_MODEL_ENGINEERING_PALMUP_NOT_ART_APPROVED",
  "anatomical_mesh":"Official MakeHuman CC0 source base.obj + caucasian-female-young.target",
+ "DQS_preserve_volume_enabled":skin.use_deform_preserve_volume,
  "official_bones":len(sk["bones"]),"original_body_vertices":len(body.data.vertices),
  "original_body_faces":len(body.data.polygons),"official_weights":True,
  "all_30_left_right_finger_segment_weights_nonzero":True,
