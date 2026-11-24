@@ -41,19 +41,21 @@ jobs:
             n:hashlib.sha256((root/n).read_bytes()).hexdigest()
             for n in ['base.obj','caucasian-female-young.target','default.mhskel','default_weights.mhw']}))
           PY
-      - name: Install headless Blender 5 official anatomical sculpt environment
+      - name: Retrieve official pinned Blender 4.5 binary (no apt mirror dependency)
         run: |
           set -euo pipefail
-          timeout 100s sudo apt-get install -y -qq blender python3-numpy xvfb libegl1 libgl1-mesa-dri libopengl0 || {
-            echo 'APT_CACHE_INSTALL_MISSED_RETRY_UPDATE'
-            timeout 100s sudo apt-get update -qq
-            timeout 100s sudo apt-get install -y -qq blender python3-numpy xvfb libegl1 libgl1-mesa-dri libopengl0
-          }
-          blender --version | head -1 | grep -E '^Blender (4\.|5\.|6\.)'
+          URL="https://download.blender.org/release/Blender4.5/blender-4.5.13-linux-x64.tar.xz"
+          curl --fail --location --retry 2 --retry-delay 2 \
+               --connect-timeout 20 --max-time 210 "$URL" -o "$RUNNER_TEMP/blender.tar.xz"
+          tar -xf "$RUNNER_TEMP/blender.tar.xz" -C "$RUNNER_TEMP"
+          BINARY="$RUNNER_TEMP/blender-4.5.13-linux-x64"
+          test -x "$BINARY/blender"
+          "$BINARY/blender" --version | head -1
+          echo "$BINARY" >> "$GITHUB_PATH"
       - name: Rebuild official MakeHuman rig, palm-up hand, costume and actual GLB
         run: |
           set -euo pipefail
-          xvfb-run -a blender -b -t 2 --python-exit-code 1 \
+          blender -b -t 2 --python-exit-code 1 \
             --python ariadne_v122/src/build_official.py > ariadne_v122_build.log 2>&1 || {
               tail -150 ariadne_v122_build.log
               exit 1
