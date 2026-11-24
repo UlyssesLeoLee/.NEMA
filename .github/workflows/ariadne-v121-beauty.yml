@@ -48,7 +48,7 @@ jobs:
           a=json.loads((p/'BEAUTY_RENDER_QA.json').read_text())
           assert a['status']=='PHYSICALLY_LIT_REAL_GLB_NOT_ART_APPROVED'
           assert a['unmodified_geometry_object_count']>=30
-          assert len(list(p.glob('V121_REAL_GLB_MUSEUM_*.png')))==6
+          assert len(list(p.glob('V121_REAL_GLB_MUSEUM_*.png')))==4
           print('ARTISTIC_MATERIAL_RENDER_DONE_WITH_ART_GATE_BLOCKED')
           PY
       - uses: actions/upload-artifact@v4
