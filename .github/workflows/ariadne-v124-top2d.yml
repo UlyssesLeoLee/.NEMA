@@ -80,6 +80,12 @@ jobs:
           assert 'top2d_palmar_surface_classification' in a
           assert 'palmar_not_dorsal_support_engineering_gate' in a
           assert 'palm_cross_product_flipped_from_V123' in a
+          assert a['palmar_not_dorsal_support_engineering_gate'] is True
+          assert a['top2d_palmar_surface_classification']['positive_fraction']>=.70
+          assert a['top2d_actual_geometry_alignment']['rotation_determinant']>.99
+          assert a['top2d_actual_geometry_alignment']['authored_2d_vs_actual_3d_rms_px']>0
+          assert a['top2d_actual_geometry_alignment']['top_art_authority_approved'] is False
+          assert (out/'V124_TOP2D_CALIBRATION_LANDMARKS.json').exists()
           assert a['waist_layer_attach_max_offset_mm']<=30
           assert a['render_backend']=='EXTERNAL_VTK_INDEPENDENT_ACTUAL_GLTF'
           assert a['actual_reimported_camera_views']==0
@@ -97,6 +103,9 @@ jobs:
           name: Ariadne-V124-V1222-RealCC0-Complete-Engineering-Candidate
           path: |
             ariadne_v124/output/**
+            ariadne_v124/src/build_palmar.py
+            ariadne_v124/art/**
+            .github/workflows/ariadne-v124-top2d.yml
             ariadne_v124_build.log
           retention-days: 30
           if-no-files-found: warn
