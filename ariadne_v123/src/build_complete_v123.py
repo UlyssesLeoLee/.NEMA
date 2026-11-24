@@ -355,6 +355,66 @@ contact={"surface_gap_min_mm":float(gaps.min()*1000),
  "negative_interpenetrating_points":int(np.sum(gaps<-.003)),
  "palm_mesh_semantic_ids_count":len(palm_ids)}
 print("OFFICIAL_PALM_BALL_CONTACT",json.dumps(contact),flush=True)
+# V122.2 genuine multi-patch finger articulation against one FIXED
+# provisional gold ball. The sphere stays at the already-calculated position;
+# optimize only the official individual finger joints. Do not claim art pass
+# without user-approved V20 hand closeups/top art.
+ball_locked=center.copy()
+pad_regions={}
+for digit in (1,2,3,4,5):
+ key=f"finger{digit}-3.L"
+ pad_regions[key]=sorted(i for i,w in valid_weights[key] if w/totals[i]>.56)
+ assert len(pad_regions[key])>=12,(key,len(pad_regions[key]))
+def contact_pad_measure(digit):
+ a=evaluated_body()
+ ids=pad_regions[f"finger{digit}-3.L"]
+ radial=np.linalg.norm(a[ids]-ball_locked,axis=1)-ballradius
+ # Metric uses a distinct official distal phalanx, never aggregates same patch.
+ return {"minimum_gap_mm":float(radial.min()*1000),
+         "within_5mm":int(np.sum(np.abs(radial)<.005)),
+         "deep_penetration_points":int(np.sum(radial<-.003)),
+         "vertex_count":len(ids)}
+finger_grid_trials=0
+for digit in (1,2,3,4):
+ jointnames=[f"finger{digit}-{n}.L" for n in range(1,4)]
+ for jn in jointnames:rig.pose.bones[jn].rotation_mode="XYZ"
+ for iteration in range(2):
+  for jn in jointnames[:2]:
+   pb=rig.pose.bones[jn]
+   baseline=float(pb.rotation_euler.x)
+   best_ang=baseline;best_obj=float("inf")
+   for offset in (-.24,-.12,0,.12,.24):
+    ang=clamp(baseline+offset,-.48,.72)
+    pb.rotation_euler.x=ang
+    bpy.context.view_layer.update()
+    m=contact_pad_measure(digit);finger_grid_trials+=1
+    gap=m["minimum_gap_mm"]
+    # Prefer a near-surface, noninterpenetrating pad. Strongly penalize
+    # crushing or moving fingers through gold instead of cupping it.
+    obj=abs(gap-1.4)+35*m["deep_penetration_points"]+4*abs(ang)
+    if obj<best_obj:best_obj=obj;best_ang=ang
+   pb.rotation_euler.x=best_ang
+   bpy.context.view_layer.update()
+digit_contact={str(k):contact_pad_measure(k) for k in (1,2,3,4,5)}
+distinct_pad_count=sum(1 for k in (1,2,3,4,5)
+ if abs(digit_contact[str(k)]["minimum_gap_mm"])<=2.5
+ and digit_contact[str(k)]["deep_penetration_points"]==0)
+actual=evaluated_body()
+palmpoints=actual[palm_ids]
+new_palm_gaps=np.linalg.norm(palmpoints-ball_locked,axis=1)-ballradius
+palm_geometric_contact=bool(np.min(np.abs(new_palm_gaps))<=.0025)
+fingers_multicontact_engineering=bool(distinct_pad_count>=2 and palm_geometric_contact)
+contact.update({
+ "locked_ball_center_from_pre_finger_optimization":ball_locked.tolist(),
+ "palmar_patch_nearest_abs_gap_mm_after_finger_fit":float(np.min(np.abs(new_palm_gaps))*1000),
+ "digit_pad_contact_distinct_count":int(distinct_pad_count),
+ "digit_pad_per_bone_measurements":digit_contact,
+ "finger_joint_search_trials":finger_grid_trials,
+ "genuine_multi_patch_geometric_contact":fingers_multicontact_engineering,
+ "approved_independent_hand_art":False})
+print("V123_FIVE_DIGIT_SURFACE_CONTACT_AUDIT",json.dumps(contact),flush=True)
+# Multi-patch engineering gate may remain FAIL; it is forbidden to move the
+# ball after fitting or to call a nearest-vertex gap an art solution.
 # Surface contact proximity only: distinct palmar and finger-pad patches
 # need independent reference approval before ART PASS.
 body.modifiers.new("Anatomical_Body_Cloth_Collider","COLLISION").settings.thickness_outer=.004
@@ -566,6 +626,8 @@ report={
  "actual_evaluated_body_max_vertex_displacement_m":float(np.max(disp)),
  "actual_ball_center_world":list(center),"gold_ball_radius_m":ballradius,
  "contact":contact,"forearm_mesh_edge_quality":forearm_quality,
+ "multi_patch_contact_engineering_gate":bool(fingers_multicontact_engineering),
+ "orb_position_locked_during_finger_fit":True,
  "sewn_garment_connected_chiton_faces":len(dress_f),
  "waist_layer_attach_max_offset_mm":seam_max_mm,
  "true_blender_physics_probe":True,"physics_probe_final_center":phys.tolist(),
