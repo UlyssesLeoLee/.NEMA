@@ -21,7 +21,7 @@ high=Vector([max(v[i] for v in corners) for i in range(3)])
 center=(low+high)/2
 radius=max((high-low).length*1.35,1)
 scene=bpy.context.scene
-scene.render.engine="BLENDER_EEVEE_NEXT"
+scene.render.engine = "BLENDER_EEVEE_NEXT" if "BLENDER_EEVEE_NEXT" in bpy.types.RenderSettings.bl_rna.properties["engine"].enum_items.keys() else "BLENDER_EEVEE"
 scene.render.resolution_x=512;scene.render.resolution_y=512
 scene.render.resolution_percentage=100
 scene.render.image_settings.file_format="PNG"
