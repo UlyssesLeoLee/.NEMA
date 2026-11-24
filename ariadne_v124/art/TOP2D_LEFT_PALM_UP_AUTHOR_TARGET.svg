@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 980" width="900" height="980">
+<title>Ariadne V124 independent authored left palm-up top 2D target. NOT V20 approved.</title>
+<rect width="900" height="980" fill="#142233"/>
+<text x="52" y="72" fill="#f0e9d7" font-size="32" font-family="Arial">LEFT PALM UP — INDEPENDENT TOP 2D TARGET</text>
+<text x="52" y="107" fill="#cdd8e0" font-size="17" font-family="Arial">PROVISIONAL 2D AUTHOR DESIGN — NOT MODEL RENDER OR APPROVED V20 ART</text>
+<path d="M326 873 C317 805 300 749 302 667 C303 627 299 599 278 555 C263 524 250 475 247 411 C244 380 252 367 271 367 C294 366 304 392 311 428 L331 509 L319 305 C318 264 328 245 348 246 C375 247 377 271 380 307 L392 481 L400 270 C402 235 417 220 438 224 C461 227 464 254 463 280 L463 472 L474 311 C476 276 489 263 507 270 C526 279 527 300 522 326 L511 473 C522 503 532 508 547 491 C563 470 588 438 608 424 C635 408 654 413 667 429 C677 445 675 466 662 477 L572 588 C553 617 550 658 545 698 C529 771 516 805 512 871 Z" fill="#e9d3b4" stroke="#f7f1e6" stroke-width="5"/>
+<g stroke="#a17865" fill="none" stroke-linecap="round">
+<path d="M320 574 C385 600 452 591 528 562" stroke-width="9"/>
+<path d="M348 632 C410 659 473 636 512 614" stroke-width="6"/>
+<path d="M522 526 Q504 578 519 631 Q547 654 556 672" stroke-width="7"/>
+<path d="M323 715 Q405 733 509 704" stroke-width="4"/>
+<path d="M254 420 L294 421 M321 331 L378 330 M404 315 L461 316 M475 340 L517 347" stroke-width="4"/>
+</g>
+<circle cx="440" cy="540" r="149" fill="#d8aa4f" fill-opacity=".18" stroke="#efc76f" stroke-width="7" stroke-dasharray="18 9"/>
+<ellipse cx="446" cy="607" rx="75" ry="35" fill="#4caa9c" fill-opacity=".36" stroke="#6addcd" stroke-width="4" stroke-dasharray="8 6"/>
+<g fill="#6de6c7" fill-opacity=".67" stroke="#6de6c7" stroke-width="2">
+<circle cx="365" cy="423" r="17"/><circle cx="438" cy="416" r="17"/><circle cx="503" cy="434" r="17"/>
+</g>
+<text x="50" y="925" fill="#eaa58f" font-size="18" font-family="Arial">FAIL: DORSAL SIDE TOUCHES BALL, even when geometric nearest-gap passes</text>
+</svg>
