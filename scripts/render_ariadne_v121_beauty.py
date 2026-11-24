@@ -44,11 +44,13 @@ for mat in bpy.data.materials:
         mat.node_tree.links.new(noise.outputs["Fac"],bump.inputs["Height"])
         mat.node_tree.links.new(bump.outputs["Normal"],p.inputs["Normal"])
 scene=bpy.context.scene
-scene.render.engine="CYCLES";scene.cycles.samples=12
+scene.render.engine="CYCLES";scene.cycles.samples=16
 scene.cycles.use_denoising=True
 scene.render.resolution_x=480;scene.render.resolution_y=640;scene.render.resolution_percentage=100
 scene.render.image_settings.file_format="PNG"
 scene.render.film_transparent=False
+scene.view_settings.view_transform="AgX"
+scene.view_settings.exposure=-.9
 world=bpy.data.worlds.new("Ariadne_Museum_Dark_Blue")
 scene.world=world;world.use_nodes=True
 bg=world.node_tree.nodes.get("Background")
@@ -58,9 +60,9 @@ def light(name,loc,energy,color,size):
  data=bpy.data.lights.new(name,"AREA");data.energy=energy;data.shape="DISK";data.size=size;data.color=color
  o=bpy.data.objects.new(name,data);bpy.context.collection.objects.link(o)
  o.location=loc;o.rotation_euler=(Vector((0,0,.88))-o.location).to_track_quat("-Z","Y").to_euler()
-light("Sculpture_Key_Light",(-2.5,-3.8,4.2),850,(1,.85,.66),3.4)
-light("Sculpture_Fill_Light",(3.0,-1.4,2.0),400,(.68,.79,1),3.2)
-light("Sculpture_Rim_Light",(1.5,2.9,3.4),950,(1,.92,.81),2.0)
+light("Sculpture_Key_Light",(-2.5,-3.8,4.2),380,(1,.85,.66),3.4)
+light("Sculpture_Fill_Light",(3.0,-1.4,2.0),165,(.68,.79,1),3.2)
+light("Sculpture_Rim_Light",(1.5,2.9,3.4),350,(1,.92,.81),2.0)
 cam=bpy.data.objects.new("Museum_Locked_Camera",bpy.data.cameras.new("Ariadne_Camera"))
 bpy.context.collection.objects.link(cam)
 cam.data.type="ORTHO";cam.data.ortho_scale=2.02
@@ -79,7 +81,7 @@ for o in meshes:
 report={"status":"PHYSICALLY_LIT_REAL_GLB_NOT_ART_APPROVED",
  "input_glb_sha256":hashlib.sha256(inp.read_bytes()).hexdigest(),
  "unmodified_geometry_object_count":len(meshes),"views":views,
- "render_engine":"Blender Cycles 12 samples",
+ "render_engine":"Blender Cycles 16 samples (AgX, exposure -0.9)",
  "render_only_procedural_surface_bump_not_baked_into_GLB":True,
  "original_V20_24_art_accuracy_not_measured":True}
 (OUT/"BEAUTY_RENDER_QA.json").write_text(json.dumps(report,indent=2))
