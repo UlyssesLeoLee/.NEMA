@@ -463,20 +463,18 @@ probe.hide_render=True;probe.hide_set(True)
 body.hide_render=True;rig.hide_render=True
 # Verify no crude collapse of forearm: compare mean edge-length ratios on
 # original source faces whose vertices were strongly assigned to forearm.
-fids=set(i for name in ("lowerarm01.L","lowerarm02.L") for i,w in valid_weights[name] if w/totals[i]>.35)
-tested=[]
-for f in faces:
- if len(set(f)&fids)>=3:
-  edge=[(f[i],f[(i+1)%len(f)]) for i in range(len(f))]
-  for a,b in edge:
-   d0=np.linalg.norm(rest[a]-rest[b]);d1=np.linalg.norm(actual[a]-actual[b])
-   if d0>1e-5:tested.append(d1/d0)
-if len(tested)<25:raise RuntimeError("FOREARM_EDGE_AUDIT_INSUFFICIENT")
-edge_ratios=np.asarray(tested)
-forearm_quality={"edges_checked":len(tested),"min_edge_ratio":float(np.min(edge_ratios)),
- "p02_edge_ratio":float(np.quantile(edge_ratios,.02)),
- "p98_edge_ratio":float(np.quantile(edge_ratios,.98)),
- "max_edge_ratio":float(np.max(edge_ratios))}
+# Final result MUST use the same unique physical mesh edges as the
+# 42 candidate trials. Repeated face-edge occurrences otherwise change
+# the percentile distribution and make acceptance non-reproducible.
+ratios=np.linalg.norm(actual[ix]-actual[iy],axis=1)/rest_edge
+if len(ratios)<200:raise RuntimeError("FOREARM_EDGE_AUDIT_INSUFFICIENT")
+forearm_quality={"edges_checked":len(ratios),"min_edge_ratio":float(np.min(ratios)),
+ "p02_edge_ratio":float(np.quantile(ratios,.02)),
+ "p98_edge_ratio":float(np.quantile(ratios,.98)),
+ "max_edge_ratio":float(np.max(ratios)),
+ "edges_below_0p50":int(np.sum(ratios<.5)),
+ "unique_edge_pairs":True,
+ "DQS_volume_preservation":skin.use_deform_preserve_volume}
 print("REAL_OFFICIAL_FOREARM_EDGE_AUDIT",json.dumps(forearm_quality),flush=True)
 if forearm_quality["p02_edge_ratio"]<.65 or forearm_quality["p98_edge_ratio"]>1.6:
  raise RuntimeError("P0_FOREARM_COLLAPSE_OR_STRETCH")
