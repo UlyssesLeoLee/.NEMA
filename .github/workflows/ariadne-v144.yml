@@ -1,0 +1,31 @@
+name: Ariadne V144 bake IK hand pose into full GLB
+on:
+  push:
+    branches: [feature/ariadne-v144-hand-ik]
+    paths: ['art/ariadne/v144/**', '.github/workflows/ariadne-v144.yml']
+  workflow_dispatch:
+jobs:
+  ik:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    permissions: {contents: read}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Blender headless
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y blender python3-numpy libegl1 libgl1 libopengl0 libxrender1 libxext6 libsm6
+          python3 -m py_compile art/ariadne/v144/build_ik.py art/ariadne/v144/verify.py
+      - name: Solve and bake hand IK, export GLB, actual 10-view render
+        run: |
+          blender -b -t 2 --python-exit-code 1 --python art/ariadne/v144/build_ik.py
+      - name: Verify
+        run: python3 art/ariadne/v144/verify.py
+      - name: Upload engineering GLB
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Ariadne-V144-IK-GLB-10-Actual-Cameras
+          path: artifacts/ariadne_v144/
+          if-no-files-found: warn
+          retention-days: 14

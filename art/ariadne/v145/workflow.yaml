@@ -1,0 +1,59 @@
+project:
+  id: ARIADNE_V145
+  baseline: v144_real_official_makehuman_weighted_ik_glb
+  art_reference: user_approved_eight_view_art_design
+  no_silent_reference_invention: true
+  same_shared_glb: true
+  release_state: BLOCKED
+  no_vercel: true
+sphere:
+  azimuth_start_deg: 0
+  azimuth_stop_exclusive_deg: 360
+  azimuth_step_deg: 15
+  elevation_rings_deg: [-75,-60,-45,-30,-15,0,15,30,45,60,75]
+  poles_deg: [-90,90]
+  unique_angles: 266
+  camera_intrinsics_and_extrinsics_fixed: true
+iteration:
+  per_camera_real_react_cycles_required: 30
+  total_genuine_corrections_required: 7980
+  stages:
+    - original_2d_reference_with_verified_approval
+    - render_actual_shared_glb_same_camera
+    - redraw_2d_new_corrected_art
+    - adjudicate_geometry_root_cause
+    - apply_nonzero_real_3d_mesh_or_rig_change
+    - export_glb_and_reimport_before_render
+    - measure_independent_ref_errors
+    - global_regression_all_previously_passed_views
+    - accept_or_rollback_and_commit_evidence
+  per_cycle_evidence_required:
+    - approved_art_ref_sha256
+    - exact_camera_calibration_id
+    - corrected_2d_file_sha256
+    - model_glb_before_sha256
+    - model_glb_after_sha256
+    - nonzero_geometry_or_bone_transform_delta
+    - screenshot_before_after_sha256
+    - semantic_and_anatomic_error_metrics
+    - global_regression_matrix
+    - rollback_or_commit_reason
+  self_render_as_reference: NEVER
+  screenshot_only_counts_as_cycle: false
+  candidate_2d_without_external_approval_counts_as_pass: false
+gates:
+  corrected_pose: anatomical_rig_validated
+  hand_orb: palm_surface_and_five_finger_contact_validated
+  face_hair: original_art_authority_and_all_visible_angular_cameras
+  garment: tailored_sewn_layers_measured_folds_and_real_body_contact
+  gold_thread: one_3d_curve_outside_body_no_penetration
+  per_authorized_angle_similarity: strictly_greater_than_0.95
+  reference_missing: BLOCKED_NOT_FAKE_SUCCESS
+  every_camera_exactly_30_genuine_iterations: true
+  all_7980_evidence_logs_required: true
+  human_approval_required: true
+execution:
+  can_publish_an_engineering_candidate: true
+  must_not_label_engineering_candidate_as_finished: true
+  code_and_action_output_to_github: true
+  release_allowed_only_after_all_gates: true
