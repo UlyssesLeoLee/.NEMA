@@ -98,6 +98,7 @@ def actual_palmar_3d_audit():
         finger_measure[str(i)]={"nearest_abs_gap_mm":mgap*1000,
                                 "deep_penetrations":deep}
         if mgap<=.005 and deep==0:count+=1
+    deep_total=sum(v["deep_penetrations"] for v in finger_measure.values())
     _,_,_,nn=landmarks()
     return {
        "palmar_visible_from_top":vis,
@@ -105,9 +106,11 @@ def actual_palmar_3d_audit():
        "palm_up_dot":float(nn.z),
        "palmar_patch_nearest_abs_gap_mm":palm_gap*1000,
        "fingertips_within_5mm":count,
+       "fingertip_deep_penetration_total":int(deep_total),
+       "no_finger_passes_through_gold":bool(deep_total==0),
        "finger_gaps":finger_measure,
        "meets_strict_anatomical_contact":bool(vis and float(nn.z)>=.82
-          and palm_gap<=.005 and count>=2)
+          and palm_gap<=.005 and count>=2 and deep_total==0)
     }
 
 def allowed_joint_variables():
@@ -191,8 +194,9 @@ for episode in range(1,31):
         anat=actual_palmar_3d_audit()
         # Zero tolerance for swapping palmar vs dorsal support. Finger-pad
         # partial failures remain engineering NOT ART; no invented V20 pass.
-        if anat["palmar_visible_from_top"] and anat["palm_up_dot"]>=.82 \
-           and anat["fingertips_within_5mm"]>=2:
+        if (anat["meets_strict_anatomical_contact"] and
+            anat["no_finger_passes_through_gold"] and
+            metric["sphere_holdout_px"]<=initial_alignment["sphere_holdout_px"]+3.0):
             chosen=(val,joint,axis,delta,candidate,metric,anat)
             break
         rejected_for_geometry+=1
@@ -227,6 +231,8 @@ for episode in range(1,31):
           "palmar_real_skin_gate_on_accept":bool(accepted),
           "rejected_trial_skin_geometry":rejected_for_geometry},
       "accepted":accepted,
+      "projected_2d_landmarks_px":best_alignment["keypoints_px"],
+      "holdout_guard_max_px":initial_alignment["sphere_holdout_px"]+3.0,
       "reflection":"retain_bounded_joint_change" if accepted
                    else "rollback_and_reduce_step_or_change_finger",
       "2d_authority_user_approved":False
@@ -241,6 +247,10 @@ final_anatomy=actual_palmar_3d_audit()
 assert len(records)==30 and len({r["round"] for r in records})==30
 assert final_alignment["determinant"]>.99
 assert final_alignment["rms"]<=initial_alignment["rms"]+1e-7
+assert final_alignment["sphere_holdout_px"]<=initial_alignment["sphere_holdout_px"]+3.0
+assert final_anatomy["fingertip_deep_penetration_total"]==0
+assert final_anatomy["meets_strict_anatomical_contact"]
+
 assert final_anatomy["palmar_visible_from_top"]
 assert final_anatomy["palm_up_dot"]>=.82
 # NO missing art-source similarity claims.
