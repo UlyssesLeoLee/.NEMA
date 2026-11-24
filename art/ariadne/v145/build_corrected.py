@@ -64,17 +64,30 @@ try:
  surface_gap=abs((proposed-observed[0]).length-r)
  assert surface_gap<.016,"orb does not touch anatomical surface"
  wrist_gap=(proposed-wrist_world).length
- # Thread follows the actual orb. Update endpoint through source world space.
- curves=[o for o in bpy.data.objects if o.type=="CURVE" and "Gold_Thread" in o.name]
- updated=0
- for c in curves:
-  for spl in c.data.splines:
-   if spl.type=="BEZIER" and len(spl.bezier_points)>=2:
-    inv=c.matrix_world.inverted()
-    spl.bezier_points[-1].co=inv@proposed
-    spl.bezier_points[-2].co=inv@(proposed+Vector((0,0,-.055)))
-    updated+=1
- assert updated>0,"gold thread failed to follow physical orb"
+ # Imported glTF CURVE is deliberately triangulated into MESH.
+ # Delete old thread mesh and rebuild one actual continuous 3D curve,
+ # then export it back to GLB; never duplicate a second gold line.
+ old_lines=[o for o in list(bpy.data.objects) if "Gold_Thread" in o.name and o.type in ("MESH","CURVE")]
+ assert old_lines, "No original gold thread found to rebuild"
+ for old in old_lines:bpy.data.objects.remove(old,do_unlink=True)
+ thread_data=bpy.data.curves.new("V145_Single_Curve","CURVE")
+ thread_data.dimensions="3D";thread_data.bevel_depth=.0037;thread_data.bevel_resolution=3
+ thread_data.resolution_u=24
+ spline=thread_data.splines.new("BEZIER");spline.bezier_points.add(51)
+ for n,p in enumerate(spline.bezier_points):
+  t=n/51
+  th=t*math.pi*3.5
+  rad=.34-.12*t
+  q=Vector((rad*math.cos(th),rad*math.sin(th),.07+1.27*t))
+  if t>.88:
+   blend=(t-.88)/.12
+   q=q.lerp(proposed,blend*blend*(3-2*blend))
+  p.co=q;p.handle_left_type="AUTO";p.handle_right_type="AUTO"
+ line=bpy.data.objects.new("V145_Single_Continuous_Gold_Thread",thread_data)
+ bpy.context.collection.objects.link(line)
+ line.data.materials.append(gold)
+ updated=1
+
 finally:
  body_eval.to_mesh_clear()
 # Remove visibly unsupported ribbon construction; replace with shoulder/
