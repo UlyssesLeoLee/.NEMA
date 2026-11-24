@@ -130,8 +130,12 @@ params=[
  ("upperarm01.L",0,-1.1,1.1),("upperarm01.L",2,-1.15,1.15),
  ("upperarm02.L",0,-.65,.65),("upperarm02.L",2,-.75,.75),
  ("lowerarm01.L",0,-1.5,1.5),("lowerarm01.L",2,-1.2,1.2),
- ("FOREARM_ROLL",1,-1.25,1.25),
- ("wrist.L",0,-.45,.45),("wrist.L",2,-.45,.45)]
+ ("FOREARM_ROLL",1,-1.57,1.57),
+ ("wrist.L",0,-.45,.45),("wrist.L",2,-.45,.45),
+ ("shoulder01.L",1,-.55,.55),
+ ("upperarm01.L",1,-.92,.92),
+ ("upperarm02.L",1,-.65,.65),
+ ("wrist.L",1,-.38,.38)]
 lower=np.asarray([a for _,_,a,b in params]);upper=np.asarray([b for _,_,a,b in params])
 def boneset(x):
  for nm in ("shoulder01.L","upperarm01.L","upperarm02.L","lowerarm01.L","lowerarm02.L","wrist.L"):
@@ -174,13 +178,13 @@ def residual(x):
   (np.array(e)-target_elbow)/.17,
   (np.array(w)-target_wrist)/.15,
   (np.array(p)-target_palm)/.13,
-  (np.array(n)-np.array(target_up))*.95,
+  (np.array(n)-np.array(target_up))*3.5,
   x*.19,
   np.array([x[8]*.11])
  ])
  return r
 x=np.zeros(len(params)); best=(1e9,x.copy()); lamb=.05
-for k in range(75):
+for k in range(120):
  r=residual(x);cost=float(r@r)
  if cost<best[0]:best=(cost,x.copy())
  J=np.zeros((len(r),len(x)))
@@ -189,7 +193,7 @@ for k in range(75):
   J[:,i]=(residual(xx)-r)/.006
  a=J.T@J + lamb*np.eye(len(x))
  step=np.linalg.lstsq(a,-J.T@r,rcond=None)[0]
- trial=np.clip(x+np.clip(step,-.18,.18),lower,upper)
+ trial=np.clip(x+np.clip(step,-.22,.22),lower,upper)
  trialcost=float(residual(trial)@residual(trial))
  if trialcost<cost: x=trial; lamb=max(.004,lamb*.72)
  else:lamb=min(2.,lamb*2.5)
