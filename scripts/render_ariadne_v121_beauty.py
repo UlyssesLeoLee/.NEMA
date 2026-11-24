@@ -44,9 +44,9 @@ for mat in bpy.data.materials:
         mat.node_tree.links.new(noise.outputs["Fac"],bump.inputs["Height"])
         mat.node_tree.links.new(bump.outputs["Normal"],p.inputs["Normal"])
 scene=bpy.context.scene
-scene.render.engine="CYCLES";scene.cycles.samples=24
+scene.render.engine="CYCLES";scene.cycles.samples=12
 scene.cycles.use_denoising=True
-scene.render.resolution_x=600;scene.render.resolution_y=800;scene.render.resolution_percentage=100
+scene.render.resolution_x=480;scene.render.resolution_y=640;scene.render.resolution_percentage=100
 scene.render.image_settings.file_format="PNG"
 scene.render.film_transparent=False
 world=bpy.data.worlds.new("Ariadne_Museum_Dark_Blue")
@@ -66,7 +66,7 @@ bpy.context.collection.objects.link(cam)
 cam.data.type="ORTHO";cam.data.ortho_scale=2.02
 scene.camera=cam
 target=Vector((0,0,.78))
-views=[0,45,90,180,270,315]
+views=[0,90,180,270]
 for deg in views:
  a=math.radians(deg)
  cam.location=(3.8*math.sin(a),-3.8*math.cos(a),1.1)
@@ -79,7 +79,7 @@ for o in meshes:
 report={"status":"PHYSICALLY_LIT_REAL_GLB_NOT_ART_APPROVED",
  "input_glb_sha256":hashlib.sha256(inp.read_bytes()).hexdigest(),
  "unmodified_geometry_object_count":len(meshes),"views":views,
- "render_engine":"Blender Cycles 24 samples",
+ "render_engine":"Blender Cycles 12 samples",
  "render_only_procedural_surface_bump_not_baked_into_GLB":True,
  "original_V20_24_art_accuracy_not_measured":True}
 (OUT/"BEAUTY_RENDER_QA.json").write_text(json.dumps(report,indent=2))
