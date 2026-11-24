@@ -238,8 +238,8 @@ def right_landmark():
  w=np.asarray(rig.pose.bones["wrist.R"].head)
  k=np.mean([np.asarray(rig.pose.bones[f"finger{a}-1.R"].head) for a in (2,3,4,5)],axis=0)
  return e,w,k
-right_e=np.array([-.35,-.12,1.05]);right_w=np.array([-.50,-.16,.805])
-right_k=np.array([-.54,-.195,.78])
+right_e=np.array([-.315,-.11,1.075]);right_w=np.array([-.455,-.15,.90])
+right_k=np.array([-.495,-.18,.85])
 right_pose=np.zeros(len(right_params))
 right_best=(1.e12,right_pose.copy());right_lambda=.08
 for _itr in range(58):
