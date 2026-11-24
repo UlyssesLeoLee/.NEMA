@@ -1,0 +1,99 @@
+name: Ariadne V123 V122.2 Adversarial Bilateral Hand and Fold Reconstruction
+on:
+  push:
+    branches: [ariadne-v123-official-palmup-20261124]
+    paths:
+      - 'ariadne_v123/**'
+      - '.github/workflows/ariadne-v123-official.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  official-skin-anatomy-palm-up-garment:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+      - name: Recover official MakeHuman CC0 skeleton weights female body
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          mkdir -p ariadne_v123/input
+          gh run download 45160529755 --repo "$GITHUB_REPOSITORY" \
+            --name Ariadne-V104-Official-MakeHuman-CC0-Rig-Weights \
+            --dir /tmp/ariadne_official_cc0
+          for FILE in base.obj caucasian-female-young.target default.mhskel default_weights.mhw; do
+            ORIGIN=$(find /tmp/ariadne_official_cc0 -type f -name "$FILE" | head -1)
+            test -n "$ORIGIN"
+            cp "$ORIGIN" "ariadne_v123/input/$FILE"
+            test -s "ariadne_v123/input/$FILE"
+          done
+          python3 - <<'PY'
+          import json,pathlib,hashlib
+          root=pathlib.Path('ariadne_v123/input')
+          sk=json.loads((root/'default.mhskel').read_text())
+          w=json.loads((root/'default_weights.mhw').read_text())
+          assert sk['license']==w['license']=='CC0'
+          assert len(sk['bones'])==163 and len(w['weights'])>=139
+          print('OFFICIAL_SOURCE_PROVENANCE',json.dumps({
+            n:hashlib.sha256((root/n).read_bytes()).hexdigest()
+            for n in ['base.obj','caucasian-female-young.target','default.mhskel','default_weights.mhw']}))
+          PY
+      - name: Retrieve official pinned Blender 4.5 binary (no apt mirror dependency)
+        run: |
+          set -euo pipefail
+          URL="https://mirror.blender.org/release/Blender4.5/blender-4.5.13-linux-x64.tar.xz"
+          FALLBACK="https://mirror.clarkson.edu/blender/release/Blender4.5/blender-4.5.13-linux-x64.tar.xz"
+          curl --fail --location --retry 1 --retry-delay 2 \
+               --connect-timeout 20 --max-time 210 "$URL" -o "$RUNNER_TEMP/blender.tar.xz" || \
+          curl --fail --location --retry 1 --retry-delay 2 \
+               --connect-timeout 20 --max-time 210 "$FALLBACK" -o "$RUNNER_TEMP/blender.tar.xz"
+          test "$(stat -c%s "$RUNNER_TEMP/blender.tar.xz")" -gt 350000000
+          tar -xf "$RUNNER_TEMP/blender.tar.xz" -C "$RUNNER_TEMP"
+          BINARY="$RUNNER_TEMP/blender-4.5.13-linux-x64"
+          test -x "$BINARY/blender"
+          "$BINARY/blender" --version | head -1
+          echo "$BINARY" >> "$GITHUB_PATH"
+      - name: Rebuild official MakeHuman rig, palm-up hand, costume and actual GLB
+        run: |
+          set -euo pipefail
+          ARIADNE_RENDER_BACKEND=EXTERNAL_VTK blender -b -t 2 --python-exit-code 1 \
+            --python ariadne_v123/src/build_complete_v123.py > ariadne_v123_build.log 2>&1 || {
+              tail -150 ariadne_v123_build.log
+              exit 1
+            }
+          tail -65 ariadne_v123_build.log
+      - name: Validate actual rebuilt source and real reimported GLB
+        run: |
+          python3 - <<'PY'
+          import json, pathlib
+          out=pathlib.Path('ariadne_v123/output')
+          a=json.loads((out/'V123_P0_ANATOMY_AND_GARMENT_QA.json').read_text())
+          assert a['official_bones']==163 and a['original_body_vertices']==13380
+          assert a['original_body_faces']==13378 and a['official_weights'] is True
+          assert a['all_30_left_right_finger_segment_weights_nonzero'] is True
+          assert a['left_palm_up_dot']>=.82
+          assert 'forearm_zero_severe_gate' in a and 'right_hand_gesture_changed_from_neutral' in a
+          assert 'digit_pad_per_bone_measurements' in a['contact']
+          assert a['waist_layer_attach_max_offset_mm']<=30
+          assert a['render_backend']=='EXTERNAL_VTK_INDEPENDENT_ACTUAL_GLTF'
+          assert a['actual_reimported_camera_views']==0
+          assert (out/'Ariadne_V123_OfficialPalmUp_FullCandidate_NOT_ART_APPROVED.glb').stat().st_size>350000
+          assert a['reimport_mesh_count']>18 and a['P0_palm_up_gate']=='PASS'
+          assert a['P0_forearm_edge_p02_gate'] in ('PASS','FAIL')
+          assert a['P0_waist_attached_geometry_gate'] in ('PASS','FAIL')
+          assert a['art_approved'] is False
+          print('V123_ENGINEERING_BUILD_DONE; ANATOMY/CONTACT/ART GATES REPORTED SEPARATELY')
+          PY
+      - name: Archive actual complete GLB editable rig 24 views and audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Ariadne-V123-V1222-RealCC0-Complete-Engineering-Candidate
+          path: |
+            ariadne_v123/output/**
+            ariadne_v123_build.log
+          retention-days: 30
+          if-no-files-found: warn
