@@ -114,7 +114,7 @@ def mantle(u,t):
     x=center+(u-.5)*width
     z+=.040*sin(3*pi*u)*sin(pi*t)+.015*sin(pi*u)*t
     relief=.038*cos(5*pi*u+.6*t)*sin(pi*t)+.016*cos(11*pi*u)*t
-    y=gown_front(min(.35,max(-.35,x)),z,.029)-relief
+    y=gown_front(min(.35,max(-.35,x)),z,.096)-.65*relief
     y+=.038*max(0.,2*u-1)*t
     return (x,y,z)
 mantle_mesh=sculpt_ribbon("V129_ROYAL_PURPLE_HIMATION_FULL_BODY",mantle,68,116,purple)
@@ -131,7 +131,7 @@ def royal_diagonal(u,t):
     z=1.26-.67*t
     x=.12-.25*t+(u-.5)*(.080+.13*sin(pi*t))
     z+=.025*sin(pi*u)*sin(pi*t)
-    y=gown_front(x,z,.060)+.008*sin(5*pi*u)*sin(pi*t)
+    y=gown_front(x,z,.098)+.006*sin(5*pi*u)*sin(pi*t)
     return(x,y,z)
 sculpt_ribbon("V129_PURPLE_DIAGONAL_WAIST_CLOTH",royal_diagonal,36,86,purple)
 for u,side in ((.015,"A"),(.985,"B")):
@@ -363,6 +363,8 @@ v129_art_design={
  "real_skirt_3d_sculpt_vertices":skirt_sculpt_vertices,
  "curved_purple_himation_no_longer_vertical_banner":True,
  "veil_has_tapered_scalloped_nonplanar_sculptural_pleats":True,
+ "purple_folds_front_surface_signed_offset_cm":9.6,
+ "purple_fabric_art_resemblance_still_manual_review":True,
  "max_neckline_vertex_displacement_mm":max_neck_disp*1000,
  "new_3d_design_mesh_components":len(glb_art_components),
  "new_components":glb_art_components,
