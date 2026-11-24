@@ -1,0 +1,37 @@
+name: Ariadne V139 CC0 full-round anatomical foundation
+on:
+  push:
+    branches:
+      - feature/ariadne-v139-cc0-round-sculpture
+    paths:
+      - 'art/ariadne/v139/**'
+      - '.github/workflows/ariadne-v139.yml'
+  workflow_dispatch:
+jobs:
+  foundation:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Blender headless dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y blender python3-numpy libegl1 libgl1 libopengl0 libxrender1 libxext6 libsm6
+          blender -b --python-exit-code 1 --python-expr "import numpy; print(numpy.__version__)"
+          python3 -m py_compile art/ariadne/v139/build_cc0_foundation.py
+      - name: Build real CC0 female 3D mesh and render ten diagnostic viewpoints
+        run: |
+          blender -b -t 2 --python-exit-code 1 --python art/ariadne/v139/build_cc0_foundation.py
+      - name: Fail-closed verification
+        run: |
+          python3 art/ariadne/v139/verify.py
+      - name: Upload glb and actual render evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Ariadne-V139-CC0-3D-foundation-and-10views
+          path: artifacts/ariadne_v139/
+          if-no-files-found: warn
+          retention-days: 21
