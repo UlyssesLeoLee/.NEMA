@@ -1,0 +1,74 @@
+name: Ariadne V120 - Real Rig Pose Blender and 24-view engineering
+on:
+  push:
+    branches: [ariadne-v120-github-20261124]
+    paths:
+      - 'ariadne_v120/**'
+      - '.github/workflows/ariadne-v120-github.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  rigged-pose-engineering-not-art:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Retrieve immutable successful V16 real MakeHuman-Rigify source
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          mkdir -p ariadne_v120/input
+          gh run download 44399369733 --repo "$GITHUB_REPOSITORY" \
+            --name Ariadne-V16-Neutral-Rigify-Prefit-DIAGNOSTIC \
+            --dir ariadne_v120/input
+          find ariadne_v120/input -maxdepth 4 -type f -printf '%p %s bytes\n'
+          test "$(find ariadne_v120/input -name 'Ariadne_V16_Neutral_Rigify_Prefit_DIAGNOSTIC.blend' | wc -l)" -eq 1
+      - name: Install Blender on actual GitHub Linux runner
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq blender python3-numpy libegl1 libgl1-mesa-dri libopengl0 xvfb
+          blender --version | head -2
+      - name: Build genuine joint-driven skinned anatomical pose
+        run: |
+          set -euo pipefail
+          xvfb-run -a -s '-screen 0 1024x768x24' \
+            blender -b -t 2 --python-exit-code 1 --python ariadne_v120/src/build_v120.py > ariadne_v120_build.log 2>&1 || {
+              tail -120 ariadne_v120_build.log
+              exit 1
+            }
+          tail -45 ariadne_v120_build.log
+      - name: Verify actual GLB, live skin, and all 24 camera renders
+        run: |
+          python3 - <<'PY'
+          import json, pathlib
+          out=pathlib.Path('ariadne_v120/output')
+          a=json.loads((out/'V120_AUDIT.json').read_text())
+          assert a['gates']['P05_anatomical_source']=='PASS'
+          assert a['gates']['P05_joint_local_movement']=='PASS'
+          assert a['gates']['P05_live_skin_export']=='PASS'
+          assert a['gates']['P16_24x95_percent_art']=='BLOCKED'
+          assert not a['art_approval'] and not a['art_similarity_measured']
+          assert a['body_vertices']==19158 and a['body_faces']==13378
+          assert a['live_gltf_skin_count']==1 and a['live_gltf_joint_count']>=100
+          assert a['pose_max_vertex_motion_m']>0.005
+          pngs=list(out.glob('v120_???.png'))
+          assert len(pngs)==24,len(pngs)
+          glb=out/'V120_MakeHuman_LiveSkinnedPose_ENGINEERING_NOT_ART.glb'
+          raw=glb.read_bytes()
+          assert raw[:4]==b'glTF' and len(raw)>100000
+          print('V120 REAL RIG ENGINEERING PASS. ART RELEASE BLOCKED')
+          PY
+      - name: Upload real engineering-only source, skin and 24-view proof
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Ariadne-V120-Real-Rig-Engineering-NOT-ART
+          path: |
+            ariadne_v120/output/**
+            ariadne_v120_build.log
+          if-no-files-found: warn
+          retention-days: 30
