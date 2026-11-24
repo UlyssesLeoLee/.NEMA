@@ -22,11 +22,16 @@ for name,url in SOURCES.items():
 
 # Build Blender mesh directly from original vertex indexing so that official
 # MakeHuman morph deltas cannot accidentally be applied to reordered vertices.
-verts=[]; faces=[]
+verts=[]; faces=[]; current_group=None; skipped_helper_faces=0
 for ln in (OUT/"base.obj").open(errors="replace"):
  if ln.startswith("v "):
   t=ln.split();verts.append(tuple(map(float,t[1:4])))
+ elif ln.startswith("g "):
+  current_group=ln.strip().split(maxsplit=1)[1]
  elif ln.startswith("f "):
+  if current_group!="body":
+   skipped_helper_faces+=1
+   continue
   fs=[]
   for tok in ln.split()[1:]:
    val=int(tok.split("/")[0]);fs.append(val-1 if val>0 else len(verts)+val)
@@ -46,14 +51,21 @@ for ln in (OUT/"female.target").open(errors="replace"):
  shifted+=1
 if shifted<1000:raise RuntimeError("female morphology did not apply")
 bpy.ops.object.select_all(action="SELECT");bpy.ops.object.delete(use_global=False)
-mesh=bpy.data.meshes.new("MakeHuman_Official_CC0_MorphFemale")
-mesh.from_pydata(verts,[],faces);mesh.update()
+used_indices=sorted({i for face in faces for i in face})
+remap={old:new for new,old in enumerate(used_indices)}
+body_verts=[verts[i] for i in used_indices]
+body_faces=[[remap[i] for i in face] for face in faces]
+mesh=bpy.data.meshes.new("MakeHuman_Official_CC0_MorphFemale_BodyOnly")
+mesh.from_pydata(body_verts,[],body_faces);mesh.update()
+print("Body faces",len(body_faces),"removed helper faces",skipped_helper_faces,flush=True)
 body=bpy.data.objects.new("Ariadne_CC0_Female_Anatomy_MASTER",mesh)
 bpy.context.collection.objects.link(body)
 # Normalize to height 1.70m and orient longest dimension vertically.
 ranges=[max(v[i] for v in verts)-min(v[i] for v in verts) for i in range(3)]
 axis=max(range(3),key=lambda i:ranges[i])
-if axis==1:body.rotation_euler[0]=math.pi/2
+if axis==1:
+ body.rotation_euler[0]=math.pi/2
+ body.rotation_euler[2]=math.pi
 elif axis==0:body.rotation_euler[1]=-math.pi/2
 bpy.context.view_layer.update()
 bnd=[body.matrix_world @ Vector(p) for p in body.bound_box]
@@ -104,6 +116,6 @@ for az,el in cam_angles:
  path=OUT/f"AZ{az:03d}_EL{el:+04d}.png"
  scene.render.filepath=str(path);bpy.ops.render.render(write_still=True)
  rendered.append({"az":az,"el":el,"file":path.name,"sha256":hashlib.sha256(path.read_bytes()).hexdigest()})
-report={"status":"ANATOMICAL_FOUNDATION_ONLY_ART_APPROVAL_BLOCKED","official_makehuman_commit":REV,"input_sha256":source_hashes,"vertex_count":len(verts),"polygon_count":len(faces),"morph_modified_vertices":shifted,"model_sha256":hashlib.sha256(model.read_bytes()).hexdigest(),"render_views":rendered,"full_round_anatomy":True,"target_pose_completed":False,"garment_completed":False,"hair_completed":False,"art_similarity_gt_95_verified":False,"imagegen_target_is_not_calibrated_3d_truth":True}
+report={"status":"ANATOMICAL_FOUNDATION_ONLY_ART_APPROVAL_BLOCKED","official_makehuman_commit":REV,"input_sha256":source_hashes,"vertex_count":len(body_verts),"polygon_count":len(body_faces),"excluded_helper_faces":skipped_helper_faces,"morph_modified_vertices":shifted,"model_sha256":hashlib.sha256(model.read_bytes()).hexdigest(),"render_views":rendered,"full_round_anatomy":True,"target_pose_completed":False,"garment_completed":False,"hair_completed":False,"art_similarity_gt_95_verified":False,"imagegen_target_is_not_calibrated_3d_truth":True}
 (OUT/"quality.json").write_text(json.dumps(report,indent=2),encoding="utf-8")
 print(json.dumps({"result":"ANATOMICAL_CC0_GLB_EXPORTED","vertices":len(verts),"renders":len(rendered),"quality":report["status"]}),flush=True)
