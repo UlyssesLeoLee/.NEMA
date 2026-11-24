@@ -1,10 +1,10 @@
 name: Ariadne V123 V122.2 Adversarial Bilateral Hand and Fold Reconstruction
 on:
   push:
-    branches: [ariadne-v123-official-palmup-20261124]
+    branches: [ariadne-v123-v1222-implementation-20261124]
     paths:
       - 'ariadne_v123/**'
-      - '.github/workflows/ariadne-v123-official.yml'
+      - '.github/workflows/ariadne-v123-v1222.yml'
   workflow_dispatch:
 permissions:
   contents: read
