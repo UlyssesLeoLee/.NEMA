@@ -44,9 +44,13 @@ jobs:
       - name: Retrieve official pinned Blender 4.5 binary (no apt mirror dependency)
         run: |
           set -euo pipefail
-          URL="https://download.blender.org/release/Blender4.5/blender-4.5.13-linux-x64.tar.xz"
-          curl --fail --location --retry 2 --retry-delay 2 \
-               --connect-timeout 20 --max-time 210 "$URL" -o "$RUNNER_TEMP/blender.tar.xz"
+          URL="https://mirror.blender.org/release/Blender4.5/blender-4.5.13-linux-x64.tar.xz"
+          FALLBACK="https://mirror.clarkson.edu/blender/release/Blender4.5/blender-4.5.13-linux-x64.tar.xz"
+          curl --fail --location --retry 1 --retry-delay 2 \
+               --connect-timeout 20 --max-time 210 "$URL" -o "$RUNNER_TEMP/blender.tar.xz" || \
+          curl --fail --location --retry 1 --retry-delay 2 \
+               --connect-timeout 20 --max-time 210 "$FALLBACK" -o "$RUNNER_TEMP/blender.tar.xz"
+          test "$(stat -c%s "$RUNNER_TEMP/blender.tar.xz")" -gt 350000000
           tar -xf "$RUNNER_TEMP/blender.tar.xz" -C "$RUNNER_TEMP"
           BINARY="$RUNNER_TEMP/blender-4.5.13-linux-x64"
           test -x "$BINARY/blender"
