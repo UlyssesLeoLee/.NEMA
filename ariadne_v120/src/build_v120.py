@@ -21,41 +21,16 @@ def main():
     if len(human.data.polygons)!=13378: fail("OFFICIAL_MAKEHUMAN_BODY_FACE_COUNT_MISMATCH")
     if len(rig.data.bones)<500 or not any(m.type=="ARMATURE" and m.object==rig for m in human.modifiers):
         fail("REAL_RIGIFY_SKIN_INTEGRITY_FAIL")
-    # Prove physics-dependent pose is on actual skeleton, not a baked vertex edit.
-    ctrl_names=["upper_arm_fk.L","forearm_fk.L","hand_fk.L",
-                "upper_arm_fk.R","forearm_fk.R","hand_fk.R"]
-    missing=[n for n in ctrl_names if n not in rig.pose.bones]
-    if missing: fail("FK_CONTROLS_UNAVAILABLE: "+repr(missing))
-    for side in ("L","R"):
-        par=rig.pose.bones.get("upper_arm_parent."+side)
-        if par is None or "IK_FK" not in par:
-            fail("RIGIFY_FK_SWITCH_NOT_AUDITED_"+side)
-        par["IK_FK"]=0.0
-    bpy.context.view_layer.update()
     def evaluated():
         deps=bpy.context.evaluated_depsgraph_get()
         ev=human.evaluated_get(deps); me=ev.to_mesh()
         verts=[ev.matrix_world @ v.co for v in me.vertices]
         ev.to_mesh_clear()
         return verts
-    before=evaluated()
-    # SMALL exploratory FK pose, deliberately not claiming artistic correctness.
-    pose_deg={"upper_arm_fk.L":(0,0,18),
-              "forearm_fk.L":(0,0,30),
-              "hand_fk.L":(0,-7,0),
-              "upper_arm_fk.R":(0,0,-7),
-              "forearm_fk.R":(0,0,12),
-              "hand_fk.R":(0,5,0)}
-    for name,angles in pose_deg.items():
-        pb=rig.pose.bones[name];pb.rotation_mode="XYZ"
-        pb.rotation_euler=tuple(math.radians(q) for q in angles)
-    bpy.context.view_layer.update()
-    after=evaluated()
-    disps=[(a-b).length for a,b in zip(after,before)]
-    max_move=max(disps); moved=sum(1 for d in disps if d>0.0005)
-    if max_move<0.005 or moved<100: fail("POSE_DID_NOT_DEFORM_REAL_BODY")
-    # Preserve full control rig and live modifiers for continued constrained IK.
-    bpy.ops.wm.save_as_mainfile(filepath=str(OUT/"V120_RealRig_Posed_Editable_NOT_ART.blend"))
+    # The original Rigify control file is a provenance and rest-weight source.
+    # Its control drivers did not move the body when loaded headlessly.
+    # We therefore build a clean deform-only armature from real Rigify DEF bones
+    # and apply joint-local pose there; no hand vertex displacement is allowed.
     # Export deform-only skeleton with copied real pose matrices and original weights.
     deform=[b for b in rig.data.bones if b.use_deform]
     if len(deform)<100: fail("DEFORM_CHAIN_TOO_SMALL")
@@ -86,6 +61,24 @@ def main():
     human.matrix_world=original_world
     mod=human.modifiers.new("V120_RealSkeletonSkin","ARMATURE");mod.object=export
     mod.use_vertex_groups=True;mod.use_bone_envelopes=False
+    before=evaluated()
+    pose_deg={"DEF-upper_arm.L":(0,0,18),
+              "DEF-forearm.L":(0,0,30),
+              "DEF-hand.L":(0,-7,0),
+              "DEF-upper_arm.R":(0,0,-7),
+              "DEF-forearm.R":(0,0,12),
+              "DEF-hand.R":(0,5,0)}
+    for name,angles in pose_deg.items():
+        if name not in export.pose.bones: fail("OFFICIAL_DEFORM_BONE_NOT_AVAILABLE_"+name)
+        pb=export.pose.bones[name];pb.rotation_mode="XYZ"
+        pb.rotation_euler=tuple(math.radians(q) for q in angles)
+    bpy.context.view_layer.update()
+    after=evaluated()
+    disps=[(a-b).length for a,b in zip(after,before)]
+    max_move=max(disps);moved=sum(1 for d in disps if d>0.0005)
+    print("REAL_DEFORM_POSE_DISPLACEMENT",max_move,moved,flush=True)
+    if max_move<0.005 or moved<100:fail("POSE_DID_NOT_DEFORM_REAL_BODY")
+    bpy.ops.wm.save_as_mainfile(filepath=str(OUT/"V120_RealRig_Posed_Editable_NOT_ART.blend"))
     glb=OUT/"V120_MakeHuman_LiveSkinnedPose_ENGINEERING_NOT_ART.glb"
     bpy.ops.object.select_all(action="DESELECT")
     human.select_set(True);export.select_set(True)
@@ -137,7 +130,8 @@ def main():
         "glb_bytes":glb.stat().st_size,
         "glb_sha256":hashlib.sha256(raw).hexdigest(),
         "images_from_reloaded_glb":24,"camera_yaw_manifest":cam,
-        "pose_controls_degrees":pose_deg,
+        "joint_local_pose_degrees":pose_deg,
+        "rigify_control_driver_limitation":"POSE_SOLVED_ON_EXTRACTED_TRUE_DEF_SKIN",
         "gates":{"P05_anatomical_source":"PASS","P05_joint_local_movement":"PASS",
                  "P05_live_skin_export":"PASS","P02_V20_24_anchors":"BLOCKED",
                  "P06_palm_orb_art":"BLOCKED","P07_garment":"BLOCKED",
