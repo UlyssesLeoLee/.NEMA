@@ -1,0 +1,62 @@
+name: Ariadne V121 - Museum Beauty Renders From Real Full GLB
+on:
+  push:
+    branches: [ariadne-v121-complete-20261124]
+    paths:
+      - 'scripts/render_ariadne_v121_beauty.py'
+      - '.github/workflows/ariadne-v121-beauty.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  museum-render-real-model:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download complete real sculpt GLB from verified engineering run
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          mkdir -p ariadne_v121_beauty_input
+          gh run download 45315044691 --repo "$GITHUB_REPOSITORY" \
+            --name Ariadne-V121-FULL-COSTUMED-REAL-GLB-CANDIDATE-NOT-ART \
+            --dir ariadne_v121_beauty_input
+          SOURCE=$(find ariadne_v121_beauty_input -name Ariadne_V121_Complete_Princess_Model_CANDIDATE_NOT_ART_APPROVED.glb | head -1)
+          test -n "$SOURCE"
+          cp "$SOURCE" ariadne_v121_beauty_input/Ariadne_V121_Complete_Princess_Model_CANDIDATE_NOT_ART_APPROVED.glb
+      - name: Blender Cycles headless
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq blender python3-numpy xvfb libegl1 libgl1-mesa-dri libopengl0
+          blender --version | head -1 | grep -E '^Blender (5\.|6\.)'
+      - name: Render full body museum material views from unchanged actual GLB
+        run: |
+          xvfb-run -a blender -b -t 2 --python-exit-code 1 \
+            --python scripts/render_ariadne_v121_beauty.py > ariadne_v121_museum.log 2>&1 || {
+              tail -150 ariadne_v121_museum.log
+              exit 1
+            }
+      - name: Audit actual rendered views
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import json
+          p=Path('ariadne_v121_beauty')
+          a=json.loads((p/'BEAUTY_RENDER_QA.json').read_text())
+          assert a['status']=='PHYSICALLY_LIT_REAL_GLB_NOT_ART_APPROVED'
+          assert a['unmodified_geometry_object_count']>=30
+          assert len(list(p.glob('V121_REAL_GLB_MUSEUM_*.png')))==6
+          print('ARTISTIC_MATERIAL_RENDER_DONE_WITH_ART_GATE_BLOCKED')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: Ariadne-V121-Cycles-Real-Full-Model-6Views-NotArtApproved
+          path: |
+            ariadne_v121_beauty/**
+            ariadne_v121_museum.log
+          retention-days: 30
+          if-no-files-found: warn
