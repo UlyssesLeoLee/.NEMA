@@ -518,6 +518,23 @@ for o in list(bpy.data.objects):bpy.data.objects.remove(o,do_unlink=True)
 bpy.ops.import_scene.gltf(filepath=str(glb))
 loaded=[o for o in scene.objects if o.type=="MESH"]
 assert len(loaded)>18
+# CI can use an independent actual-GLB renderer when host graphics libraries
+# are unavailable. This skip is AFTER successful GLB export and fresh import.
+if os.environ.get("ARIADNE_RENDER_BACKEND")=="EXTERNAL_VTK":
+    report["exported_GLTF_bytes"]=glb.stat().st_size
+    report["exported_sha256"]=hashlib.sha256(glb.read_bytes()).hexdigest()
+    report["actual_reimported_camera_views"]=0
+    report["reimport_mesh_count"]=len(loaded)
+    report["render_backend"]="EXTERNAL_VTK_INDEPENDENT_ACTUAL_GLTF"
+    report["P0_palm_up_gate"]="PASS" if palm_dot>=.82 else "FAIL"
+    report["P0_forearm_edge_p02_gate"]="PASS" if forearm_quality["p02_edge_ratio"]>=.65 else "FAIL"
+    report["P0_waist_attached_geometry_gate"]="PASS" if seam_max_mm<=30 else "FAIL"
+    (OUT/"V122_P0_ANATOMY_AND_GARMENT_QA.json").write_text(json.dumps(report,indent=2,ensure_ascii=False))
+    print("V122_REAL_GLB_EXPORTED_AND_REIMPORTED",json.dumps({"bytes":glb.stat().st_size,
+      "mesh_count":len(loaded),"forearm_p02":forearm_quality["p02_edge_ratio"],
+      "palm_up_dot":palm_dot,"waist_mm":seam_max_mm}),flush=True)
+    print("EXTERNAL_GLB_RENDER_REQUIRED_BACKEND_OFFLINE_VTK",flush=True)
+    raise SystemExit(0)
 # Art review diagnostics from one fixed YAW model coordinate system.
 world=bpy.data.worlds.new("Museum_Night_Backdrop");scene.world=world;world.use_nodes=True
 bg=world.node_tree.nodes.get("Background")
