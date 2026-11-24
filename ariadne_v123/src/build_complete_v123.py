@@ -329,6 +329,59 @@ boneset(choice[6]);actual=evaluated_body()
 elbow,wrist,palm,palm_normal=landmarks();palm_dot=float(palm_normal.z)
 disp=np.linalg.norm(actual-rest,axis=1)
 assert palm_dot>=.82 and float(np.max(disp))>.025
+# V122.2 mandatory BILATERAL audit: original V123 trial improved LEFT but
+# independently detected FOUR collapsed RIGHT forearm edges (<0.5). Right
+# artistic pose must be re-solved under the same strict edge/volume gate.
+right_fids=set(i for name in ("lowerarm01.R","lowerarm02.R")
+ for i,w in valid_weights[name] if w/totals[i]>.35)
+right_edges=set()
+for f in faces:
+ if len(right_fids.intersection(f))>=3:
+  for j in range(len(f)):
+   a,b=int(f[j]),int(f[(j+1)%len(f)])
+   right_edges.add((min(a,b),max(a,b)))
+right_edges=sorted(right_edges)
+rix=np.asarray([e[0] for e in right_edges],dtype=int)
+riy=np.asarray([e[1] for e in right_edges],dtype=int)
+rr0=np.linalg.norm(rest[rix]-rest[riy],axis=1)
+rkeep=rr0>1e-5;rix=rix[rkeep];riy=riy[rkeep];rr0=rr0[rkeep]
+assert len(rix)>=200
+right_seed=right_best[1].copy()
+right_trials=[]
+for f_forearm in (1.,.88,.74,.60,.45,.30,.16,0):
+ for f_wrist in (1.,.82,.62,.40):
+  for f_upper in (1.,.85,.67):
+   t=right_seed.copy()
+   t[5:7]*=f_forearm;t[7:9]*=f_wrist;t[4]*=f_upper
+   set_right(t)
+   tri=evaluated_body()
+   rr=np.linalg.norm(tri[rix]-tri[riy],axis=1)/rr0
+   q02=float(np.quantile(rr,.02));q98=float(np.quantile(rr,.98))
+   nsev=int(np.sum(rr<.5))
+   re,rw,rh=right_landmark()
+   err=float(np.linalg.norm(rw-right_w))
+   safe=bool(nsev==0 and q02>=.65 and q98<=1.6 and err<.14
+             and np.linalg.norm(t)>.08)
+   score=float(err+.19*np.linalg.norm(t-right_seed)
+     +.20*nsev+8*max(0,.65-q02))
+   right_trials.append((not safe,score,nsev,q02,q98,err,t))
+right_trials.sort(key=lambda item:(item[0],item[1]))
+rchoice=right_trials[0];set_right(rchoice[6])
+right_final=right_landmark()
+right_target_error=float(np.linalg.norm(right_final[1]-right_w))
+right_pose_changed=bool(np.linalg.norm(rchoice[6])>.08)
+right_forearm_quality={
+ "unique_edges":len(rix),"p02_edge_ratio":rchoice[3],
+ "p98_edge_ratio":rchoice[4],
+ "severe_edges_below_0p5":rchoice[2],
+ "wrist_target_error_m":rchoice[5],
+ "accepted_zero_severe":not rchoice[0],
+ "search_candidates":len(right_trials),
+ "valid_pose_count":sum(1 for item in right_trials if not item[0])}
+actual=evaluated_body()
+print("V123_RIGHT_FOREARM_P0_96_TRIAL_REPAIR",json.dumps(right_forearm_quality),flush=True)
+# If no acceptable right pose exists, the candidate may be archived for
+# diagnosis but cannot be marked ANATOMY_PASS or released as finished.
 # Palm support surface must be actual official wrist and metacarpal semantic patch,
 # NOT an arbitrary x/y/z bounding box.
 palm_ids=set()
@@ -759,7 +812,10 @@ report={
  "right_hand_9dof_provisional_solution":right_best[1].tolist(),
  "right_hand_target_error_m":right_target_error,
  "right_hand_gesture_changed_from_neutral":right_pose_changed,
- "right_hand_independent_art_approved":False,"support_side":"anatomical L",
+ "right_hand_independent_art_approved":False,
+ "right_forearm_mesh_edge_quality":right_forearm_quality,
+ "right_forearm_zero_severe_gate":right_forearm_quality["accepted_zero_severe"],
+ "support_side":"anatomical L",
  "left_palm_normal_world":list(palm_normal),"left_palm_up_dot":palm_dot,
  "left_elbow_world":list(elbow),"left_wrist_world":list(wrist),
  "left_palm_world":list(palm),"right_arm_pose_modified":right_pose_changed,
@@ -813,6 +869,7 @@ if os.environ.get("ARIADNE_RENDER_BACKEND")=="EXTERNAL_VTK":
     report["P0_palm_up_gate"]="PASS" if palm_dot>=.82 else "FAIL"
     report["P0_forearm_edge_p02_gate"]="PASS" if forearm_quality["p02_edge_ratio"]>=.65 and forearm_quality["edges_below_0p50"]==0 else "FAIL"
     report["P0_waist_attached_geometry_gate"]="PASS" if seam_max_mm<=30 else "FAIL"
+    report["P0_right_forearm_bilateral_gate"]="PASS" if right_forearm_quality["accepted_zero_severe"] else "FAIL"
     (OUT/"V123_P0_ANATOMY_AND_GARMENT_QA.json").write_text(json.dumps(report,indent=2,ensure_ascii=False))
     print("V123_REAL_GLB_EXPORTED_AND_REIMPORTED",json.dumps({"bytes":glb.stat().st_size,
       "mesh_count":len(loaded),"forearm_p02":forearm_quality["p02_edge_ratio"],
