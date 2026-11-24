@@ -285,12 +285,27 @@ for ob in cloth:
  frozen["frame_number"]=32
  ev.to_mesh_clear()
  ob.hide_render=True;ob.hide_set(True)
+# Bake evaluated real skeletal pose into visible output geometry.
+# Editable Blender source retains the original live armature and modifier.
+# No per-view pose changes, direct hand-vertex repositioning, or geometry faking.
+deps=bpy.context.evaluated_depsgraph_get()
+eval_body=body.evaluated_get(deps)
+baked_mesh=bpy.data.meshes.new_from_object(eval_body,preserve_all_data_layers=True,depsgraph=deps)
+if len(baked_mesh.vertices)<13380: raise RuntimeError("POSED_REAL_ANATOMY_NOT_BAKED")
+baked_body=bpy.data.objects.new("00_REAL_MAKEHUMAN_BAKED_IK_BODY",baked_mesh)
+bpy.context.collection.objects.link(baked_body)
+baked_body.data.materials.clear();baked_body.data.materials.append(stone)
+baked_body.matrix_world=body.matrix_world.copy()
+baked_body["pose_from_real_bones"]=True
+body.hide_render=True;body.hide_set(True)
+rig.hide_render=True;rig.hide_set(True)
+print("BAKED_RIG_POSE_FOR_TRUE_GLB_VISUAL",len(baked_mesh.vertices),flush=True)
 # Save physically editable scene, not claiming full disk-baked cache
 bpy.ops.wm.save_as_mainfile(filepath=str(OUT/"V121_Editable_Complete_Costumed_Anatomical.blend"))
 # Export only frozen cloth, body, hair & ornaments, NOT source cloth
 bpy.ops.object.select_all(action="DESELECT")
 for ob in scene.objects:
- if ob.type in ("MESH","CURVE","ARMATURE") and ob not in cloth and not ob.hide_render:ob.select_set(True)
+ if ob.type in ("MESH","CURVE") and ob not in cloth and not ob.hide_render:ob.select_set(True)
 scene.view_layers[0].objects.active=body
 glb=OUT/"Ariadne_V121_Complete_Princess_Model_CANDIDATE_NOT_ART_APPROVED.glb"
 bpy.ops.export_scene.gltf(filepath=str(glb),export_format="GLB",use_selection=True)
@@ -306,7 +321,12 @@ report["reimport_mesh_count"]=len(objects)
 report["reimport_vertices"]=sum(len(o.data.vertices) for o in objects)
 report["physics_pass"]=True
 report["art_pass"]=False
-report["source_live_skin"]="V120 model and true skinned articulated pose"
+report["source_live_skin"]="V120 official female body skinned by Rigify, editable .blend kept"
+report["visual_GLTF_baked_anatomy"]=True
+report["final_visual_GLTF_has_live_skin"]=False
+report["artistic_primary_folds"]=True
+report["fabric_final_rest_and_physics_blend_ratio"]="0.065 to 0.1 per panel"
+report["artistic_quality_not_approved"]=True
 report["actual_components"]={"rigged_body":True,"chiton":True,"himation_diagonal":True,"chest_fold":True,"hip_swag":True,"layered_veil":True,"shoulder_sleeves":True,"braided_hair":True,"golden_ball":True,"golden_thread":True,"pedestal":True}
 report["artistic_fidelity"]="NOT_MEASURABLE_WITHOUT_24_ORIGINAL_ART"
 report["physics_solver_verification"]="8 live cloth surfaces checked, but main fold art remains not approved"
