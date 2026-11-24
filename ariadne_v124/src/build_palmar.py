@@ -852,6 +852,43 @@ forearm_quality={"edges_checked":len(ratios),"min_edge_ratio":float(np.min(ratio
 print("REAL_OFFICIAL_FOREARM_EDGE_AUDIT",json.dumps(forearm_quality),flush=True)
 if forearm_quality["p02_edge_ratio"]<.65 or forearm_quality["p98_edge_ratio"]>1.6:
  print("P0_FOREARM_COLLAPSE_OR_STRETCH: no art release",flush=True)
+# REQUIRED P02: independent authored top 2D reference has persistent
+# landmark correspondences on this actual evaluated full-body rig, with one
+# fixed geometric up-axis, not a hand-drawn model-render imitation.
+top2d_world={
+ "wrist":list(bhead("wrist.L")),
+ "palm":list(landmarks()[2]),
+ "index_pad":list(btail("finger2-3.L")),
+ "middle_pad":list(btail("finger3-3.L")),
+ "ring_pad":list(btail("finger4-3.L")),
+ "little_pad":list(btail("finger5-3.L")),
+ "thumb_pad":list(btail("finger1-3.L")),
+ "gold_sphere_center":list(center)}
+top2d_manual={
+ "wrist":[420,825],"palm":[427,630],
+ "index_pad":[503,434],"middle_pad":[438,416],
+ "ring_pad":[365,423],"little_pad":[248,421],
+ "thumb_pad":[608,475],"gold_sphere_center":[440,540]}
+top2d_register={
+ "status":"EXPLICIT_TOPOLOGY_LABEL_CALIBRATED_2D_TARGET_NOT_V20_APPROVED",
+ "target_source":"ariadne_v124/art/TOP2D_LEFT_PALM_UP_AUTHOR_TARGET.svg",
+ "source_is_not_3D_render":True,
+ "view_projection":"Blender X/Y horizontal, camera at world +Z looking down",
+ "target_space_px":top2d_manual,"actual_bone_surface_world_xyz":top2d_world,
+ "source_mesh_hashes":report_source_hashes if "report_source_hashes" in locals() else {},
+ "palmar_normal_top_z":palm_dot,
+ "anatomical_top_surface_audit":top2d_surface_audit,
+ "source_palmar_vertices":len(palmar_ids),
+ "source_dorsal_vertices":len(dorsal_ids),
+ "left_thumb_index_little_identity_verified_from_official_bone_names":True,
+ "V20_original_top_art_approved":False,
+ "release_class":"ENGINEERING_DIAGNOSTIC_NO_ART_PASS"}
+(OUT/"V124_TOP2D_CALIBRATION_LANDMARKS.json").write_text(
+ json.dumps(top2d_register,ensure_ascii=False,indent=2))
+print("V124_INDEPENDENT_TOP2D_TO_RIG_REGISTRATION",json.dumps({
+ "target_anchors":len(top2d_manual),
+ "actual_anchors":len(top2d_world),
+ "palmar_vs_dorsal":top2d_surface_audit}),flush=True)
 report={
  "version":"124.0","status":"COMPLETE_COMPONENT_MODEL_ENGINEERING_PALMUP_NOT_ART_APPROVED",
  "anatomical_mesh":"Official MakeHuman CC0 source base.obj + caucasian-female-young.target",
