@@ -102,6 +102,8 @@ def main():
     joints=len(gltf["skins"][0]["joints"])
     if joints!=len(deform):fail("GLB_JOINT_COUNT_MISMATCH")
     # Separate re-import to prevent false positive from current scene.
+    exported_body_vertex_count=len(human.data.vertices)
+    exported_body_face_count=len(human.data.polygons)
     for obj in list(bpy.data.objects):bpy.data.objects.remove(obj,do_unlink=True)
     bpy.ops.import_scene.gltf(filepath=str(glb))
     loaded=[o for o in bpy.context.scene.objects if o.type=="MESH"]
@@ -130,7 +132,7 @@ def main():
         "art_approval":False,"k_pose_art_matched":False,
         "support_hand_ball_contact_approved":False,"garment_art_solved":False,
         "live_gltf_skin_count":1,"live_gltf_joint_count":joints,
-        "body_vertices":len(human.data.vertices),"body_faces":len(human.data.polygons),
+        "body_vertices":exported_body_vertex_count,"body_faces":exported_body_face_count,
         "pose_max_vertex_motion_m":max_move,"pose_vertices_moved_gt_0p5mm":moved,
         "glb_bytes":glb.stat().st_size,
         "glb_sha256":hashlib.sha256(raw).hexdigest(),
