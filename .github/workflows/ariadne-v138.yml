@@ -1,0 +1,36 @@
+name: Ariadne V138 266-view engineering render
+on:
+  push:
+    branches:
+      - feature/ariadne-v138-github-render-pipeline
+    paths:
+      - 'art/ariadne/v138/**'
+      - '.github/workflows/ariadne-v138.yml'
+  workflow_dispatch:
+jobs:
+  render:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Blender
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y blender
+          blender --version
+      - name: Render 266 calibrated spherical views
+        run: |
+          blender -b -t 2 --python art/ariadne/v138/render_sphere.py
+      - name: Fail closed on incomplete evidence
+        run: |
+          python3 art/ariadne/v138/verify_output.py
+      - name: Upload engineering evidence, not art approval
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Ariadne-V138-266view-engineering
+          path: artifacts/ariadne_v138/
+          if-no-files-found: warn
+          retention-days: 14
