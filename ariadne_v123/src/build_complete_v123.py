@@ -359,12 +359,57 @@ print("OFFICIAL_PALM_BALL_CONTACT",json.dumps(contact),flush=True)
 # provisional gold ball. The sphere stays at the already-calculated position;
 # optimize only the official individual finger joints. Do not claim art pass
 # without user-approved V20 hand closeups/top art.
-ball_locked=center.copy()
+provisional_seed_ball_center=center.copy()
 pad_regions={}
 for digit in (1,2,3,4,5):
  key=f"finger{digit}-3.L"
  pad_regions[key]=sorted(i for i,w in valid_weights[key] if w/totals[i]>.56)
  assert len(pad_regions[key])>=12,(key,len(pad_regions[key]))
+# V122.2 ART REFERENCE ABSENT: obtain ONE provisional, geometrically
+# plausible sphere center from frozen anatomical palm + distinct index/middle
+# distal pad surfaces before finger fitting. Lock it thereafter. Never call
+# this user-approved art; position is not adapted during finger IK optimization.
+# This replaces V122's flawed palm-centroid-only guess.
+initial_skin=evaluated_body()
+frozen_contact_patches={
+ "palm":initial_skin[palm_ids],
+ "index":initial_skin[pad_regions["finger2-3.L"]],
+ "middle":initial_skin[pad_regions["finger3-3.L"]]}
+def provisional_center_cost(cc):
+ score=0.
+ for name,pts in frozen_contact_patches.items():
+  dd=np.linalg.norm(pts-cc,axis=1)-ballradius
+  close=float(np.min(np.abs(dd)))
+  penetration=np.maximum(0,-dd-.001)
+  score+=(close/.0018)**2+650.*np.sum((penetration/.001)**2)
+ score+=.10*(np.linalg.norm((cc-provisional_seed_ball_center)/.05)**2)
+ return float(score)
+candidate_centers=[]
+for dx in np.linspace(-.020,.072,13):
+ for dy in np.linspace(-.044,.018,9):
+  for dz in np.linspace(-.042,.052,9):
+   cc=provisional_seed_ball_center+np.array([dx,dy,dz])
+   candidate_centers.append((provisional_center_cost(cc),cc))
+candidate_centers.sort(key=lambda item:item[0])
+ball_locked=candidate_centers[0][1].copy()
+for step_size in (.008,.004,.002,.001,.00045):
+ improved=True
+ for _ in range(4):
+  base_score=provisional_center_cost(ball_locked)
+  scores=[(base_score,ball_locked.copy())]
+  for axis in range(3):
+   for sign in (-1,1):
+    tmp=ball_locked.copy();tmp[axis]+=sign*step_size
+    scores.append((provisional_center_cost(tmp),tmp))
+  val,chosen=min(scores,key=lambda item:item[0])
+  if val>=base_score-1e-8:break
+  ball_locked=chosen.copy()
+center=ball_locked.copy()
+print("V123_LOCKED_PROVISIONAL_BALL_TARGET",json.dumps({
+ "source":"FROZEN_REAL_PALM_AND_DISTINCT_INDEX_MIDDLE_PADS_NOT_APPROVED_ART",
+ "target":center.tolist(),
+ "difference_from_old_palm_only_seed_mm":float(np.linalg.norm(center-provisional_seed_ball_center)*1000),
+ "provisional_objective_score":provisional_center_cost(center)}),flush=True)
 def contact_pad_measure(digit):
  a=evaluated_body()
  ids=pad_regions[f"finger{digit}-3.L"]
@@ -406,6 +451,9 @@ palm_geometric_contact=bool(np.min(np.abs(new_palm_gaps))<=.0025)
 fingers_multicontact_engineering=bool(distinct_pad_count>=2 and palm_geometric_contact)
 contact.update({
  "locked_ball_center_from_pre_finger_optimization":ball_locked.tolist(),
+ "ball_target_source":"FROZEN_PALM_INDEX_MIDDLE_ANATOMICAL_SUPPORT_ZONES_PROVISIONAL",
+ "ball_target_is_independent_V20_art":False,
+ "ball_adjustment_mm_before_finger_IK":float(np.linalg.norm(center-provisional_seed_ball_center)*1000),
  "palmar_patch_nearest_abs_gap_mm_after_finger_fit":float(np.min(np.abs(new_palm_gaps))*1000),
  "digit_pad_contact_distinct_count":int(distinct_pad_count),
  "digit_pad_per_bone_measurements":digit_contact,
