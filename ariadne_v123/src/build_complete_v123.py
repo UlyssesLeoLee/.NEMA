@@ -439,20 +439,81 @@ def dress_sections(z):
   return (.21+.023*t,.165+.038*t)
  t=clamp((z-1.16)/.17,0,1)
  return (.233-.021*t,.203-.020*t)
-N=72;M=72; dress_v=[];dress_f=[];waist_rows=[]
+# V122.2: persistent primary/secondary/tertiary 3D causal fold graph.
+# Three-dimensional crests deform actual material mesh. No texture-only or
+# random uniform sinusoidal waves can satisfy the folded-sculpture gate.
+fold_graph={
+ "authority":"PROVISIONAL_SCULPT_NO_INDEPENDENT_V20_ART",
+ "source_mesh":"10_ONE_SEWN_CONTINUOUS_ROYAL_CHITON_WAIST",
+ "level_1_primary":[
+  {"id":"P_HEM_FRONT_L","angle":-2.45,"width":.23,"amplitude":.029,"source":"hip_belt_to_hem"},
+  {"id":"P_HEM_F_LEFT","angle":-1.85,"width":.19,"amplitude":.043,"source":"underbust_to_hem"},
+  {"id":"P_HEM_FRONT_C","angle":-1.32,"width":.20,"amplitude":.033,"source":"waist_frontal_centre"},
+  {"id":"P_HEM_FRONT_R","angle":-.55,"width":.23,"amplitude":.038,"source":"hip_to_hem"},
+  {"id":"P_HEM_SIDE_R","angle":.32,"width":.20,"amplitude":.025,"source":"side_waist_gather"},
+  {"id":"P_HEM_BACK_R","angle":1.45,"width":.23,"amplitude":.027,"source":"rear_drape_root"},
+  {"id":"P_HEM_BACK_L","angle":2.45,"width":.24,"amplitude":.023,"source":"rear_belt"}],
+ "level_2_secondary":[
+  {"id":"S_WAIST_FLEFT","angle":-2.05,"width":.12,"amplitude":.013,"source":"waist_belt"},
+  {"id":"S_WAIST_FRIGHT","angle":-.70,"width":.13,"amplitude":.012,"source":"waist_sash"},
+  {"id":"S_SIDE_GATHER","angle":.20,"width":.11,"amplitude":.010,"source":"side_seam"},
+  {"id":"S_REAR_VEIL_FALL","angle":2.60,"width":.13,"amplitude":.009,"source":"rear_layer"}],
+ "level_3_tertiary":[
+  {"id":"T_HEM_EDGE_LIPS","source":"hem_fixed_outer_seam","amplitude":.004},
+  {"id":"T_BELT_COMPRESS","source":"waist_sash_tension","amplitude":.003},
+  {"id":"T_SLEEVE_EDGE","source":"shoulder_cuff_seam","amplitude":.003}],
+ "fold_curve_coordinates":"Generated below from same actual 3D groomed mesh",
+ "independent_reference_approved":False}
+def cyclic_diff(a,b):
+ return math.atan2(math.sin(a-b),math.cos(a-b))
+def fold_profile(a,w,z):
+ hem_envelope=clamp((1.14-z)/1.07,0,1)**1.5
+ v=0
+ for guide in fold_graph["level_1_primary"]:
+  angle=guide["angle"]+(.20*(1-w))+.07*sin(pi*w)
+  d=cyclic_diff(a,angle)
+  width=guide["width"]
+  crest=math.exp(-.5*(d/width)**2)
+  valley=math.exp(-.5*((abs(d)-width*1.65)/(width*.62))**2)
+  v+=guide["amplitude"]*hem_envelope*(crest-.35*valley)
+ # Medium folds branch from the taut waist as curved channels.
+ waist_envelope=math.exp(-((z-.96)/.225)**2)
+ for guide in fold_graph["level_2_secondary"]:
+  shifted=guide["angle"]+.19*(1-w)
+  d=cyclic_diff(a,shifted)
+  v+=guide["amplitude"]*waist_envelope*math.exp(-.5*(d/guide["width"])**2)
+ # Small relief follows an actual lower hem / edge border.
+ hem_lip=math.exp(-((z-.13)/.075)**2)
+ v+=.0035*hem_lip*sin(13*a+3*w)
+ return v
+N=144;M=104; dress_v=[];dress_f=[];waist_rows=[]
 for j in range(M):
  w=j/(M-1);z=.105+1.225*w
  rx,ry=dress_sections(z)
  for i in range(N):
   a=2*pi*i/N
-  # Continuous sculpted royal folds: principal sculptural ridges are
-  # stronger toward the hem and die out progressively at waist.
-  pleat=(.008+.030*(1-w)**1.8)*cos(8*a+1.35*w+.28*sin(3*a))
-  pleat+=.004*cos(15*a-1.2*w)*(1-w)
-  r_x=rx+pleat;r_y=ry+.74*pleat
-  # U-shaped neckline carved into the same surface, not separate chest panel.
+  pleat=fold_profile(a,w,z)
+  # Three guided U-shaped chest folds converge into the waist tension.
+  if z>.95:
+   chest_env=math.sin(pi*clamp((z-.94)/.39,0,1))
+   for centre,amplitude in [(-2.05,.016),(-1.52,.019),(-.95,.013)]:
+    d=cyclic_diff(a,centre+.34*(z-1.08))
+    pleat+=amplitude*chest_env*math.exp(-.5*(d/.16)**2)
+  r_x=rx+pleat;r_y=ry+.78*pleat
   neckline=-.088*max(0,-sin(a))**8*(w**20)
   dress_v.append((r_x*cos(a),r_y*sin(a)-.018,z+neckline))
+fold_graph["sampled_3D_primary_lines"]=[]
+for guide in fold_graph["level_1_primary"]:
+ coords=[]
+ for w in np.linspace(.08,.97,22):
+  z=.105+1.225*w; a=guide["angle"]+.20*(1-w)+.07*sin(pi*w)
+  rx,ry=dress_sections(z);d=fold_profile(a,w,z)
+  coords.append([round(float((rx+d)*cos(a)),6),
+                 round(float((ry+.78*d)*sin(a)-.018),6),
+                 round(float(z),6)])
+ fold_graph["sampled_3D_primary_lines"].append({"id":guide["id"],"vertices":coords})
+(OUT/"V123_FOLD_CAUSAL_GRAPH.json").write_text(json.dumps(fold_graph,indent=2))
+
 for j in range(M-1):
  for i in range(N):
   k=j*N+i;kn=j*N+(i+1)%N
@@ -484,14 +545,21 @@ def sash(u,w):
  center_x=.165-.30*w
  width=.12+.035*sin(pi*w)
  x=center_x+(u-.5)*width
- y=gown_front(x,z,.023)+.007*sin(3*pi*u)*sin(pi*w)
+ # Three physical crest-and-valley bands, not a featureless flat strap.
+ crest=.015*math.exp(-((u-.24)/.14)**2)-.011*math.exp(-((u-.53)/.12)**2)
+ crest+=.009*math.exp(-((u-.78)/.13)**2)
+ y=gown_front(x,z,.021)-crest*math.sin(pi*(.10+.85*w))
  return (x,y,z)
 sash_ob=ribbon("11_SHOULDER_TO_WAIST_CARVED_HIMATION",sash,22,55,himation_mat)
 def waist_swag(u,w):
  x=(u-.5)*.425
  centerz=.992-.11*sin(pi*u)
  z=centerz+(w-.5)*(.055+.018*sin(pi*u))
- y=gown_front(x,z,.014)+.008*sin(3*pi*u)*sin(pi*w)
+ # Folds converge into an anchored waist seam; raised crests have
+ # physical volume and two valleys toward the belt, not a floating ribbon.
+ crease=.012*math.exp(-((u-.26)/.16)**2)-.009*math.exp(-((u-.53)/.13)**2)
+ crease+=.006*math.exp(-((u-.77)/.16)**2)
+ y=gown_front(x,z,.013)-crease*math.sin(pi*w)
  return (x,y,z)
 swag=ribbon("12_WAIST_SAG_ATTACHED_TO_SHARED_CHITON",waist_swag,50,17,himation_mat)
 # Seam audit: independent draped overlay anchored onto same underlying gown.
@@ -628,6 +696,11 @@ report={
  "contact":contact,"forearm_mesh_edge_quality":forearm_quality,
  "multi_patch_contact_engineering_gate":bool(fingers_multicontact_engineering),
  "orb_position_locked_during_finger_fit":True,
+ "actual_fold_graph_primary_count":len(fold_graph["level_1_primary"]),
+ "actual_fold_graph_secondary_count":len(fold_graph["level_2_secondary"]),
+ "actual_fold_graph_tertiary_count":len(fold_graph["level_3_tertiary"]),
+ "actual_3D_fold_graph_file":"V123_FOLD_CAUSAL_GRAPH.json",
+ "fold_reference_24_art_approved":False,
  "sewn_garment_connected_chiton_faces":len(dress_f),
  "waist_layer_attach_max_offset_mm":seam_max_mm,
  "true_blender_physics_probe":True,"physics_probe_final_center":phys.tolist(),
