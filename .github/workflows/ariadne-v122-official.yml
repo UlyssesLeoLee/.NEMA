@@ -44,8 +44,11 @@ jobs:
       - name: Install headless Blender 5 official anatomical sculpt environment
         run: |
           set -euo pipefail
-          sudo apt-get update -qq
-          sudo apt-get install -y -qq blender python3-numpy xvfb libegl1 libgl1-mesa-dri libopengl0
+          timeout 100s sudo apt-get install -y -qq blender python3-numpy xvfb libegl1 libgl1-mesa-dri libopengl0 || {
+            echo 'APT_CACHE_INSTALL_MISSED_RETRY_UPDATE'
+            timeout 100s sudo apt-get update -qq
+            timeout 100s sudo apt-get install -y -qq blender python3-numpy xvfb libegl1 libgl1-mesa-dri libopengl0
+          }
           blender --version | head -1 | grep -E '^Blender (4\.|5\.|6\.)'
       - name: Rebuild official MakeHuman rig, palm-up hand, costume and actual GLB
         run: |
