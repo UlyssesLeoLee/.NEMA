@@ -1,0 +1,45 @@
+version: "130.0"
+project: ".NEMA Ariadne"
+governance_file_role: "V130 companion, not complete historical master"
+branch: "ariadne-v130-react390-20261124"
+input:
+  glb_parent_version: V129
+  source_license: MakeHuman_CC0
+  approved_art: USER_APPROVED_FULL_BODY_V2_SINGLE_COMPOSITE
+  26_independent_artist_views: false
+stages:
+  details:
+    D01_global_pose: 30
+    D02_top_left_hand: 30
+    D03_right_hand: 30
+    D04_face: 30
+    D05_hair: 30
+    D06_neckline: 30
+    D07_chest_white_drape: 30
+    D08_purple_gold_himation: 30
+    D09_skirt_hem: 30
+    D10_veil_layers: 30
+    D11_gold_thread_orb: 30
+    D12_pedestal: 30
+  global_joint_reconciliation: 30
+  executed_total: 390
+  accepted: 141
+  rolled_back: 249
+hard_gates:
+  every_round_actual_2D_projected_front_and_top: true
+  preserve_26_camera_one_GLTF_scene: true
+  preserve_CC0_anatomical_original_mesh: true
+  no_backside_palm_art_claim: true
+  no_fabricated_26_art_targets: true
+  cloth_chiton_occlusion_count_after: 0
+  face_normal_reversals_on_173_original_meshes_after: 0
+art_release_status: NOT_APPROVED
+validated:
+  actual_2d_per_round_png_count: 390
+  source_mesh_count: 173
+  changed_original_meshes: 136
+  new_sculpted_hair_geometry_meshes: 53
+  final_mesh_count: 226
+  actual_final_GLTF_sha256: e0a5a487a7446e74210506aee0d26c8cad740647c1f76f80a0bd9a3f0b42ada5
+  V130_executed_in_GitHub_Actions: false
+  V130_executed_locally_and_GitHub_workflow_pending: true
