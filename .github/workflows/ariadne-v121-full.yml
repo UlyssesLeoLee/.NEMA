@@ -69,7 +69,8 @@ jobs:
           n,t=struct.unpack_from('<I4s',raw,12)
           d=json.loads(raw[20:20+n])
           assert len(d.get('meshes',[]))>=15
-          assert len(d.get('skins',[]))==1, 'Anatomical live skin missing from full costume'
+          assert len(d.get('skins',[]))==0, 'Final art GLB must contain baked posed geometry; live rig remains in editable .blend'
+          assert a['visual_GLTF_baked_anatomy'] and not a['final_visual_GLTF_has_live_skin']
           print('V121_FULL_COMPONENTS_AND_REAL_PHYSICS_VERIFIED')
           PY
       - name: Upload real complete model, 24 images, editable scene and audit
