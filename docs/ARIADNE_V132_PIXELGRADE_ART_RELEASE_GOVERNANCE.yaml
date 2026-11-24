@@ -1,0 +1,57 @@
+schema_identity:
+  project: ".NEMA Ariadne"
+  version: "132.0"
+  role: "GitHub governance companion; actual single full 30-section master YAML is included in the generated V132 delivery ZIP"
+  source_glb: "V131 official CC0 body, 226 actual GLTF scene mesh nodes"
+  source_sha256: "40b1ec31028027bfa3a5af6281293d3c4c628f0d0bb7c0f0a6030756e6591bfd"
+  actual_V132_final_glb_sha256: "6a5f6db3be76609931ac4eca05cc9eb8062b113b4ba28a5066ee9a485c96e125"
+mandatory_reference_authority:
+  official_user_approved_hero_composite: true
+  original_art_sha256: "006571ec8c14dfc2f571d7c651bcb79831e2c5e9020f436b0b0a17eb528496e5"
+  source_exact_roi_crops: 19
+  original_24_azimuth_art_views_full_res_and_independently_calibrated: false
+  top_view_high_res_independently_artist_approved: false
+  never_treat_model_self_render_as_art_source: true
+  block_pixel_perfect_claim_if_art_missing: true
+  never_upscale_mini_reference_and_claim_new_pixels: true
+pixelgrade_react_required:
+  component_detail_loops: 12
+  rounds_each: 30
+  total_component_rounds_required: 360
+  global_26_camera_joint_reconciliation_rounds: 30
+  total_required: 390
+  source_2d_reference_per_component_required: true
+  same_real_gltf_26_view_render_per_round: true
+  accept_change_only_if_art_semantics_pixel_mask_landmarks_and_mesh_valid: true
+  missing_reference_early_exit: true
+  # Distinguish old V130 390 model-geometry tests from NEW V132 art loops:
+  V132_new_pixelgrade_390_art_loops_executed: false
+  V130_historical_390_art_approved_for_V132: false
+V132_local_actual_engineering_build:
+  executed_in_container: true
+  V132_GitHub_Actions_executed: false
+  existing_meshes_changed: 117
+  actual_new_volumetric_sculpted_hair_meshes: 14
+  original_nodes: 226
+  final_nodes: 240
+  actual_body_geometry_changed: false
+  gold_orb_geometry_changed: false
+  sampled_and_per_edited_face_winding_flips: 0
+  same_actual_final_glb_rendered_24_horizontal_2_polar_views: true
+  additional_detail_camera_diagnostics: 6
+  old_vs_new_front_pixels_changing_more_than_10_RGB: 0.0385315615
+  pixel_change_is_not_art_similarity: true
+  no_independent_26_camera_art_similarity_metrics: true
+  actual_ART_APPROVAL: false
+  non_model_reference_crops_source_verified: true
+  delivered_scripts_and_actual_GLTF_in_conversation_ZIP: true
+release:
+  engineering_geometry_and_source_provenance: PASS
+  independent_26_high_res_art: BLOCKED
+  per_detail_12x30_react_with_authoritative_art: BLOCKED
+  exact_image_pixel_fidelity_claim: BLOCKED
+  body_cloth_signed_distance: NOT_CERTIFIED
+  face_beauty_and_royal_drape: FAIL_VISUAL
+  all_24_angles_each_above_95pct: NOT_MEASURED
+  user_art_approval: NOT_OBTAINED
+  usable_as_final_art_statue: false
