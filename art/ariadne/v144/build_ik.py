@@ -163,6 +163,7 @@ constraint.use_rotation=False
 bpy.context.view_layer.update()
 # Bake the evaluated IK onto actual pose channels and remove the temporary
 # constraint, so glTF reimport contains the solution without external IK.
+ik_target_coords_saved=tuple(target.location)
 bpy.ops.object.select_all(action="DESELECT")
 arm.select_set(True)
 bpy.context.view_layer.objects.active=arm
@@ -250,7 +251,7 @@ report={
  "posed_ball_arm":ball_side,
  "ball_to_wrist_distance":palm_dist,
  "ik_target_error_m":ik_target_error,
- "hand_target_world":list(target.location),
+ "hand_target_world":list(ik_target_coords_saved),
  "glb_sha256":hashlib.sha256(outglb.read_bytes()).hexdigest(),
  "glb":outglb.name,
  "real_blender_views":images,
