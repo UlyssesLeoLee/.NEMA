@@ -2,7 +2,8 @@ import bpy, math, json, hashlib, os, sys
 from pathlib import Path
 from mathutils import Vector
 
-ROOT=Path(__file__).resolve().parents[2]
+ROOT=Path(__file__).resolve().parents[3]
+assert (ROOT/".github"/"workflows").is_dir(), f"invalid repo root: {ROOT}"
 OUT=ROOT/"artifacts"/"ariadne_v138"
 OUT.mkdir(parents=True,exist_ok=True)
 SOURCE=ROOT/"website"/"assets"/"ariadne-relief-3d.glb"
@@ -21,11 +22,16 @@ high=Vector([max(v[i] for v in corners) for i in range(3)])
 center=(low+high)/2
 radius=max((high-low).length*1.35,1)
 scene=bpy.context.scene
-scene.render.engine = "BLENDER_EEVEE_NEXT" if "BLENDER_EEVEE_NEXT" in bpy.types.RenderSettings.bl_rna.properties["engine"].enum_items.keys() else "BLENDER_EEVEE"
+try:
+ scene.render.engine = "BLENDER_EEVEE_NEXT"
+except TypeError:
+ scene.render.engine = "BLENDER_EEVEE"
 scene.render.resolution_x=512;scene.render.resolution_y=512
 scene.render.resolution_percentage=100
 scene.render.image_settings.file_format="PNG"
 scene.render.film_transparent=True
+if scene.world is None:
+ scene.world=bpy.data.worlds.new("V138World")
 scene.world.color=(.14,.14,.14)
 def lamp(name,position,power,size):
  bpy.ops.object.light_add(type="AREA",location=position)
