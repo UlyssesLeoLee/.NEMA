@@ -30,7 +30,7 @@ for view in manifest["views"]:
  if actual_art_hash!=ref["sha256"]:raise RuntimeError("Art reference hash mismatch")
  if actual_art_hash==view["png_sha256"]:raise RuntimeError("Model self-render cannot be art authority")
  # Pixel correspondence is only valid after explicit matching camera registration.
- if ref.get("camera_calibration_id")!=view.get("camera_calibration_id"):
+ if not ref.get("camera_calibration_id") or ref.get("camera_calibration_id")!=view.get("camera_calibration_id"):
   results.append({"azimuth_deg":key[0],"elevation_deg":key[1],"status":"BLOCKED_UNREGISTERED_CAMERA"})
   continue
  img=Image.open(out/view["png"]).convert("RGBA")
