@@ -3,7 +3,7 @@ schema_identity:
   version: "120.0"
   format: YAML_1.2
   role: ACTIVE_CONTRACT_SINGLE_MASTER
-  state: ENGINEERING_CLOUD_BUILD_UNVERIFIED_ART_BLOCKED
+  state: ENGINEERING_CLOUD_BUILD_PASSED_ART_BLOCKED
   precedence: "V120 actual GitHub execution + V119 evidence > V118 synthetic design > V117B history"
   final_claim_policy: "No model, render, GLB or text shall claim art approval until all 24 independently sourced V20 anchors exceed 0.95 and are artist-approved"
 historical_evidence:
@@ -77,7 +77,7 @@ coordinate_contract:
 production:
   P00_source_integrity:
     gate: HASH_LICENSE_TOPOLOGY
-    status: HISTORICALLY_PROVEN_REVERIFY_RUN
+    status: GITHUB_ACTUAL_VERIFIED_PASS_OR_SOURCE_AUDITED
   P01_real_anatomical_rig:
     gate: ORIGINAL_MAKEHUMAN_AND_ORIGINAL_FULL_RIG
     requirement: preserve true anatomy, weights, hand/finger structure and joints
@@ -137,7 +137,20 @@ production:
     no_distribution_of_failed_preview_as_finished: true
     current_state: BLOCKED
 execution_state:
-  this_commit: GITHUB_ACTIONS_BUILD_SUBMITTED_PENDING_RUN
+  this_commit: GITHUB_ACTIONS_REAL_SKINNED_POSE_BUILD_PASSED
+  successful_run: 45309917671
+  actual_glb_sha256: e52798b56693c3fc0288342fa6bf484ac59baa3d5cd1295570d639093f4d1132
+  actual_glb_bytes: 788364
+  actual_body_vertices: 19158
+  actual_body_quad_faces: 13378
+  actual_live_glTF_skin: 1
+  actual_live_deform_bones: 160
+  evaluated_vertices_moved_more_than_0p5mm: 5336
+  max_vertex_motion_m: 0.6720044605981729
+  anatomical_correctness_of_max_motion: NOT_ESTABLISHED
+  actual_rendered_24_views_are_GLB_DIAGNOSTICS_NOT_V20_ART: true
+  V16_skin_weights_are_Rigify_auto_not_official_default_mhw: true
+  art_approved: false
   no_new_final_art_GLB_approved: true
   workflow_must_fail_closed_if_real_rig_or_mesh_is_missing: true
   if_24_art_missing: "Allow only source/rig engineering diagnostics, never artistic full statue release"
