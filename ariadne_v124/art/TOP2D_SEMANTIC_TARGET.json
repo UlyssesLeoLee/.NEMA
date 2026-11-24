@@ -1,0 +1,46 @@
+{
+  "version": "V124",
+  "status": "AUTHOR_CREATED_2D_HAND_LOCAL_NOT_USER_APPROVED_V20",
+  "source": "independently drawn 2D palmar hand, not from V123 GLB",
+  "view": "orthographic top",
+  "left_hand_thumb_side": "viewer right when fingers point upward",
+  "control_anchors": {
+    "wrist": [
+      420,
+      825
+    ],
+    "palm": [
+      427,
+      630
+    ],
+    "sphere": [
+      440,
+      540
+    ],
+    "index_pad": [
+      503,
+      434
+    ],
+    "middle_pad": [
+      438,
+      416
+    ],
+    "ring_pad": [
+      365,
+      423
+    ],
+    "thumb_pad": [
+      608,
+      475
+    ]
+  },
+  "required_geometry": [
+    "visible palmar crease",
+    "thenar/hypothenar structure",
+    "2 distinct palmar fingertip pads",
+    "sphere above palmar not dorsal",
+    "same 3D model all top obliques"
+  ],
+  "user_approved": false,
+  "contact_not_certified_without_surface_identity": true
+}
