@@ -110,7 +110,7 @@ cam_angles=[(0,0),(45,0),(90,0),(135,0),(180,0),(225,0),(270,0),(315,0),(0,90),(
 rendered=[]
 for az,el in cam_angles:
  a=math.radians(az);e=math.radians(el);center=Vector((0,0,.85))
- direction=Vector((math.sin(a)*math.cos(e),-math.cos(a)*math.cos(e),math.sin(e)))
+ direction=Vector((math.sin(a)*math.cos(e),math.cos(a)*math.cos(e),math.sin(e)))
  camera.location=center+direction*4
  camera.rotation_euler=(center-camera.location).to_track_quat("-Z","Y").to_euler()
  path=OUT/f"AZ{az:03d}_EL{el:+04d}.png"
