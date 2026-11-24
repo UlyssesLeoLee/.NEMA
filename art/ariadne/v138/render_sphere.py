@@ -22,10 +22,9 @@ high=Vector([max(v[i] for v in corners) for i in range(3)])
 center=(low+high)/2
 radius=max((high-low).length*1.35,1)
 scene=bpy.context.scene
-try:
- scene.render.engine = "BLENDER_EEVEE_NEXT"
-except TypeError:
- scene.render.engine = "BLENDER_EEVEE"
+scene.render.engine = "CYCLES"
+scene.cycles.device = "CPU"
+scene.cycles.samples = 12
 scene.render.resolution_x=512;scene.render.resolution_y=512
 scene.render.resolution_percentage=100
 scene.render.image_settings.file_format="PNG"
