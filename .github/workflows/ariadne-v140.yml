@@ -1,0 +1,37 @@
+name: Ariadne V140 actual 3D sculpture iteration
+on:
+  push:
+    branches:
+      - feature/ariadne-v140-sculpture-iteration
+    paths:
+      - 'art/ariadne/v140/**'
+      - '.github/workflows/ariadne-v140.yml'
+  workflow_dispatch:
+jobs:
+  sculpt:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Headless Blender and NumPy
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y blender python3-numpy libegl1 libgl1 libopengl0 libxrender1 libxext6 libsm6
+          blender --version
+          python3 -m py_compile art/ariadne/v140/build_v140.py
+      - name: Create actual GLB geometry and render 10 views
+        run: |
+          blender -b -t 2 --python-exit-code 1 --python art/ariadne/v140/build_v140.py
+      - name: Verify model and render evidence
+        run: |
+          python3 art/ariadne/v140/verify.py
+      - name: Upload GLB and Blender screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Ariadne-V140-Real-3D-Iteration-GLB-and-10views
+          path: artifacts/ariadne_v140/
+          if-no-files-found: warn
+          retention-days: 21
