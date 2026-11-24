@@ -146,7 +146,7 @@ for bone_name in ["upperarm01.","upperarm02.","lowerarm01.","lowerarm02.","wrist
  pb=arm.pose.bones[bone_name+ball_side]
  pb.rotation_euler=(0,0,0)
 target=bpy.data.objects.new("V144_Ball_Hand_IK_Target",None)
-scene.collection.objects.link(target)
+bpy.context.scene.collection.objects.link(target)
 side_sign=-1 if ball_side=="L" else 1
 # Actual joint geometry is authoritative; target is intentionally placed
 # above and slightly in front of shoulder, rather than at arbitrary sphere spot.
