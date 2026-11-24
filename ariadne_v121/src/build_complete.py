@@ -142,12 +142,17 @@ def skirt_obj():
 cloth.append(skirt_obj())
 # U-shaped soft neckline and gravity formed chest folds, top pinned along shoulder line
 def chest(u,w):
- x=-.229+.458*u
- upper=1.305-.095*(1-(2*u-1)**2)
- z=upper-(upper-.985)*w
- ridge=(.012*cos((3*u+1.25*w)*pi)+.003*cos((7*u-.6*w)*pi))*w
- y=-.199-.020*(1-(2*u-1)**2)+ridge-.010*sin(pi*w)
- return(x,y,z)
+ q=2*u-1
+ width=.245-.065*w
+ x=q*width
+ upper=1.312-.105*(1-q*q)
+ z=upper-(upper-.998)*w
+ # Volumetric bodice wraps the torso; authored diagonal sculptural ridges.
+ wrap=math.sqrt(max(.04,1-q*q))
+ front=-.075-.155*wrap
+ ridge=(.014*cos(pi*(3.0*u+1.20*w))+.006*cos(pi*(6.0*u-.9*w)))*sin(pi*w)
+ y=front+ridge-.007*sin(pi*w)
+ return (x,y,z)
 cloth.append(ribbon("11_BODICE_U_FOLD_CONTINUOUS",50,40,chest,cloth2))
 # broad actual diagonal, continuous warp of mesh, not overlay ribbons for mock fold
 def diagonal(u,w):
@@ -158,12 +163,15 @@ def diagonal(u,w):
 cloth.append(ribbon("12_SHOULDER_TO_WAIST_CONTINUOUS_DRAPE",22,45,lambda u,w:diagonal(u,w),clothmat))
 # deep hip diagonal fold panel: authored from actual folded sewing cloth
 def hip(u,w):
- x=-.285+.56*u
- top=.99-.045*u
- drop=(.052+.108*sin(pi*u)+.016*u)
+ q=2*u-1
+ x=q*(.286-.015*w)
+ top=.994-.025*u
+ drop=(.038+.120*sin(pi*u)+.008*u)
  z=top-drop*w
- y=-.242-.035*sin(pi*u)-.007*w+.014*sin(pi*4*u)*sin(pi*w)
- return x,y,z
+ # Waist swag follows the actual rounded front of the skirt.
+ arc=math.sqrt(max(.02,1-(x/.37)**2))
+ y=-.095-.212*arc-.008*w+.012*cos(pi*(3*u+1.3*w))*sin(pi*w)
+ return (x,y,z)
 cloth.append(ribbon("13_HIP_CROSS_SWAG_CONTINUOUS",48,35,hip,clothmat))
 # two separate layers only where 2D explicitly shows cape and underlayer
 def veil(u,w,layer):
@@ -193,6 +201,28 @@ def curve(name,coords,rad,mt,res=3):
 def sphere(name,loc,r,mt,segments=32,rings=16):
  bpy.ops.mesh.primitive_uv_sphere_add(segments=segments,ring_count=rings,location=loc,radius=r)
  ob=bpy.context.object;ob.name=name;ob.data.materials.append(mt);return ob
+# Semantically continuous three-dimensional carved hair cap above the hairline.
+# Keep the original MakeHuman face skin unmodified.
+def sculpted_hair_cap():
+ rings=20; sectors=64; verts=[]; faces=[]
+ for j in range(rings):
+  theta=.0001+(1.26-.0001)*j/(rings-1)
+  for i in range(sectors):
+   phi=2*pi*i/sectors
+   r=sin(theta)*(1+.025*cos(9*phi)*sin(theta))
+   x=.137*r*cos(phi)
+   y=.018+.113*r*sin(phi)
+   z=1.513+.129*cos(theta)-.006*r
+   verts.append((x,y,z))
+ for j in range(rings-1):
+  for i in range(sectors):
+   k=j*sectors+i; nexti=j*sectors+(i+1)%sectors
+   faces.append((k,nexti,nexti+sectors,k+sectors))
+ cap=obj("19_REAL_SCULPTED_BRAID_BASE_HAIR_CAP",verts,faces,hairmat)
+ solid=cap.modifiers.new("Hair_Cap_Stone_Thickness","SOLIDIFY")
+ solid.thickness=.004
+ return cap
+sculpted_hair_cap()
 # Hair: broad temple waves and crown organized into three-dimensional guide masses,
 # not 28 uniform vertical tooth tubes. This is structural blockout, requires art pass.
 for side in (-1,1):
@@ -231,12 +261,25 @@ curve("24_GOLD_DIADEM_FRONT",[(.128*cos(a),-.065-.045*sin(a),1.56+.065*sin(a)) f
 for sign in [-1,1]:sphere("25_CROWN_SHOULDER_PIN_"+str(sign),(sign*.222,-.145,1.29),.015,gold)
 # gold ball and guide thread; palm contact remains not approved
 sphere("30_GOLD_ORB",ball_center,.072,gold)
+# Intrinsic 3D winding surface: actual gold lines hugging the one sphere.
+for coil in range(4):
+ pts=[]
+ for k in range(160):
+  t=k/159
+  theta=.10+(pi-.20)*t
+  phi=9*pi*t+2*pi*coil/4
+  rr=.0734
+  pts.append((ball_center[0]+rr*sin(theta)*cos(phi),
+              ball_center[1]+rr*sin(theta)*sin(phi),
+              ball_center[2]+rr*cos(theta)))
+ curve("30_GOLD_ORB_WINDING_%02d"%coil,pts,.0018,gold)
+
 thread=[]
 for i in range(130):
  t=i/129
- x=ball_center[0]+.025-.72*t+.15*sin(pi*t)
- y=ball_center[1]-.01-.19*sin(pi*t)
- z=ball_center[2]-.08-1.23*t-.065*sin(pi*3*t)
+ x=ball_center[0]+.012-.72*t+.15*sin(pi*t)
+ y=ball_center[1]-.19*sin(pi*t)
+ z=ball_center[2]-.071-1.23*t-.065*sin(pi*3*t)
  thread.append((x,y,z))
 curve("31_CONTINUOUS_GOLD_THREAD",thread,.007,gold)
 # Pedestal
