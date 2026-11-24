@@ -1,0 +1,103 @@
+name: Ariadne V129 - Approved Fullbody Greek Princess Actual GLB Build
+on:
+  push:
+    branches: [ariadne-v129-approved-fullbody-20261124]
+    paths:
+      - 'ariadne_v129/**'
+      - '.github/workflows/ariadne-v129-fullbody.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  official-skin-anatomy-palm-up-garment:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+      - name: Recover official MakeHuman CC0 skeleton weights female body
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          mkdir -p ariadne_v129/input
+          gh run download 45160529755 --repo "$GITHUB_REPOSITORY" \
+            --name Ariadne-V104-Official-MakeHuman-CC0-Rig-Weights \
+            --dir /tmp/ariadne_official_cc0
+          for FILE in base.obj caucasian-female-young.target default.mhskel default_weights.mhw; do
+            ORIGIN=$(find /tmp/ariadne_official_cc0 -type f -name "$FILE" | head -1)
+            test -n "$ORIGIN"
+            cp "$ORIGIN" "ariadne_v129/input/$FILE"
+            test -s "ariadne_v129/input/$FILE"
+          done
+          python3 - <<'PY'
+          import json,pathlib,hashlib
+          root=pathlib.Path('ariadne_v129/input')
+          sk=json.loads((root/'default.mhskel').read_text())
+          w=json.loads((root/'default_weights.mhw').read_text())
+          assert sk['license']==w['license']=='CC0'
+          assert len(sk['bones'])==163 and len(w['weights'])>=139
+          print('OFFICIAL_SOURCE_PROVENANCE',json.dumps({
+            n:hashlib.sha256((root/n).read_bytes()).hexdigest()
+            for n in ['base.obj','caucasian-female-young.target','default.mhskel','default_weights.mhw']}))
+          PY
+      - name: Retrieve official pinned Blender 4.5 binary (no apt mirror dependency)
+        run: |
+          set -euo pipefail
+          URL="https://mirror.blender.org/release/Blender4.5/blender-4.5.13-linux-x64.tar.xz"
+          FALLBACK="https://mirror.clarkson.edu/blender/release/Blender4.5/blender-4.5.13-linux-x64.tar.xz"
+          curl --fail --location --retry 1 --retry-delay 2 \
+               --connect-timeout 20 --max-time 210 "$URL" -o "$RUNNER_TEMP/blender.tar.xz" || \
+          curl --fail --location --retry 1 --retry-delay 2 \
+               --connect-timeout 20 --max-time 210 "$FALLBACK" -o "$RUNNER_TEMP/blender.tar.xz"
+          test "$(stat -c%s "$RUNNER_TEMP/blender.tar.xz")" -gt 350000000
+          tar -xf "$RUNNER_TEMP/blender.tar.xz" -C "$RUNNER_TEMP"
+          BINARY="$RUNNER_TEMP/blender-4.5.13-linux-x64"
+          test -x "$BINARY/blender"
+          "$BINARY/blender" --version | head -1
+          echo "$BINARY" >> "$GITHUB_PATH"
+      - name: Rebuild official MakeHuman rig, palm-up hand, costume and actual GLB
+        run: |
+          set -euo pipefail
+          ARIADNE_RENDER_BACKEND=EXTERNAL_VTK blender -b -t 2 --python-exit-code 1 \
+            --python ariadne_v129/src/build_v129_fullbody.py > ariadne_v129_build.log 2>&1 || {
+              tail -150 ariadne_v129_build.log
+              exit 1
+            }
+          tail -65 ariadne_v129_build.log
+      - name: Validate real official full body and art component redesign
+        run: |
+          python3 - <<'PY'
+          import json,pathlib,hashlib
+          out=pathlib.Path('ariadne_v129/output')
+          j=json.loads((out/'V129_P0_ANATOMY_AND_GARMENT_QA.json').read_text())
+          a=json.loads((out/'V129_FULLBODY_SCULPTURAL_REDESIGN_AUDIT.json').read_text())
+          glb=out/'Ariadne_V129_OfficialPalmUp_FullCandidate_NOT_ART_APPROVED.glb'
+          assert glb.stat().st_size>400000
+          assert j['official_bones']==163 and j['original_body_vertices']==13380
+          assert j['official_weights'] is True
+          assert j['new_user_approved_fullbody_v2_reference_available'] is True
+          assert j['obsolete_wrong_top2d_React30_used'] is False
+          assert a['actual_neckline_vertices_modified']>100
+          assert a['new_3d_design_mesh_components']>=15
+          assert 'V129_ROYAL_PURPLE_HIMATION_FULL_BODY' in a['new_components']
+          assert j['art_approved'] is False
+          assert j['reimport_mesh_count']>30
+          print('V129_FULLBODY_REAL_GLB_ENGINEERING_REIMPORT_OK',
+              glb.stat().st_size,hashlib.sha256(glb.read_bytes()).hexdigest(),
+              a['new_3d_design_mesh_components'])
+          PY
+      - name: Archive actual complete GLB editable rig 24 views and audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Ariadne-V129-ApprovedFullbody-KShape-GreekPrincess-RealGLB-NotArtApproved
+          path: |
+            ariadne_v129/output/**
+            ariadne_v129/src/build_v129_fullbody.py
+            ariadne_v129/src/fullbody_redesign.py
+            ariadne_v129/art/**
+            .github/workflows/ariadne-v129-top2d.yml
+            ariadne_v129_build.log
+          retention-days: 30
+          if-no-files-found: warn
