@@ -1,0 +1,70 @@
+project:
+  id: ARIADNE_V141
+  goal: full_round_art_reconstruction
+  state: ENGINEERING_NOT_ART_APPROVED
+  source_body:
+    provenance: official_MakeHuman_CC0
+    preserve_source_mesh_and_vertex_correspondence: true
+    forbid_visual_hull_relief_procedural_mannequin: true
+  art_authority:
+    priority: user_selected_10_view_turnaround
+    require_independent_camera_registered_images: true
+    generated_candidate_2d_never_self_approves: true
+  hard_stage_gates:
+    - id: P00
+      title: reference_provenance_and_camera_calibration
+      fail_if_missing_reference: true
+    - id: P01
+      title: female_anatomy_pose
+      rig_joint_limits: true
+      arms: ball_holding_hand_raised_and_palmar_contact
+      anatomy_provenance: preserve_cc0
+      avoid_wrist_edge_collapses: true
+    - id: P02
+      title: sewn_costume_primary_shape
+      ban_cylinder_skirt: true
+      ban_free_floating_ribbon: true
+      white_chiton_cut_pattern: true
+      purple_himation_real_shoulder_to_waist_folds: true
+      true_thickness_and_collision_evidence: true
+    - id: P03
+      title: sculpted_head_hair_and_facial_proportions
+      scalp_cap_and_rooted_hairline: true
+      approved_ear_surroundings_required: true
+      braids_connected_in_real_3d: true
+    - id: P04
+      title: ball_thread_and_pedestal
+      orb_real_palmar_support: true
+      one_3d_thread: true
+      closed_loop_and_no_floating_material: true
+    - id: P05
+      title: all_spherical_2d_3d_react
+      azimuth_degrees: [0,15,30,45,60,75,90,105,120,135,150,165,180,195,210,225,240,255,270,285,300,315,330,345]
+      elevation_degrees: [-75,-60,-45,-30,-15,0,15,30,45,60,75]
+      poles: [-90,90]
+      views: 266
+      per_angle_react_cycles_min: 3
+      strict_similarity_per_authorized_angle_gt: 0.95
+      local_loop: [fixed_camera, independent_2d_reference, render_current_glb, reason_geometry_root_cause, edit_shared_mesh, export_reimport, rerender, measure, global_regression, accept_or_rollback]
+      repeat_until_each_angle_pass_or_report_blocked: true
+      reject_mean_score_only: true
+    - id: P06
+      title: human_art_approval
+      user_approval: required
+  adversarial_review:
+    false_positive_patterns:
+      - texture_inverse_or_mirror_masquerades_as_geometry
+      - model_self_render_as_reference
+      - unsupported_floating_ball
+      - open_arm_neutral_pose_as_approved_K_pose
+      - cheap_ring_loft_cloth_with_no_actual_pattern
+      - disconnected_hair_tubes
+      - missing_top_bottom_art
+      - declared_95_percent_without_independent_measurement
+    on_failure: rollback_or_explicitly_block
+  build:
+    runner: github_actions
+    blender: headless_cycles_cpu
+    no_vercel_deployment: true
+    outputs: [glb, orthographic_contact_sheet, camera_manifest, geometry_audit, blocker_report]
+    release_status: NOT_ART_APPROVED_UNTIL_ALL_STAGES_PASS

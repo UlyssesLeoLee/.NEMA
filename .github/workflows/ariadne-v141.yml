@@ -1,0 +1,32 @@
+name: Ariadne V141 root-cause geometry rebuild
+on:
+  push:
+    branches: [feature/ariadne-v141-root-cause-rebuild]
+    paths: ['art/ariadne/v141/**', '.github/workflows/ariadne-v141.yml']
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Blender headless CPU environment
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y blender python3-numpy libegl1 libgl1 libopengl0 libxrender1 libxext6 libsm6
+          python3 -m py_compile art/ariadne/v141/build_v141.py art/ariadne/v141/verify.py
+      - name: Build V141 shared GLB and render 10 diagnostics
+        run: |
+          blender -b -t 2 --python-exit-code 1 --python art/ariadne/v141/build_v141.py
+      - name: Verify verifiable geometry and failure honesty
+        run: python3 art/ariadne/v141/verify.py
+      - name: Upload actual screenshots and candidate GLB
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Ariadne-V141-GLB-and-10-real-renders
+          path: artifacts/ariadne_v141/
+          if-no-files-found: warn
+          retention-days: 14
