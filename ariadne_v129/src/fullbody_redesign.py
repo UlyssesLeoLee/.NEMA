@@ -27,6 +27,23 @@ glb_art_components=[]
 # remains 13,380 vertices of official licensed MakeHuman body.
 sculpt.data.materials.clear()
 sculpt.data.materials.append(skin_warm)
+gown.data.materials.clear();gown.data.materials.append(ivory_silk)
+sash_ob.data.materials.clear();sash_ob.data.materials.append(ivory_silk)
+swag.data.materials.clear();swag.data.materials.append(ivory_silk)
+# Sculpt graded hem movement and pronounced actual marble/silk relief.
+skirt_sculpt_vertices=0
+for vert in gown.data.vertices:
+    px,py,pz=map(float,vert.co)
+    if pz>=1.02:continue
+    envelope=(1.02-pz)/.96
+    theta=math.atan2(py+.018,px)
+    radial=.010+.042*(envelope**1.45)
+    signed_fold=radial*(.70*sin(11*theta+.9*pz)+.35*sin(17*theta-.7*pz))
+    skew=.027*(envelope**2)*sin(theta*2)
+    vert.co.x=px+(px/(math.hypot(px,py)+.001))*signed_fold+skew
+    vert.co.y=py+(py/(math.hypot(px,py)+.001))*signed_fold*.83
+    skirt_sculpt_vertices+=1
+gown.data.update()
 
 def clear_old(prefixes):
     for obj in list(bpy.data.objects):
@@ -90,14 +107,15 @@ for j in range(5):
 # across the skirt with genuine thick ridge-and-valley geometry.
 def mantle(u,t):
     z=1.31-1.22*t
-    center=.195+.105*sin(pi*t)-.04*t
-    width=.095+.19*t+.05*sin(pi*t)
+    # Real curved garment path: shoulder→crossed waist→right-flank hem,
+    # never a vertical rectangular "banner" hanging from the shoulder.
+    center=.22-.22*sin(.75*pi*t)+.16*t*t
+    width=.095+.13*sin(pi*t)+.28*t*t
     x=center+(u-.5)*width
-    z+=.028*sin(pi*u)*sin(pi*t)
-    # Outward sculptural pleats; center falls forward and edges turn back.
-    relief=.017*cos(5*pi*u+.8*t)*sin(pi*t)+.007*cos(11*pi*u)*t
-    y=gown_front(min(.35,max(-.35,x)),z,.042)-relief
-    y+=.030*max(0,2*u-1)*t
+    z+=.040*sin(3*pi*u)*sin(pi*t)+.015*sin(pi*u)*t
+    relief=.038*cos(5*pi*u+.6*t)*sin(pi*t)+.016*cos(11*pi*u)*t
+    y=gown_front(min(.35,max(-.35,x)),z,.029)-relief
+    y+=.038*max(0.,2*u-1)*t
     return (x,y,z)
 mantle_mesh=sculpt_ribbon("V129_ROYAL_PURPLE_HIMATION_FULL_BODY",mantle,68,116,purple)
 mantle_mesh["garment_structure"]="RIGHT_SHOULDER_TO_HIP_TO_HEM_REAL_FOLDED_PURPLE"
@@ -161,10 +179,13 @@ for lane in (0,1,2):
 # billboards; length, fall and fold envelopes remain stable around 360°.
 def long_veil(u,t,layer=0):
     z=1.64-1.35*t
-    widen=.08+.44*(t**.65)
-    x=(u-.5)*2*widen+.018*sin(2*pi*u)*t
-    y=.073+.18*t+.012*layer+.027*cos(8*pi*u+1.1*t)*t
-    z+=.018*sin(5*pi*u)*sin(pi*t)
+    # Head-rooted drape with a scalloped floating left/right outline:
+    # compact around the crown; broad in motion but not a planar tent.
+    widen=.06+.33*(t**.70)
+    x=(u-.5)*2*widen+.035*sin(2*pi*t)*(u-.5)
+    pleats=.038*cos(9*pi*u+1.5*t)*t+.012*sin(17*pi*u)*t*t
+    y=.080+.145*t+.014*layer+pleats
+    z+=.023*sin(6*pi*u)*sin(pi*t)-.025*sin(pi*u)*t*t
     return(x,y,z)
 for layer in (0,1):
     veil_obj=sculpt_ribbon("V129_LONG_IVORY_VEIL_LAYER_%d"%layer,
@@ -339,6 +360,9 @@ v129_art_design={
  "reference_description":"auburn laurel chignon; ivory chest folds; Tyrian purple gold-leaf himation; gold braid and orb; downward free arm, upward left support; K composition; 0.618 golden proportions",
  "body":"OFFICIAL_MAKEHUMAN_CC0_163_BONE_SOURCE",
  "actual_neckline_vertices_modified":neck_changed,
+ "real_skirt_3d_sculpt_vertices":skirt_sculpt_vertices,
+ "curved_purple_himation_no_longer_vertical_banner":True,
+ "veil_has_tapered_scalloped_nonplanar_sculptural_pleats":True,
  "max_neckline_vertex_displacement_mm":max_neck_disp*1000,
  "new_3d_design_mesh_components":len(glb_art_components),
  "new_components":glb_art_components,
