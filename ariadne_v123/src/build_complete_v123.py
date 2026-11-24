@@ -571,10 +571,16 @@ gown=meshobj("10_ONE_SEWN_CONTINUOUS_ROYAL_CHITON_WAIST",dress_v,dress_f,chiton_
 m=gown.modifiers.new("TrueClothSurfaceThickness","SOLIDIFY");m.thickness=.004;m.offset=0
 sub=gown.modifiers.new("GarmentFineFoldSubdivision","SUBSURF");sub.levels=1;sub.render_levels=1
 def gown_front(x,z,extra=.009):
+ # Query the SAME sculpted 3D ridge surface used by the sewn gown.
+ # The former approximation ignored the actual fold depth and could
+ # float the waist ribbon above it or penetrate the skirt.
  rx,ry=dress_sections(z)
- t=clamp(x/rx,-.95,.95)
- y=-.018-ry*sqrt(max(.01,1-t*t))-extra
- return y
+ a=-math.acos(clamp(x/rx,-.94,.94))
+ w=clamp((z-.105)/1.225,0,1)
+ ridge=fold_profile(a,w,z)
+ r_x=rx+ridge;r_y=ry+.78*ridge
+ t=clamp(x/max(.04,r_x),-.96,.96)
+ return -.018-r_y*sqrt(max(.01,1-t*t))-extra
 # Wide sculpted diagonal sash conforms to the underlying true chiton.
 def ribbon(name,fn,nu,nv,mat,thickness=.004):
  pts=[fn(i/(nu-1),j/(nv-1)) for j in range(nv) for i in range(nu)]
@@ -601,15 +607,30 @@ def sash(u,w):
 sash_ob=ribbon("11_SHOULDER_TO_WAIST_CARVED_HIMATION",sash,22,55,himation_mat)
 def waist_swag(u,w):
  x=(u-.5)*.425
- centerz=.992-.11*sin(pi*u)
- z=centerz+(w-.5)*(.055+.018*sin(pi*u))
+ # Royal waist is a shallow sewn wrap under tension, not a wide
+ # floating U-shaped hammock crossing the abdomen.
+ centerz=.992-.037*sin(pi*u)+.013*(u-.5)
+ z=centerz+(w-.5)*(.047+.009*sin(pi*u))
  # Folds converge into an anchored waist seam; raised crests have
  # physical volume and two valleys toward the belt, not a floating ribbon.
  crease=.012*math.exp(-((u-.26)/.16)**2)-.009*math.exp(-((u-.53)/.13)**2)
  crease+=.006*math.exp(-((u-.77)/.16)**2)
  y=gown_front(x,z,.013)-crease*math.sin(pi*w)
  return (x,y,z)
-swag=ribbon("12_WAIST_SAG_ATTACHED_TO_SHARED_CHITON",waist_swag,50,17,himation_mat)
+swag=ribbon("12_WAIST_SAG_ATTACHED_TO_SHARED_CHITON",waist_swag,64,19,himation_mat)
+# Real wraparound stitched belt sampled from the original SAME chest-waist-
+# skirt surface, not a hovering independent decorative rectangle.
+def waist_belt(u,w):
+ a=2*pi*u
+ z=.985+(w-.5)*.055
+ rx,ry=dress_sections(z)
+ elev=fold_profile(a,clamp((z-.105)/1.225,0,1),z)
+ outset=.008
+ x=(rx+elev+outset)*cos(a)
+ y=(ry+.78*elev+outset)*sin(a)-.018
+ return (x,y,z)
+belt=ribbon("12A_REAL_SEWN_ROYAL_WAIST_BELT",waist_belt,108,11,himation_mat)
+# Waist/belt/swag share the same anatomy-derived 3D reference surface.
 # Seam audit: independent draped overlay anchored onto same underlying gown.
 seam_samples=[]
 for u in np.linspace(.06,.94,12):
@@ -620,9 +641,12 @@ if seam_max_mm>30:raise RuntimeError("P0_WAIST_SAG_NOT_ATTACHED_TO_CHITON")
 # Tailored short rear veil, two layered polygonal pleats from crown to shoulder.
 for layer in (0,1):
  def veil(u,w,ly=layer):
-  x=(u-.5)*(.135+.35*w+.025*ly)
-  z=1.59-.585*w+.008*sin(5*pi*u)*sin(pi*w)
-  y=.105+.15*w+.012*ly+.02*sin(7*pi*u)*w
+  crest=(.020*math.exp(-((u-.27)/.12)**2)
+         -.013*math.exp(-((u-.51)/.10)**2)
+         +.016*math.exp(-((u-.78)/.13)**2))*w
+  x=(u-.5)*(.132+.355*w+.026*ly)
+  z=1.59-.54*w+.009*sin(3*pi*u)*w
+  y=.109+.143*w+.015*ly+crest
   return(x,y,z)
  ribbon("13_ROYAL_SHORT_REAR_VEIL_LAYER_%s"%layer,veil,36,38,chiton_mat if layer==0 else himation_mat)
 # Low-profile sewn shoulder sleeves: arms remain visibly articulated.
@@ -747,6 +771,9 @@ report={
  "actual_fold_graph_primary_count":len(fold_graph["level_1_primary"]),
  "actual_fold_graph_secondary_count":len(fold_graph["level_2_secondary"]),
  "actual_fold_graph_tertiary_count":len(fold_graph["level_3_tertiary"]),
+ "true_waist_wrap_circumferential_belt_mesh":True,
+ "waist_swag_U_hammock_artifact_rebuilt":True,
+ "waist_sash_and_belt_sample_the_real_sculpted_fold_profile":True,
  "actual_3D_fold_graph_file":"V123_FOLD_CAUSAL_GRAPH.json",
  "fold_reference_24_art_approved":False,
  "sewn_garment_connected_chiton_faces":len(dress_f),
