@@ -1,5 +1,5 @@
 project: ".NEMA Ariadne"
-revision: V165.1
+revision: V165.3
 status: ENGINEERING_CANDIDATE
 reference_contract:
   input_authority: independent_user_approved_art
@@ -30,6 +30,42 @@ reference_contract:
     glb: actual_shared_3d_geometry
     comparison_renders: separate_qa_evidence_only
     diagnostic_rotation: never_reference_truth
+react_execution:
+  execution_host: github_actions
+  decision_host: multimodal_api
+  api_key_secret: ARIADNE_VISION_API_KEY
+  api_base_repository_variable: ARIADNE_VISION_API_BASE
+  model_repository_variable: ARIADNE_VISION_MODEL
+  required_rounds: 30
+  max_attempts_per_round: 3
+  no_noop_rounds: true
+  mode: independent_visual_feedback_and_geometry_mutation
+  input_bundle: references/ariadne/react_input
+  mandatory_before_start:
+    - actual_approved_independent_gif_svg_argb_and_266_registered_views
+    - immutable_hash_manifest
+    - calibrated_camera_registry
+    - vision_api_credentials
+    - actual_base_glb
+  each_round:
+    - render_all_266_views_from_current_glb
+    - compare_all_views_to_independent_inputs
+    - vision_review_ranked_defects_and_reference_render_pairs
+    - propose_allowlisted_mesh_material_operations
+    - mutate_real_shared_geometry
+    - export_reimport_and_render_all_266_views
+    - independent_vision_critique
+    - quantifiable_regression_test
+    - accept_or_rollback
+    - persist_hashes_proposals_metrics_and_review
+  accept_only:
+    - actual_geometry_change
+    - independent_critic_accepts
+    - reference_error_improves
+    - no_view_regression_above_tolerance
+  blocked_policy: stop_and_report_missing_input_or_api_no_fake_rounds
+  round_evidence: immutable_checkpoint_and_json
+  final_art_approval: separate_all_anchor_gate
 review:
   spherical:
     elevation_deg: [-75,-60,-45,-30,-15,0,15,30,45,60,75]
