@@ -1,0 +1,97 @@
+project:
+  id: ARIADNE_V142
+  baseline: V141_CC0_SHARED_MESH
+  output: REAL_GLB_PLUS_SPHERICAL_RENDER_EVIDENCE
+  art_release: BLOCKED_UNTIL_HUMAN_APPROVAL
+  prohibit_web_deployment: true
+reference_authority:
+  approved_user_art: REQUIRED_FOR_ART_SCORE
+  registered_reference_per_angle: REQUIRED
+  generated_candidate_2d:
+    purpose: corrective_hypothesis_only
+    approval_inferred: false
+  self_render_can_never_be_reference: true
+cameras:
+  azimuth_degrees: {start: 0, stop_exclusive: 360, step: 15}
+  elevations_degrees: [-75, -60, -45, -30, -15, 0, 15, 30, 45, 60, 75]
+  poles: [-90, 90]
+  unique_views: 266
+  front_azimuth: 0
+  fixed_in_world: true
+  uniform_orthographic_scale: true
+  include_exact_top_and_bottom: true
+  prohibit_per_view_mesh_swap: true
+scope:
+  every_visible_component:
+    - anatomy_pose
+    - facial_beauty
+    - hairline_ear_and_rooted_braids
+    - shoulders_neck
+    - wrists_fingers_palmar_support
+    - golden_orb
+    - one_continuous_gold_thread
+    - white_chiton
+    - purple_himation
+    - 3d_primary_secondary_folds
+    - seams_trim_hems
+    - pedestal
+  all_components_share_one_3d_coordinate_system: true
+loop:
+  per_angle_minimum_react_cycles: 3
+  each_cycle:
+    - verify_independent_approved_target_and_camera_calibration
+    - render_shared_glb_at_locked_camera
+    - compare_semantic_masks_256_landmarks_silhouette_and_fold_paths
+    - reason_about_actual_geometry_root_cause
+    - prepare_new_2d_correction_hypothesis
+    - propose_real_anatomical_mesh_or_sewn_cloth_edit
+    - export_and_reimport_same_glb
+    - rerender_same_camera
+    - compute_measured_component_errors_and_worst_view
+    - rollback_if_other_views_regress
+  hard_convergence:
+    all_authorized_views_strictly_greater_than: 0.95
+    no_average_substitution: true
+    no_self_render_as_truth: true
+    fail_closed_missing_reference: true
+    no_unbounded_claims_without_execution: true
+  missing_art_reference:
+    status: ART_BLOCKED_REFERENCE_MISSING
+    do_not_simulate_three_completed_react_cycles: true
+    render_geometry_diagnostics_only: true
+geometry_gates:
+  requires_original_official_CC0_mesh: true
+  target_pose_requires_real_armature_with_weights: true
+  real_palm_support_orb: true
+  preserve_skull_attachment_and_hair_roots: true
+  garment_collision_and_sewn_pattern: true
+  not_cylindrical_or_floating_ribbons: true
+  real_3d_gold_thread_no_penetration: true
+  no_texture_fixes_for_structural_error: true
+  anti_regression_all_266: true
+execution:
+  runner: GitHub_Actions_Blender_Cycles_CPU
+  build_after_V141: true
+  export_single_shared_glb: true
+  reimport_into_new_blender_scene_before_render: true
+  engineering_render:
+    all_266_angle_thumbnail_png: true
+    original_10_critical_views: true
+    metadata_and_hashes: true
+  full_3_cycle_react_passes:
+    performed_only_if_authoritative_reference_is_available: true
+    expected_current_status: BLOCKED
+    do_not_count_diagnostic_renders_as_react_cycles: true
+  outputs:
+    - model_glb
+    - fixed_camera_manifest_json
+    - png_spherical_266
+    - qa_per_angle_json
+    - qa_global_blocker_json
+    - contact_sheet
+release:
+  require_pose_rig_validation: true
+  require_24_independent_original_angles_each_gt_95: true
+  require_all_266_checked_and_no_geometry_regressions: true
+  require_human_approval: true
+  engineering_success_is_not_art_success: true

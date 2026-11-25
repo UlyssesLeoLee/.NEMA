@@ -1,0 +1,30 @@
+name: Ariadne V145 real geometry improvement and art-blocking audit
+on:
+  push:
+    branches: [feature/ariadne-v145-reference-gated-sculpt]
+    paths: ['art/ariadne/v145/**','.github/workflows/ariadne-v145.yml']
+  workflow_dispatch:
+jobs:
+  geometry:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 100
+    permissions: {contents: read}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Blender CPU + check scripts
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y blender python3-numpy python3-pil libegl1 libgl1 libopengl0 libxrender1 libxext6 libsm6
+          python3 -m py_compile art/ariadne/v145/build_corrected.py art/ariadne/v145/verify_engineering.py art/ariadne/v145/certify_art.py
+      - name: Actually modify real V144 skinned GLB and render 10 cameras
+        run: blender -b -t 2 --python-exit-code 1 --python art/ariadne/v145/build_corrected.py
+      - name: Verify actual geometry changes
+        run: python3 art/ariadne/v145/verify_engineering.py
+      - name: Upload unapproved geometry candidate and renders
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Ariadne-V145-Corrected-GLB-10-Real-Views-NOT-ART-APPROVED
+          path: artifacts/ariadne_v145/
+          retention-days: 14
+          if-no-files-found: warn
