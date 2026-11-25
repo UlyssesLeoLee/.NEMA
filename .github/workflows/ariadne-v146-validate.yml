@@ -1,0 +1,42 @@
+name: Ariadne V146 2D-first YAML contract verification
+on:
+  push:
+    branches: [feature/ariadne-v146-2d-art-authority]
+    paths:
+      - 'art/ariadne/v146/workflow.yaml'
+      - '.github/workflows/ariadne-v146-validate.yml'
+  workflow_dispatch:
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    permissions: {contents: read}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check V146 YAML syntax and exact per-camera cycle contracts
+        run: |
+          python3 -m pip install --user PyYAML
+          python3 - <<'PY'
+          import yaml
+          from pathlib import Path
+          p=Path("art/ariadne/v146/workflow.yaml")
+          d=yaml.safe_load(p.read_text(encoding="utf-8"))
+          assert d["project"]["id"]=="ARIADNE_V146"
+          st={x["id"]:x for x in d["stages"]}
+          assert len(st)==8 and list(st)==[f"P{i:02d}" for i in range(8)]
+          assert st["P04"]["camera_space"]["unique_views"]==266
+          assert st["P06"]["camera_count"]==266
+          assert st["P06"]["cycles_per_camera"]==30
+          assert st["P06"]["minimum_valid_local_cycle_count"]==7980
+          assert st["P06"]["accounting"]["no_real_edit_counts_as_completed"] is False
+          assert st["P06"]["accounting"]["self_render_only_counts_as_completed"] is False
+          assert d["principles"]["source_of_truth"]
+          assert d["art_authority"]["master"]["forbid_automatic_master_replacement"]
+          assert d["runtime_and_fail_closed"]["never_advance_unmet_gate_as_pass"]
+          print("VALID V146 ART MASTER CONTRACT: 266 CAMERAS X 30 REAL ReAct CYCLES")
+          PY
+      - name: Upload vetted YAML
+        uses: actions/upload-artifact@v4
+        with:
+          name: Ariadne-V146-2D-Art-First-YAML-Verified
+          path: art/ariadne/v146/workflow.yaml
+          retention-days: 30

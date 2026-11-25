@@ -1,0 +1,35 @@
+name: Ariadne V142 266-view spherical GLB reconstruction audit
+on:
+  push:
+    branches: [feature/ariadne-v142-spherical-react]
+    paths: ['art/ariadne/v142/**', '.github/workflows/ariadne-v142.yml']
+  workflow_dispatch:
+jobs:
+  render:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install headless Blender and contact sheet prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y blender python3-numpy python3-pil libegl1 libgl1 libopengl0 libxrender1 libxext6 libsm6
+          blender --version
+          python3 -m py_compile art/ariadne/v142/render_spherical.py art/ariadne/v142/verify.py art/ariadne/v142/contact_sheet.py
+      - name: Rebuild CC0-based GLB and reimport into Blender for all 266 directions
+        run: |
+          blender -b -t 2 --python-exit-code 1 --python art/ariadne/v142/render_spherical.py
+      - name: Verify provenance, angles, hashes and no false 95-percent approval
+        run: |
+          python3 art/ariadne/v142/verify.py
+          python3 art/ariadne/v142/contact_sheet.py
+      - name: Upload real GLB and 266 camera screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Ariadne-V142-REAL-GLB-266-Spherical-Cameras-NOT-ART-APPROVED
+          path: artifacts/ariadne_v142/
+          if-no-files-found: warn
+          retention-days: 21
