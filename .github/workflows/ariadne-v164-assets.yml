@@ -1,0 +1,30 @@
+name: Ariadne V164 licensed hair acquisition
+on:
+  push:
+    branches: [feature/ariadne-v164-licensed-hair-prior]
+    paths: ['.github/workflows/ariadne-v164-assets.yml']
+  workflow_dispatch:
+jobs:
+  download:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Retrieve official MakeHuman asset packs
+        run: |
+          mkdir -p assets
+          for pack in hair01 hair02 eyebrows01 makehuman_system_assets; do
+            for host in files2.makehumancommunity.org files.makehumancommunity.org; do
+              if curl --fail -L --connect-timeout 8 --max-time 65 --retry 0 "https://$host/asset_packs/$pack.zip" -o "assets/$pack.zip" && unzip -tq "assets/$pack.zip" >/dev/null; then
+                echo "$pack https://$host/asset_packs/$pack.zip" >> assets/sources.txt
+                break
+              fi
+              rm -f "assets/$pack.zip"
+            done
+          done
+          ls -lh assets
+          test -f assets/sources.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: official-hair-priors-v164
+          path: assets/
+          retention-days: 7
