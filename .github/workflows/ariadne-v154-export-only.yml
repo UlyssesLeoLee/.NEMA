@@ -1,0 +1,72 @@
+name: Ariadne V154 direct artifact GLB export with no render bottleneck
+on:
+  push:
+    branches: [feature/ariadne-v154-static-sculpt-pose-fix]
+    paths: ['.github/workflows/ariadne-v154-export-only.yml']
+  workflow_dispatch:
+jobs:
+  build-static-glb:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    permissions: {contents: read, actions: read}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: Ariadne-V153-Pose-Hair-SideCloth-real-GLB-NOT-ART-APPROVED
+          run-id: 45534976705
+          github-token: ${{ github.token }}
+          path: artifacts/ariadne_v153
+      - name: Install blender
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y blender python3-numpy python3-pil libegl1 libgl1 libopengl0 libxrender1 libxext6 libsm6
+      - name: Run all geometry and static bone baking but omit expensive screenshots
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          s=Path("art/ariadne/v154/build_v154.py").read_text()
+          marker="# Real roundtrip inspection and image review from frozen exported GLB."
+          assert s.count(marker)==1
+          s=s.split(marker)[0]+"""
+          audit={
+            'status':'V154_REAL_CC0_STATIC_GLB_EXPORTED_NO_VIEW_ART_CERT',
+            'actual_static_frozen_glb':glb.name,
+            'actual_glb_sha256':sha,
+            'editable_blender':blend.name,
+            'skinned_body_vertices_baked':len(mes.vertices),
+            'legacy_hair_removed':len(bad_hair),
+            'legacy_purple_panels_removed':len(removedcloth),
+            'glb_skin_count':len(j.get('skins',[])),
+            'glb_animation_count':len(j.get('animations',[])),
+            'wrist_ik_target_errors_m':errors,
+            'user_art_approval':False,
+            'completed_react_cycles':0
+          }
+          (OUT/'V154_EXPORT_AUDIT.json').write_text(json.dumps(audit,indent=2))
+          print('V154_STATIC_GLB_EXPORTED_NO_PREVIEW',json.dumps(audit),flush=True)
+          """
+          Path("art/ariadne/v154/export_only.py").write_text(s)
+          PY
+          blender -b -t 2 --python-exit-code 1 --python art/ariadne/v154/export_only.py
+      - name: Assert real frozen 3D file, zero animation and original CC0 anatomy
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import json,hashlib
+          p=Path('artifacts/ariadne_v154')
+          a=json.loads((p/'V154_EXPORT_AUDIT.json').read_text())
+          g=p/a['actual_static_frozen_glb']
+          assert g.stat().st_size>1000000
+          assert hashlib.sha256(g.read_bytes()).hexdigest()==a['actual_glb_sha256']
+          assert a['glb_skin_count']==0 and a['glb_animation_count']==0
+          assert a['skinned_body_vertices_baked']>=10000
+          print('ARTIFACT GLB VALIDATED',g.name,g.stat().st_size)
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: Ariadne-V154-STATIC-GLB-EXPORT-ONLY-NOT-ART-APPROVED
+          path: artifacts/ariadne_v154/
+          if-no-files-found: warn
+          retention-days: 21
