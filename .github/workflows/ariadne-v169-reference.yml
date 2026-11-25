@@ -1,0 +1,24 @@
+name: Ariadne V169 recover original homepage reference
+on:
+  push:
+    branches: [feature/ariadne-v165-input-first-detail-repair]
+    paths: ['.github/workflows/ariadne-v169-reference.yml']
+  workflow_dispatch:
+jobs:
+  reference:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify original homepage reference bytes
+        run: |
+          test -s website/assets/ariadne-hero-texture.png
+          test -s website/assets/ariadne-relief-3d.glb
+          sha256sum website/assets/ariadne-hero-texture.png website/assets/ariadne-relief-3d.glb > homepage_reference_sha256.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Ariadne-V169-Homepage-Original-Reference
+          path: |
+            website/assets/ariadne-hero-texture.png
+            website/assets/ariadne-relief-3d.glb
+            homepage_reference_sha256.txt
+          retention-days: 7
