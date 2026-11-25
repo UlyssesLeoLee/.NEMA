@@ -104,9 +104,18 @@ from mathutils.bvhtree import BVHTree
 scalp_bvh=BVHTree.FromPolygons([Vector(p) for p in verts],faces,all_triangles=False)
 def scalp_point(guess):
  hit=scalp_bvh.find_nearest(Vector(guess),.095)
- if not hit:raise RuntimeError("hair root lacks actual anatomical head surface")
- location,normal,_,_=hit
- p=location+normal.normalized()*.009
+ if hit is not None and hit[0] is not None and hit[1] is not None:
+  location,normal,_,_=hit
+  p=location+normal.normalized()*.009
+ else:
+  # At triangle-border/degenerate BVH spots snap to an ACTUAL scalp vertex;
+  # fail if the head topology is missing, never invent a space root.
+  assert verts, "Missing actual source-scalp vertices"
+  seed=Vector(guess)
+  nearest=min((Vector(v) for v in verts),key=lambda v:(v-seed).length_squared)
+  norm=nearest-Vector((cx,cy,hz))
+  if norm.length<1e-6:norm=Vector((0,0,1))
+  p=nearest+norm.normalized()*.008
  # Front facial reserve is stricter than head shell itself.
  if p.z<hz+.065 and p.y>cy-.008:
   p.y=cy-.011
