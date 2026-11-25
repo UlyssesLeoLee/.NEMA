@@ -9,7 +9,7 @@ from mathutils import Vector
 
 ROOT=Path(__file__).resolve().parents[3]
 runpy.run_path(str(ROOT/"art/ariadne/v147/build_v147.py"),run_name="__main__")
-OUT=ROOT/"artifacts"/"ariadne_v149"
+OUT=ROOT/"artifacts"/"ariadne_v150"
 OUT.mkdir(parents=True,exist_ok=True)
 scene=bpy.context.scene
 
