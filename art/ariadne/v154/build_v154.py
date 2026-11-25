@@ -35,7 +35,7 @@ print("V154_SOURCE_ARMS",bs,rs,flush=True)
 for o in bpy.data.objects:
  if o.animation_data:o.animation_data_clear()
 for pb in rig.pose.bones:
- pb.constraints.clear()
+ for constraint in list(pb.constraints):pb.constraints.remove(constraint)
  pb.rotation_mode="QUATERNION"
  pb.rotation_quaternion=(1,0,0,0)
  pb.location=(0,0,0)
