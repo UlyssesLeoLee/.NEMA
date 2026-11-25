@@ -1,0 +1,50 @@
+name: Ariadne V165.3 real 30-round independent vision ReAct
+on:
+  push:
+    branches: [feature/ariadne-v165-input-first-detail-repair]
+    paths: ['.github/workflows/ariadne-v165-react.yml']
+  workflow_dispatch:
+    inputs:
+      source_run_id:
+        description: Run ID containing actual V165 candidate GLB artifact
+        required: true
+        default: '45565601138'
+jobs:
+  react:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    permissions:
+      contents: read
+      actions: read
+    env:
+      ARIADNE_VISION_API_KEY: ${{ secrets.ARIADNE_VISION_API_KEY }}
+      ARIADNE_VISION_MODEL: ${{ vars.ARIADNE_VISION_MODEL }}
+      ARIADNE_VISION_API_BASE: ${{ vars.ARIADNE_VISION_API_BASE }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install preflight dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-numpy python3-pil
+          python3 -m py_compile art/ariadne/v165/react_controller.py art/ariadne/v165/react_blender.py
+      - name: Verify independent references and vision credentials
+        run: python3 art/ariadne/v165/react_controller.py --preflight
+      - uses: actions/download-artifact@v4
+        with:
+          name: Ariadne-V165-REAL-DETAIL-REPAIR-NOT-ART-APPROVED
+          run-id: ${{ inputs.source_run_id || '45565601138' }}
+          github-token: ${{ github.token }}
+          path: artifacts/ariadne_v165_source
+      - name: Install Blender
+        run: sudo apt-get install -y blender libegl1 libgl1 libopengl0
+      - name: Execute 30 real closed-loop ReAct rounds
+        run: |
+          test -s artifacts/ariadne_v165_source/Ariadne_V165_NOT_ART_APPROVED.glb
+          python3 art/ariadne/v165/react_controller.py artifacts/ariadne_v165_source/Ariadne_V165_NOT_ART_APPROVED.glb
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: Ariadne-V165-30-ROUND-REACT-EVIDENCE-NOT-ART-APPROVED
+          path: artifacts/ariadne_v165_react/
+          if-no-files-found: warn
+          retention-days: 21
