@@ -13,6 +13,9 @@ ROOT=Path(__file__).resolve().parents[3]
 OUT=ROOT/"artifacts"/"ariadne_v154";OUT.mkdir(parents=True,exist_ok=True)
 SOURCE=ROOT/"artifacts"/"ariadne_v153"/"Ariadne_V153_Real_Sculpture_Engineering_NOT_ART_APPROVED.glb"
 assert SOURCE.stat().st_size>1000000
+# Blender startup default cube obscures the lower statue unless explicitly removed.
+bpy.ops.object.select_all(action="SELECT")
+bpy.ops.object.delete(use_global=False)
 bpy.ops.import_scene.gltf(filepath=str(SOURCE))
 scene=bpy.context.scene
 body=[o for o in bpy.data.objects if o.type=="MESH" and "Anatomy" in o.name]
