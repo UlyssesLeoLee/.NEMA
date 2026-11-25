@@ -1,0 +1,30 @@
+name: Ariadne V149 actual GLB — V148 face-hair protection
+on:
+  push:
+    branches: [feature/ariadne-v149-face-hair-exclusion]
+    paths: ['art/ariadne/v149/**','.github/workflows/ariadne-v149.yml']
+  workflow_dispatch:
+jobs:
+  sculpt:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    permissions: {contents: read}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install headless Blender for real glTF sculpt validation
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y blender python3-numpy python3-pil libegl1 libgl1 libopengl0 libxrender1 libxext6 libsm6
+          python3 -m py_compile art/ariadne/v149/build_v149.py art/ariadne/v149/verify.py
+      - name: Rebuild from actual V147 CC0 rig and prevent scalp geometry entering front face guard
+        run: blender -b -t 2 --python-exit-code 1 --python art/ariadne/v149/build_v149.py
+      - name: Verify genuine GLB Blender scene and face-hair exclusion evidence
+        run: python3 art/ariadne/v149/verify.py
+      - name: Upload real GLB Blender editable source and 17 camera renders
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Ariadne-V149-Real-GLB-FaceHairFix-NOT-Art-Approved
+          path: artifacts/ariadne_v149/
+          retention-days: 21
+          if-no-files-found: warn

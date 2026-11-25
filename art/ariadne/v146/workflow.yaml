@@ -1,0 +1,304 @@
+schema_version: "1.0"
+project:
+  id: "ARIADNE_V146"
+  name: "2D_ART_AUTHORITY_FIRST_SPHERICAL_REACT_266x30"
+  purpose: "从正确的多视角二维艺术设定出发，用球面机位二维重绘闭环驱动唯一真实 GLB 的雕刻"
+  baseline:
+    version: "V145"
+    status: "ENGINEERING_ONLY_ART_REJECTED"
+    reuse:
+      - "MakeHuman 官方 CC0 人体拓扑与女性形态数据"
+      - "已确认来源与许可的原始骨架、权重及可用的 IK 技术"
+      - "真实 GLB 导入/导出、球面相机及截图基础设施"
+    quarantine:
+      - "V140-V145 未经艺术验收的服装主褶、披衣悬浮面"
+      - "未经二维证据证实的头发、面部与金线空间轨迹"
+      - "仅以手腕距离推断金球掌心接触的结果"
+    rule: "复用底层资产和可靠工具，不继承错误的艺术网格；与权威二维稿冲突时重建"
+  output_release_state: "BLOCKED_UNTIL_EVIDENCE_AND_USER_APPROVAL"
+  site_deployment: false
+  single_shared_glb: true
+  no_per_camera_geometry_variant: true
+
+principles:
+  source_of_truth: "用户批准的二维艺术设定及其多视角一致性"
+  order: "2D设计锁定 -> 2D多视角一致性 -> 3D骨架及衣料 -> 渲染成2D -> 重绘校正2D -> 回改同一3D -> 全局回归"
+  prohibit:
+    - "先随意生成3D再把自渲染认定为设计真值"
+    - "用自生成二维候选图自行宣布95%通过"
+    - "以图片贴图、浮雕、Visual Hull掩盖真实圆雕几何缺陷"
+    - "环状拉伸圆筒裙或漂浮纸带作为最终服装"
+    - "用局部顶点拖拽假装骨架与关节正确"
+    - "用多个角度平均分隐藏最差角度"
+    - "仅反复渲染、改参数或记录日志就计作ReAct"
+    - "未经完整证据把工程成功描述为艺术成功"
+
+art_authority:
+  master:
+    identity: "用户在本项目选定的 Ariadne 目标八/十视图雕像艺术稿"
+    status: "APPROVED_FOR_ART_DIRECTION_NOT_ALL_CAMERAS_CALIBRATED"
+    must_preserve:
+      - "美艳而符合希腊雕像风格的女性面容"
+      - "人体真实解剖结构、黄金分割的美术构图与优雅K字轮廓"
+      - "发髻、根植头皮的多层发束、双耳周围完整发际线、背后编辫"
+      - "古希腊克里特王室身份、白色 Chiton 与紫金 Himation 的定制服装设计"
+      - "肩到腰斜披、腰束、袖肘褶皱、深浅厚薄的真实立体主褶"
+      - "真实手掌托举金球、符合指骨关节的人体接触"
+      - "金球连接单根位于身体外侧的空间金线"
+      - "优雅连贯的底座与人物受力关系"
+    forbid_automatic_master_replacement: true
+  per_view_reference:
+    record_fields:
+      - "view_id"
+      - "approved_art_asset_sha256"
+      - "camera_calibration_id"
+      - "2d_skeleton_svg"
+      - "2d_contour_svg"
+      - "2d_semantic_paths_svg"
+      - "2d_color_map"
+      - "2d_depth_ordinal"
+      - "256_landmarks_projection"
+      - "approver"
+      - "approval_status"
+    valid_approval_states: ["CANDIDATE", "REVIEW_PENDING", "USER_APPROVED", "BLOCKED"]
+    missing_approved_reference: "ART_BLOCKED_REFERENCE_MISSING"
+    candidate_reference_can_guide_edits: true
+    candidate_reference_can_certify_similarity: false
+
+stages:
+  - id: "P00"
+    name: "ARCHIVE_AND_AUTHORITATIVE_REFERENCE_LOCK"
+    actions:
+      - "保留并标注 V5B 与最近用户认可的目标艺术稿，不让错误中间稿覆盖"
+      - "收集当前真实骨架、人体网格、材质、原始艺术图与许可信息"
+      - "将用户认可艺术稿锁成只读资产并计算SHA256"
+      - "统一正面0度、侧面90度、背面180度、左侧270度以及顶底方向定义"
+    required_outputs: ["art_master_manifest.json", "asset_provenance.json", "camera_coordinate_contract.json"]
+    pass_if: "资产来源可追溯，艺术母版不混入GLB自渲染"
+
+  - id: "P01"
+    name: "ANATOMICAL_2D_POSE_MASTER"
+    actions:
+      - "首先重绘完整女性骨骼与身体的正、侧、背三视图及上视/下视结构示意"
+      - "独立锁定躯干、骨盆、肩胛、肘、腕、掌心、指尖、头颈角度"
+      - "使托球手与球中心、掌心法向、五指弯曲具有一致的二维接触约束"
+      - "锁定K字构图、肢体伸展方向与垂直体轴，不以变形人体实现构图"
+      - "为已遮挡部位保留可信三维解剖先验，不将空白误判为缺肢"
+    required_outputs:
+      - "BODY_FRONT.svg"
+      - "BODY_LEFT.svg"
+      - "BODY_BACK.svg"
+      - "BODY_TOP.svg"
+      - "BODY_BOTTOM.svg"
+      - "skeletal_joint_targets.json"
+      - "palm_orb_contact_constraints.json"
+    reject_if:
+      - "错误反手、腕部反折或掌球分离"
+      - "不同视图的肢体长度、头身比例不一致"
+      - "身体被衣服剪影掩盖而结构未知"
+    pass_if: "二维人体能由同一可信骨架投影解释，重要关节具可复核证据"
+
+  - id: "P02"
+    name: "HIGH_ART_2D_FACE_HAIR_AND_COUTURE"
+    actions:
+      - "正、四分之三侧、严格侧面、背面分别重绘高精度面部与发型"
+      - "眼眶、鼻梁、鼻翼、唇形、下颌、耳朵、颈项以三维体积一致性审核"
+      - "绘制头皮发帽、发际线、耳周发束、发冠、发髻、背辫连通路径"
+      - "根据王室服装设定绘制白衣和紫披可缝合裁片、接缝与肩腰支点"
+      - "为主褶绘制具有方向、深度、厚度、层压、遮挡关系的二维路径"
+      - "重新绘制金球与金线在前侧背顶底的遮挡与深度关系"
+    required_outputs:
+      - "FACE_5VIEW.svg"
+      - "HAIR_5VIEW.svg"
+      - "GARMENT_CUT_PATTERN.svg"
+      - "FOLD_ROUTE_AND_LAYER_GRAPH.json"
+      - "ORB_THREAD_3D_CONSTRAINTS.json"
+    reject_if:
+      - "头发只画正面，背面与耳周丢失"
+      - "紫披与白衣的衔接在相邻视角断裂"
+      - "衣褶只有重力垂坠，没有艺术化定型主褶"
+
+  - id: "P03"
+    name: "24_ART_ANCHORS_AND_256_PERSISTENT_LANDMARKS"
+    sampling: "24张每15度水平艺术锚点 + 顶底专用视图"
+    point_ids: "P000..P255"
+    landmark_rules:
+      count: 256
+      stable_semantic_id: true
+      3d_coordinates_and_2d_projections: true
+      confidence_and_occlusion_per_view: true
+      cross_view_consistency: true
+      no_mirrored_correspondence: true
+      missing_visibility_is_not_missing_geometry: true
+    outputs:
+      - "ART_24_ANCHORS/"
+      - "TOP_BOTTOM_ART/"
+      - "Landmark_ID_Correspondence.json"
+      - "Cross_View_SVG_Consistency.json"
+    approval:
+      allow_machine_candidate_drafts: true
+      user_art_authority_required: true
+      gate: "ALL_CRITICAL_ART_ANCHORS_APPROVED_OR_EXPLICITLY_BLOCKED"
+
+  - id: "P04"
+    name: "266_SPHERICAL_2D_REFERENCE_REGISTRATION"
+    camera_space:
+      azimuth_degrees: {start: 0, stop_exclusive: 360, step: 15}
+      elevation_rings_deg: [-75, -60, -45, -30, -15, 0, 15, 30, 45, 60, 75]
+      pole_elevations_deg: [-90, 90]
+      unique_views: 266
+      model_fixed: true
+      camera_moves: true
+      orthographic_projection: true
+      intrinsics_and_extrinsics_locked: true
+    actions:
+      - "从已批准锚点出发，为266个机位创建独立二维候选与语义路径"
+      - "检查连续机位轮廓、关键点、衣褶、头发、金线位置的一致性"
+      - "高仰角、俯角、手掌球接触与遮挡复杂位置自适应加密到7.5/3.75/1.875度"
+      - "对每个机位记录源参考和相机配准，不使用当前GLB渲染冒充权威源图"
+    reference_policy:
+      pending_cameras_can_generate_candidate_2d: true
+      candidate_only_cannot_be_declared_approved: true
+      no_approval_means_block_release: true
+    outputs:
+      - "SPHERE_266_2D_CANDIDATES/"
+      - "SPHERE_266_CameraManifest.json"
+      - "SPHERE_266_ArtReferenceRegistry.json"
+
+  - id: "P05"
+    name: "SHARED_3D_GEO_REBUILD_FROM_CORRECT_2D"
+    requirements:
+      authentic_base_mesh: "MakeHuman/MPFB licensed CC0 anatomy with provenance"
+      preserve_topology_skinning: true
+      art_pose_by_real_armature_and_joint_limits: true
+      palm_support_using_surface_normals_and_contact_constraints: true
+      face_sculpt_from_approved_2d_landmarks: true
+      scalp_connected_hair_geometry: true
+      garment_by_pattern_and_art_directed_fold_sculpt: true
+      material_thickness_and_collision: true
+      one_continuous_gold_thread_outside_anatomy: true
+      same_mesh_for_glb_and_renders: true
+      no_cheap_cylinders_or_floating_ribbons: true
+    outputs: ["Ariadne_Master_Sculpt.blend", "Ariadne_Candidate.glb", "3D_geometry_provenance.json"]
+    pass_if: "正侧背顶底共享真实圆雕体积且每项几何可追溯到2D证据"
+
+  - id: "P06"
+    name: "266_CAMERAS_X_30_TRUE_REACT"
+    camera_count: 266
+    cycles_per_camera: 30
+    minimum_valid_local_cycle_count: 7980
+    loop_order:
+      - "锁定相机、原始二维艺术参考和当前GLB快照"
+      - "用完全相同GLB渲染RGB、灰模、法线、深度、Mask与256点覆盖图"
+      - "比较独立参考及相邻机位，分析姿势/面容/头发/衣料/球线的真实根因"
+      - "实际重新绘制该机位二维校正稿，保留SVG差分及对应三维表面ID"
+      - "用二维差分生成修改提案，编辑同一个三维骨架或实体网格"
+      - "导出GLB、重新导入、从锁定机位渲染新的二维结果"
+      - "计算局部变化，评估形体一致性、碰撞、穿插及最差构件"
+      - "执行十个关键机位和全部已批准机位的跨角回归"
+      - "通过则提交快照；退化则回滚并登记新策略，进入下一轮"
+    cycle_must_include:
+      - "真实的二维重绘结果或明确标记为阻塞而不计数"
+      - "真实骨架/网格编辑尝试及可审计变更"
+      - "GLB导出再导入及前后截图"
+      - "局部测量与跨角回归记录"
+    accounting:
+      view_cycle_index_range: [1, 30]
+      count_rollback_as_executed_attempt_only_if_full_real_evidence_exists: true
+      blocked_or_skipped_cycle_counts_as_completed: false
+      identical_2d_before_after_without_reason_counts_as_completed: false
+      self_render_only_counts_as_completed: false
+      repeated_hash_only_counts_as_completed: false
+      no_real_edit_counts_as_completed: false
+      no_global_regression_counts_as_completed: false
+      at_least_30_real_cycles_per_view: true
+      all_266_views_required: true
+      checkpoint_after_each_committed_cycle: true
+      resumable_and_idempotent_by_view_and_cycle_key: true
+      concurrent_workers_must_not_edit_same_master_mesh: true
+      parallelize_camera_render_and_independent_analysis_only: true
+      serialize_master_mesh_commits_and_global_regression: true
+    outputs:
+      - "react/view_{az}_{el}/cycle_{01..30}/reference_2d.svg"
+      - "react/view_{az}_{el}/cycle_{01..30}/corrected_2d.svg"
+      - "react/view_{az}_{el}/cycle_{01..30}/before_render.png"
+      - "react/view_{az}_{el}/cycle_{01..30}/after_render.png"
+      - "react/view_{az}_{el}/cycle_{01..30}/mesh_edit.json"
+      - "react/view_{az}_{el}/cycle_{01..30}/global_regression.json"
+      - "react/view_{az}_{el}/cycle_{01..30}/cycle_audit.json"
+      - "Spherical_React_Progress.json"
+
+  - id: "P07"
+    name: "ADVERSARIAL_QUALITY_AND_RELEASE"
+    art_metrics:
+      silhouette_iou: true
+      component_semantic_iou: true
+      landmark_reprojection: true
+      facial_feature_alignment: true
+      hairline_ear_consistency: true
+      fold_route_distance: true
+      golden_thread_depth_consistency: true
+      contact_and_penetration: true
+      anatomical_joint_constraints: true
+    quality_rules:
+      original_24_authorized_angles_similarity_strictly_gt: 0.95
+      every_other_approved_reference_angle_similarity_strictly_gt: 0.95
+      missing_approved_reference_never_passes: true
+      no_averaged_score_substitution: true
+      compare_clay_geometry_to_prevent_texture_cheating: true
+      inspect_top_and_bottom: true
+      require_camera_consistency_and_no_regressions: true
+      user_final_approval_required: true
+    release_gate:
+      completed_real_react_cycles_at_least: 7980
+      unique_cameras_with_30_real_cycles: 266
+      approved_reference_and_measurement_per_required_angle: true
+      no_open_anatomy_or_garment_or_face_or_hair_or_contact_blockers: true
+      same_GLb_hash_for_export_and_evidence: true
+      pass_status: "FINAL_APPROVED"
+      otherwise: "ART_BLOCKED"
+
+runtime_and_fail_closed:
+  preferred_execution: "GitHub Actions + Blender + independent2Dart editor + auditable image/geometry comparison"
+  stage_dependencies: ["P00", "P01", "P02", "P03", "P04", "P05", "P06", "P07"]
+  never_advance_unmet_gate_as_pass: true
+  if_reference_missing: "STOP_ART_VALIDATION_AND_REPORT_VIEW_AND_MISSING_ASSET"
+  if_sculpt_delta_does_not_improve: "ROLLBACK_RECORD_CAUSE_AND_CORRECT_2D_STRATEGY"
+  if_user_design_conflicts_with_generated_candidate: "USER_MASTER_WINS"
+  if_technical_export_succeeds_but_art_fails: "ENGINEERING_CANDIDATE_ONLY"
+  periodic_checkpoint: "per_actual_cycle"
+  git_commit_policy: "store_code_and_manifests_in_git; large GLB/SVG/PNG as versioned artifacts"
+  no_automatic_website_release: true
+
+audit:
+  immutable_fields:
+    - "art_master_sha256"
+    - "camera_calibration_id"
+    - "reference_2d_sha256"
+    - "redrawn_2d_sha256"
+    - "before_glb_sha256"
+    - "after_glb_sha256"
+    - "before_render_sha256"
+    - "after_render_sha256"
+    - "bone_vertex_or_geometry_edit_delta"
+    - "local_component_metrics"
+    - "global_regression_results"
+    - "decision_and_rollback_reason"
+  existing_V145_evidence:
+    genuine_2d_3d_2d_react_cycles: 0
+    accurate_266x30_art_validation: false
+    reuse_as_technical_input_only: true
+
+deliverables:
+  - "workflow.yaml"
+  - "art_master_manifest.json"
+  - "anatomical_2d_5views/"
+  - "face_hair_garment_2d/"
+  - "24_approved_anchors_and_256_landmark_ids/"
+  - "266_camera_candidate_reference_registry/"
+  - "Ariadne_Master_Sculpt.blend"
+  - "Ariadne_Final.glb"
+  - "266x30_real_react_logs_and_2d_redraws/"
+  - "sphere_266_true_glb_views/"
+  - "adversarial_review_and_worst_angle_report.json"
+  - "final_user_approval.json"

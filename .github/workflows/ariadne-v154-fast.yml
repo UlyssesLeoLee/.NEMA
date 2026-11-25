@@ -1,0 +1,64 @@
+name: Ariadne V154 quick static GLB export and basic views
+on:
+  push:
+    branches: [feature/ariadne-v154-static-sculpt-pose-fix]
+    paths: ['.github/workflows/ariadne-v154-fast.yml']
+  workflow_dispatch:
+jobs:
+  quick:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    permissions: {contents: read, actions: read}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download real V153 GLB only
+        uses: actions/download-artifact@v4
+        with:
+          name: Ariadne-V153-Pose-Hair-SideCloth-real-GLB-NOT-ART-APPROVED
+          run-id: 45534976705
+          github-token: ${{ github.token }}
+          path: artifacts/ariadne_v153
+      - name: Install Blender
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y blender python3-numpy python3-pil libegl1 libgl1 libopengl0 libxrender1 libxext6 libsm6
+      - name: Reuse same sculpt but reduce only audit snapshot resolution
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          s=Path("art/ariadne/v154/build_v154.py").read_text()
+          changes=[
+            ('scene.render.resolution_x=570;scene.render.resolution_y=755','scene.render.resolution_x=310;scene.render.resolution_y=414'),
+            ('views=[(az,0) for az in (0,30,45,90,135,180,225,270,315,330)]+[(0,90),(0,-90)]','views=[(az,0) for az in (0,45,90,180,270,315)]+[(0,90),(0,-90)]'),
+            ('for az in (0,30,45,90,270,315):','for az in (0,45,90,315):')
+          ]
+          for old,new in changes:
+            assert s.count(old)==1,old
+            s=s.replace(old,new)
+          Path("art/ariadne/v154/quick.py").write_text(s)
+          PY
+      - name: Bake actual pose and export frozen GLB with 8 real views
+        run: blender -b -t 2 --python-exit-code 1 --python art/ariadne/v154/quick.py
+      - name: Verify actual GLB and static pose without animations
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import json,hashlib
+          p=Path("artifacts/ariadne_v154")
+          a=json.loads((p/"V154_AUDIT.json").read_text())
+          g=p/a["actual_static_frozen_glb"]
+          assert g.stat().st_size>1000000
+          assert hashlib.sha256(g.read_bytes()).hexdigest()==a["actual_glb_sha256"]
+          assert a["glb_skin_count"]==0 and a["glb_animation_count"]==0
+          assert len(a["rendered_from_reimported_glb"])==8
+          assert len(a["face_views_from_reimported_glb"])==4
+          print("V154 FAST TRUE FROZEN STATIC GLB PASSED")
+          PY
+      - name: Upload source scene, GLB and 12 real view images
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Ariadne-V154-TRUE-FROZEN-GLB-QUICK-VIEWS-NOT-ART-APPROVED
+          path: artifacts/ariadne_v154/
+          retention-days: 21
+          if-no-files-found: warn

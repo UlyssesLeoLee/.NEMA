@@ -1,0 +1,30 @@
+name: Ariadne V153 — real sculpted GLB pose hair and drapery rebuild
+on:
+  push:
+    branches: [feature/ariadne-v153-pose-hair-side-cloth-rebuild]
+    paths: ['art/ariadne/v153/**','.github/workflows/ariadne-v153.yml']
+  workflow_dispatch:
+jobs:
+  real-rebuild:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    permissions: {contents: read}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Blender
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y blender python3-numpy python3-pil libegl1 libgl1 libopengl0 libxrender1 libxext6 libsm6
+          python3 -m py_compile art/ariadne/v153/build_v153.py art/ariadne/v153/verify.py
+      - name: Reconstruct and reimport real CC0 rigged sculpture
+        run: blender -b -t 2 --python-exit-code 1 --python art/ariadne/v153/build_v153.py
+      - name: Verify GLB, editable blend, 16 actual views and 6 face reviews
+        run: python3 art/ariadne/v153/verify.py
+      - name: Preserve outputs for review even if artistic gate fails
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Ariadne-V153-Pose-Hair-SideCloth-real-GLB-NOT-ART-APPROVED
+          path: artifacts/ariadne_v153/
+          if-no-files-found: warn
+          retention-days: 21

@@ -1,0 +1,91 @@
+{
+  "master_art_source": "ariadne_eight_view_sculptural_reconstruction.png",
+  "master_art_sha256": "1e5046524ad3d188f58bc09afa117657517f190b9c83664ff0c80fbc27d00f8e",
+  "art_authority": "established user-selected concept; needs precise camera calibration",
+  "camera_angles": [
+    [
+      0,
+      0
+    ],
+    [
+      45,
+      0
+    ],
+    [
+      90,
+      0
+    ],
+    [
+      180,
+      0
+    ],
+    [
+      270,
+      0
+    ],
+    [
+      315,
+      0
+    ],
+    [
+      0,
+      90
+    ],
+    [
+      0,
+      -90
+    ]
+  ],
+  "crop_rects": [
+    [
+      13,
+      109,
+      355,
+      529
+    ],
+    [
+      366,
+      109,
+      703,
+      529
+    ],
+    [
+      715,
+      109,
+      1050,
+      529
+    ],
+    [
+      1062,
+      109,
+      1398,
+      529
+    ],
+    [
+      13,
+      580,
+      355,
+      1022
+    ],
+    [
+      366,
+      580,
+      704,
+      1022
+    ],
+    [
+      715,
+      580,
+      1050,
+      1022
+    ],
+    [
+      1062,
+      580,
+      1398,
+      1022
+    ]
+  ],
+  "registered_for_pixel_score": false,
+  "approved_new_2d_redraws": 0
+}

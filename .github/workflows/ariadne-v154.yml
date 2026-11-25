@@ -1,0 +1,40 @@
+name: Ariadne V154 true static posed sculpture GLB (no animations)
+on:
+  push:
+    branches: [feature/ariadne-v154-static-sculpt-pose-fix]
+    paths: ['art/ariadne/v154/**','.github/workflows/ariadne-v154.yml']
+  workflow_dispatch:
+jobs:
+  rebuild:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download actual vetted V153 Blender GLB
+        uses: actions/download-artifact@v4
+        with:
+          name: Ariadne-V153-Pose-Hair-SideCloth-real-GLB-NOT-ART-APPROVED
+          run-id: 45534976705
+          github-token: ${{ github.token }}
+          path: artifacts/ariadne_v153
+      - name: Install Blender
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y blender python3-numpy python3-pil libegl1 libgl1 libopengl0 libxrender1 libxext6 libsm6
+          python3 -m py_compile art/ariadne/v154/build_v154.py art/ariadne/v154/verify.py
+          test -s artifacts/ariadne_v153/Ariadne_V153_Real_Sculpture_Engineering_NOT_ART_APPROVED.glb
+      - name: Freeze actual IK armature into CC0 body and rebuild hair/side cloth
+        run: blender -b -t 2 --python-exit-code 1 --python art/ariadne/v154/build_v154.py
+      - name: Validate GLB has zero animations, zero skins, real multi-angle renders
+        run: python3 art/ariadne/v154/verify.py
+      - name: Upload real V154 static GLB and source project
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Ariadne-V154-Static-Greek-Princess-GLB-18-Views-NOT-ART-APPROVED
+          path: artifacts/ariadne_v154/
+          if-no-files-found: warn
+          retention-days: 21
