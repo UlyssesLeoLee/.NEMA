@@ -1,0 +1,59 @@
+schema: ariadne-art-registered-candidate-v1
+source_board:
+  supplied_reference: "ariadne_eight_view_sculptural_reconstruction.png"
+  source_type: "previously established user-selected 8-view artwork (reference known in conversation)"
+  authority: "ART_DIRECTION_ONLY"
+  direct_binary_in_git: false
+  note: "The original concept board is accessible in the originating chat, not yet imported as byte-identical GitHub object. This vector interpretation is a candidate and is not a replacement for approved art."
+coordinate_frame:
+  az0: "FRONT looking toward +Y-facing face"
+  z_up: true
+  figure_height_m: 1.70
+  zero_at_feet: true
+  left_right: "viewer-right in 0-degree front art is sculpture's anatomical left"
+front_reference:
+  full_board_panel_px: [12, 107, 354, 530]
+  landmark_px:
+    skull_top: [182, 115]
+    eye_line: [185, 142]
+    chin: [184, 165]
+    left_shoulder_viewer_right: [215, 183]
+    orb_center_viewer_right: [260, 155]
+    palm_support_viewer_right: [256, 170]
+    elbow_holding_arm: [242, 228]
+    relaxed_hand_viewer_left: [126, 310]
+    torso_center: [181, 252]
+    waist_center: [181, 292]
+    drape_cross_hip: [164, 320]
+    left_foot: [164, 484]
+    right_foot: [203, 481]
+    base_center: [178, 498]
+  posture: "raised hand holds actual spherical gold orb; other arm descends at side rather than extended T-pose"
+  gold_thread: "one outside-body continuous helix ascending to orb with no intersections"
+  costume:
+    white: "diagonal shoulder-to-waist chiton, anatomical torso folds, structured long hem"
+    purple: "shoulder-supported purple himation, sweeping diagonal waist, deep arcing sculpted primary pleats; on back thick layered folds"
+back_reference:
+  primary_hair: "interwoven braid emerging from sculpture scalp, no bald ear sides"
+  garment: "purple shoulder wrap crosses back with natural folds and decorative gold hem"
+side_reference:
+  face: "nose, chin, eyes and neck retain Greek sculptural profile"
+  raised_hand: "orb physically above palm, not hovering next to wrist"
+top_reference:
+  hair_crown: "interwoven symmetrical crown with true 3D braid volume"
+  thread: "one gold curve arranged outside figure"
+bottom_reference:
+  pedestal: "complete classical circular base without extra detached anatomy"
+reconstruction_steps:
+  - "P01 sketch poses in 2D using registered manually transcribed landmarks"
+  - "P02 produce candidate front/back/side SVG; check image layout alignment"
+  - "P03 preserve original MakeHuman CC0 skinning; pose real bones with IK"
+  - "P04 delete all legacy nonapproved visual geometry"
+  - "P05 build new 3D hand-orb and couture geometry from authored source paths"
+  - "P06 export and reimport same GLB, render 10 angles and audit reference blockers"
+not_claimed:
+  - "matching original 8-panel concept at pixel level"
+  - "approved precise camera registration"
+  - "24 approved azimuth targets"
+  - "256 landmarks independently validated"
+  - "266 times 30 completed 2D 3D 2D React cycles"

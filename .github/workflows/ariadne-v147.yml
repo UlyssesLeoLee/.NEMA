@@ -1,0 +1,32 @@
+name: Ariadne V147 2D-authority-first real GLB rebuild
+on:
+  push:
+    branches: [feature/ariadne-v147-art-first-rebuild]
+    paths: ['art/ariadne/v147/**','.github/workflows/ariadne-v147.yml']
+  workflow_dispatch:
+jobs:
+  rebuild:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    permissions: {contents: read}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Blender headless CPU and Python preflight
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y blender python3-numpy python3-pil libegl1 libgl1 libopengl0 libxrender1 libxext6 libsm6
+          python3 -m py_compile art/ariadne/v147/build_v147.py art/ariadne/v147/verify.py
+          test -s art/ariadne/v147/02d_art_candidate_front_side_back.svg
+          test -s art/ariadne/v147/02d_art_candidate_manifest.yaml
+      - name: Actually rebuild real anatomically rigged GLB from 2D reference annotations
+        run: blender -b -t 2 --python-exit-code 1 --python art/ariadne/v147/build_v147.py
+      - name: Enforce geometry and art-evidence honesty
+        run: python3 art/ariadne/v147/verify.py
+      - name: Upload true candidate GLB 10-camera snapshots and audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Ariadne-V147-ArtFirst-Candidate-GLB-10views-NOT-APPROVED
+          path: artifacts/ariadne_v147/
+          retention-days: 21
+          if-no-files-found: warn
