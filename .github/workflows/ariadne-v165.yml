@@ -2,7 +2,7 @@ name: Ariadne V165 actual detail repair and spherical diagnostic
 on:
   push:
     branches: [feature/ariadne-v165-input-first-detail-repair]
-    paths: ['.github/workflows/ariadne-v165.yml', 'art/ariadne/v165/**']
+    paths: ['.github/workflows/ariadne-v165.yml', 'art/ariadne/v165/build_v165.py']
   workflow_dispatch:
 jobs:
   repair:
