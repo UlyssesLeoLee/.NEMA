@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="620" viewBox="0 0 1000 620">
+<title>Ariadne V147 reference-derived anatomical 2D schema, engineering candidate not approved art</title>
+<rect width="1000" height="620" fill="#252730"/>
+<g fill="none" stroke-linecap="round" stroke-linejoin="round">
+ <g transform="translate(60 50)">
+  <rect x="0" y="0" width="270" height="520" rx="5" fill="#30323c" stroke="#64636b"/>
+  <text x="16" y="28" fill="#e9d6b7" stroke="none" font-family="Georgia" font-size="17">FRONT 0° — pose reference</text>
+  <path d="M135 68 C92 76 98 153 126 161 C140 176 158 145 161 109 Q158 73 135 68Z" stroke="#d3bda0" stroke-width="2.6"/>
+  <path d="M116 130 Q125 170 136 180 Q146 173 152 130 M120 90 Q142 60 153 89" stroke="#c99948" stroke-width="4"/>
+  <path d="M135 180 Q94 188 92 235 Q96 270 110 305 L103 445 Q133 468 179 450 L161 300 Q184 240 164 198 Z" fill="#e4ded0" stroke="#efeeeb" stroke-width="2.5"/>
+  <path d="M117 185 Q135 238 161 252 L110 308 Q127 326 170 309 M112 320 Q131 350 151 444 M135 318 Q163 368 174 447" stroke="#c6bdb2" stroke-width="5"/>
+  <path d="M96 191 Q83 236 80 279 Q76 306 64 330" stroke="#d8c5a9" stroke-width="15"/>
+  <path d="M163 199 Q196 220 191 250 Q189 256 213 244 L218 168" stroke="#d8c5a9" stroke-width="15"/>
+  <circle cx="220" cy="151" r="21" fill="#b9862c" stroke="#f6cf68" stroke-width="2"/>
+  <path d="M177 185 Q173 211 156 238 Q128 275 97 300 Q92 329 70 440" stroke="#6e4b7b" stroke-width="25"/>
+  <path d="M173 190 Q164 230 125 294 Q120 321 70 440" stroke="#c09bc3" stroke-width="3"/>
+  <path d="M55 466 Q135 451 197 464 L206 494 Q140 506 57 494Z" fill="#ddd2bd" stroke="#dfc99d" stroke-width="3"/>
+  <path d="M70 450 C100 390 171 330 176 290 C161 225 230 257 220 151" stroke="#eec165" stroke-width="3"/>
+  <circle cx="64" cy="330" r="4" fill="#d36e62" stroke="#f9d1cd"/><circle cx="220" cy="171" r="4" fill="#d36e62" stroke="#f9d1cd"/>
+  <text x="13" y="515" fill="#d3bbb3" stroke="none" font-size="10">Candidate tracing / NOT art approval</text>
+ </g>
+ <g transform="translate(370 50)">
+  <rect width="270" height="520" rx="5" fill="#30323c" stroke="#64636b"/>
+  <text x="16" y="28" fill="#e9d6b7" stroke="none" font-family="Georgia" font-size="17">SIDE 90° — volume logic</text>
+  <path d="M135 68 C114 80 114 136 133 157 Q160 162 173 132 Q173 82 135 68Z" stroke="#dac19f" stroke-width="3"/>
+  <path d="M135 88 Q103 96 109 145 M109 145 Q100 210 112 261 M112 261 Q83 320 76 428" stroke="#a47d46" stroke-width="11"/>
+  <path d="M136 176 Q110 187 111 230 Q120 263 110 308 L95 454 Q155 475 196 450 L176 315 Q171 256 156 181Z" fill="#eee5d8" stroke="#f0e4d0" stroke-width="2"/>
+  <path d="M116 192 Q148 215 157 282 Q161 332 184 447" stroke="#c9beb2" stroke-width="6"/>
+  <path d="M156 194 Q194 205 198 229 Q185 256 208 230 L217 154" stroke="#d3b9a0" stroke-width="16"/>
+  <circle cx="220" cy="143" r="21" fill="#b98b3e" stroke="#f5ce67" stroke-width="2"/>
+  <path d="M119 195 Q127 250 105 292 Q145 325 162 279 L185 450" stroke="#6f527f" stroke-width="25"/>
+  <path d="M92 461 Q147 457 209 463 L220 495 Q130 508 89 494Z" fill="#d9cbbb" stroke="#d7bf98" stroke-width="3"/>
+  <path d="M94 450 C98 379 206 320 187 270 C170 209 235 192 220 143" stroke="#efc868" stroke-width="3"/>
+  <text x="13" y="515" fill="#d3bbb3" stroke="none" font-size="10">Candidate volume / no camera calibration</text>
+ </g>
+ <g transform="translate(680 50)">
+  <rect width="270" height="520" rx="5" fill="#30323c" stroke="#64636b"/>
+  <text x="16" y="28" fill="#e9d6b7" stroke="none" font-family="Georgia" font-size="17">BACK 180° — braid / folds</text>
+  <path d="M135 73 C105 80 109 160 138 164 Q171 151 162 91Z" stroke="#d3bd9e" stroke-width="3"/>
+  <path d="M120 87 Q158 58 167 100 Q178 154 142 197 Q152 240 133 297 Q118 350 135 405" stroke="#b69a71" stroke-width="17"/>
+  <path d="M119 116 Q153 138 131 184 Q166 215 129 270 Q150 310 128 362" stroke="#e6c6a6" stroke-width="5"/>
+  <path d="M125 182 Q93 191 93 240 L100 311 L90 449 Q148 471 195 450 L184 305 Q179 203 154 185Z" fill="#e7ded1" stroke="#eee2ce" stroke-width="2.5"/>
+  <path d="M158 188 Q184 220 205 265 Q230 310 179 358 Q160 403 212 455 L139 461 Q80 381 106 301 Q111 224 158 188Z" fill="#624071" stroke="#9478a5" stroke-width="6"/>
+  <path d="M148 196 Q187 232 194 300 Q154 334 170 379 M126 205 Q122 277 107 330 Q143 385 163 444" stroke="#b995b7" stroke-width="8"/>
+  <path d="M90 461 Q145 457 212 462 L221 494 Q138 508 89 495Z" fill="#ddd1bd" stroke="#dfc99d" stroke-width="3"/>
+  <path d="M91 445 C124 375 162 354 175 296 C204 222 186 181 170 148" stroke="#eac06b" stroke-width="3"/>
+  <text x="13" y="515" fill="#d3bbb3" stroke="none" font-size="10">Candidate back / cannot self-approve</text>
+ </g>
+</g>
+</svg>

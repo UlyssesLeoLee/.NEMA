@@ -1,0 +1,45 @@
+project:
+  name: ARIADNE_V143
+  base: V142
+  scope: move_from_vertex_heuristics_to_official_CC0_weighted_rig
+  official_source:
+    mesh: makehuman/base.obj
+    morph: caucasian-female-young.target
+    armature: default.mhskel
+    vertex_weights: default_weights.mhw
+    require_official_license_cc0: true
+    no_visual_hull_or_relief: true
+  fixed_camera_reference:
+    sphere_266: inherited
+    art_truth: require_independent_registered_reference
+    prohibit_self_render_as_art_truth: true
+  gates:
+    P01:
+      stage: articulated_figure
+      use_actual_armature: true
+      use_official_skin_weights: true
+      export_reimport_verify_skeleton: true
+      joint_validated: BLOCKED_UNTIL_ART_POSE_CHECK
+    P02:
+      stage: orb_contact
+      wrist_followed: true
+      palmar_mesh_contact: NOT_YET_VERIFIED
+    P03:
+      stage: costume
+      must_refit_to_new_pose: true
+      real_sewn_pattern_and_collision_required: true
+      current: ART_BLOCKED
+    P04:
+      stage: head_hair_face
+      current: ART_BLOCKED
+    P05:
+      stage: spherical_2D_3D_ReAct
+      all_266_angles: true
+      per_angle_cycles_min: 3
+      threshold_strict: 0.95
+      requires_independent_same_camera_reference: true
+      missing_reference: ART_BLOCKED
+  release:
+    engineering_ok_not_art_approved: true
+    do_not_announce_final: true
+    do_not_change_vercel: true

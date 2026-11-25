@@ -1,0 +1,32 @@
+name: Ariadne V151 all 266 actual spherical Blender frames
+on:
+  push:
+    branches: [feature/ariadne-v151-full-sphere-art-evidence]
+    paths: ['art/ariadne/v151/**','.github/workflows/ariadne-v151.yml']
+  workflow_dispatch:
+jobs:
+  true-spherical-renders:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    permissions: {contents: read}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install headless Blender
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y blender python3-numpy python3-pil libegl1 libgl1 libopengl0 libxrender1 libxext6 libsm6
+          python3 -m py_compile art/ariadne/v149/build_v149.py art/ariadne/v151/render_266.py art/ariadne/v151/verify_266.py
+      - name: Rebuild physical V149 GLB
+        run: blender -b -t 2 --python-exit-code 1 --python art/ariadne/v149/build_v149.py
+      - name: Render all 266 cameras from one unchanged exported-and-reimported GLB
+        run: blender -b -t 2 --python-exit-code 1 --python art/ariadne/v151/render_266.py
+      - name: Verify all actual PNG hashes, fail-closed art gate
+        run: python3 art/ariadne/v151/verify_266.py
+      - name: Upload full sphere diagnostics — NOT art-approved
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Ariadne-V151-266-real-spherical-views-NOT-7980-ReAct
+          path: artifacts/ariadne_v151/
+          retention-days: 21
+          if-no-files-found: warn
