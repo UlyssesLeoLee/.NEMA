@@ -1,0 +1,30 @@
+name: Ariadne V150 anatomy-fitted scalp and GLB multi-view
+on:
+  push:
+    branches: [feature/ariadne-v150-scalp-surface-fit]
+    paths: ['art/ariadne/v150/**','.github/workflows/ariadne-v150.yml']
+  workflow_dispatch:
+jobs:
+  sculpt:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    permissions: {contents: read}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Blender CPU and Python syntax
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y blender python3-numpy python3-pil libegl1 libgl1 libopengl0 libxrender1 libxext6 libsm6
+          python3 -m py_compile art/ariadne/v150/build_v150.py art/ariadne/v150/verify.py
+      - name: Actually reconstruct scalp hair from MakeHuman skinned skull triangles and inspect face
+        run: blender -b -t 2 --python-exit-code 1 --python art/ariadne/v150/build_v150.py
+      - name: Verify real GLB exported, reimported, and hair forbidden zone free
+        run: python3 art/ariadne/v150/verify.py
+      - name: Upload actual Blender file GLB 12 views and 5 face closeups
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Ariadne-V150-Actual-ScalpFit-GLB-17views-NOT-ART-APPROVED
+          path: artifacts/ariadne_v150/
+          retention-days: 21
+          if-no-files-found: warn
