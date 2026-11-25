@@ -1,0 +1,51 @@
+name: Ariadne V153 fast rebuild from authenticated V149 GLB artifact
+on:
+  push:
+    branches: [feature/ariadne-v153-pose-hair-side-cloth-rebuild]
+    paths: ['.github/workflows/ariadne-v153-fast.yml']
+  workflow_dispatch:
+jobs:
+  optimized-rebuild:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download authenticated original V149 rigged GLB
+        uses: actions/download-artifact@v4
+        with:
+          name: Ariadne-V149-Real-GLB-FaceHairFix-NOT-Art-Approved
+          run-id: 45525517265
+          github-token: ${{ github.token }}
+          path: artifacts/ariadne_v149/
+      - name: Install Blender runtime
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y blender python3-numpy python3-pil libegl1 libgl1 libopengl0 libxrender1 libxext6 libsm6
+      - name: Replace repeated old build with actual trusted source GLB import
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          src=Path('art/ariadne/v153/build_v153.py').read_text()
+          old='runpy.run_path(str(ROOT/"art/ariadne/v149/build_v149.py"),run_name="__main__")'
+          new='bpy.ops.import_scene.gltf(filepath=str(ROOT/"artifacts"/"ariadne_v149"/"Ariadne_V149_Corrected_Face_Hair_Engineering_NOT_ART_APPROVED.glb"))'
+          assert src.count(old)==1
+          Path('art/ariadne/v153/build_fast.py').write_text(src.replace(old,new))
+          p=Path('artifacts/ariadne_v149/Ariadne_V149_Corrected_Face_Hair_Engineering_NOT_ART_APPROVED.glb')
+          assert p.stat().st_size>1000000,p
+          print("Imported actual rigged V149 GLB input size",p.stat().st_size)
+          PY
+      - name: Real V153 shape rebuild and render from one exported GLB
+        run: blender -b -t 2 --python-exit-code 1 --python art/ariadne/v153/build_fast.py
+      - name: Validate real V153 sculpture
+        run: python3 art/ariadne/v153/verify.py
+      - name: Upload V153 full source GLB renders and failure evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Ariadne-V153-Fast-Verified-GLB-16views-6face-NOT-APPROVED
+          path: artifacts/ariadne_v153/
+          if-no-files-found: warn
+          retention-days: 21
