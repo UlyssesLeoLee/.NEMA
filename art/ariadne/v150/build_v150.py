@@ -117,8 +117,10 @@ def scalp_point(guess):
   if norm.length<1e-6:norm=Vector((0,0,1))
   p=nearest+norm.normalized()*.008
  # Front facial reserve is stricter than head shell itself.
- if p.z<hz+.065 and p.y>cy-.008:
-  p.y=cy-.011
+ # Reserve extra margin for the *tube radius* and the forehead slope,
+ # not merely the center-line control points.
+ if p.z<hz+.095 and p.y>cy-.022:
+  p.y=cy-.025
  return p
 # Strands follow a real full head surface; posterior roots are in scalp topology.
 for i in range(24):
