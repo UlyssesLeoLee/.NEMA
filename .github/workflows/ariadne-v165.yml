@@ -1,0 +1,33 @@
+name: Ariadne V165 actual detail repair and spherical diagnostic
+on:
+  push:
+    branches: [feature/ariadne-v165-input-first-detail-repair]
+    paths: ['.github/workflows/ariadne-v165.yml']
+  workflow_dispatch:
+jobs:
+  repair:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    permissions: {contents: read, actions: read}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: Ariadne-V153-Pose-Hair-SideCloth-real-GLB-NOT-ART-APPROVED
+          run-id: 45534976705
+          github-token: ${{ github.token }}
+          path: artifacts/ariadne_v153
+      - name: Install actual Blender
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y blender python3-numpy python3-pil libegl1 libgl1 libopengl0 libxrender1 libxext6 libsm6
+          python3 -m py_compile art/ariadne/v165/build_v165.py
+      - name: Modify real geometry and render fixed spherical views
+        run: blender -b -t 2 --python-exit-code 1 --python art/ariadne/v165/build_v165.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: Ariadne-V165-REAL-DETAIL-REPAIR-NOT-ART-APPROVED
+          path: artifacts/ariadne_v165/
+          if-no-files-found: warn
+          retention-days: 21
