@@ -10,6 +10,8 @@ wrist_bone=rig.pose.bones["wrist."+bs]
 wrist_head=rig.matrix_world@wrist_bone.head
 wrist_tail=rig.matrix_world@wrist_bone.tail
 finger_roots=[rig.matrix_world@b.head for b in rig.pose.bones if b.name.endswith("."+bs) and b.name.split(".")[0] in ("finger2-1","finger3-1","finger4-1","finger5-1")]
+eye_bones=[(b.name,rig.matrix_world@b.head,rig.matrix_world@b.tail) for b in rig.pose.bones if "eye" in b.name.lower()]
+print("V165_EYE_BONES",[(n,list(h),list(t)) for n,h,t in eye_bones],flush=True)
 print("V165_PALM_LANDMARKS",tuple(wrist_head),tuple(wrist_tail),[tuple(p) for p in finger_roots],flush=True)
 """)
 marker="# Before export: remove all animation"
@@ -53,6 +55,7 @@ _,contact,normal=min(options,key=lambda x:x[0])
 radius=max(ball.dimensions)*.5
 assert .025<radius<.12, radius
 center=contact+up*radius
+print("V165_PALM_CONTACT",list(contact),list(normal),list(center),flush=True)
 # If central palm is not flat enough, keep physical penetration evidence explicit.
 audit["palm"]={"wrist":list(wrist_head),"knuckles":list(knuckles),
  "surface_contact":list(contact),"surface_normal":list(normal),"center":list(center),
@@ -95,8 +98,8 @@ for k in range(36):
    if q.length>1e-6:wind.append(center+q.normalized()*radius*.96)
  wind.extend(pts)
 # Actual pedestal attachment via raycast to named mesh, choose visible upper border.
-ped=[o for o in scene.objects if o.type=="MESH" and "pedestal" in o.name.lower()]
-assert ped,"no pedestal mesh"
+ped=[o for o in scene.objects if o.type=="MESH" and any(k in o.name.lower() for k in ("pedestal","plinth","marble_round_base"))]
+assert ped,("no pedestal mesh",[(o.name,o.type) for o in scene.objects])
 hits=[]
 for ob in ped:
  b=world_bvh(ob)
@@ -104,7 +107,7 @@ for ob in ped:
   a=j*math.tau/48; p0=Vector((cx+.32*math.cos(a),cy+.32*math.sin(a),base+.2))
   hit,n,_,_=b.ray_cast(p0,-up,.7)
   if hit is not None and n.dot(up)>.5:hits.append((ob,hit))
-assert hits,"no pedestal top attachment"
+assert hits,("no pedestal top attachment",[(o.name,list(o.dimensions)) for o in ped])
 ped_ob,end=min(hits,key=lambda x:(x[1]-center).length)
 # Reuse smooth external route, now surface-anchored at both ends.
 # start at actual last wound strand and finish at actual pedestal top.
@@ -121,6 +124,7 @@ for i in range(201):
  free.append(q)
 free[0]=exit_pt;free[-1]=end
 tube("V165_One_Continuous_Wound_Gold_Thread_To_Pedestal",wind+free[1:],strand_radius,gold)
+print("V165_PEDESTAL_ATTACHMENT",ped_ob.name,list(end),flush=True)
 audit["gold"]={"winding_points":len(wind),"continuous_curve":True,
  "strand_radius":strand_radius,"pedestal":ped_ob.name,"endpoint":list(end),
  "endpoint_surface_verified":True,"collision_and_art_path_certified":False}
@@ -168,13 +172,14 @@ for ob in eye_objects:
    if h is not None:pts.append(h+front*.00015)
   if len(pts)==65:tube("V165_"+ring+"_"+ob.name,pts,.00025,white)
  eye_result.append(ob.name)
-audit["eyes"]={"actual_eye_meshes":eye_result,"status":"RELIEF_RINGS_CANDIDATE" if len(eye_result)==2 else "BLOCKED_NO_VERIFIED_SEPARATE_EYE_MESH",
+audit["eyes"]={"eye_bone_anchors":[{"name":n,"head":list(h),"tail":list(t)} for n,h,t in eye_bones],"actual_eye_meshes":eye_result,"status":"RELIEF_RINGS_CANDIDATE" if len(eye_result)==2 else "BLOCKED_NO_VERIFIED_SEPARATE_EYE_MESH",
  "recessed_pupil_certified":False}
 # Export actual static candidate and render all 266 calibrated directions.
 bpy.context.view_layer.update()
 blend=OUT/"Ariadne_V165_EDITABLE.blend";bpy.ops.wm.save_as_mainfile(filepath=str(blend))
 glb=OUT/"Ariadne_V165_NOT_ART_APPROVED.glb"
 bpy.ops.export_scene.gltf(filepath=str(glb),export_format="GLB",export_animations=False,export_cameras=False,export_lights=False)
+print("V165_ACTUAL_GLB_EXPORTED",glb.name,flush=True)
 assert glb.stat().st_size>1000000
 audit["glb_sha256"]=hashlib.sha256(glb.read_bytes()).hexdigest()
 audit["input_art"]={"GIF":"REQUIRED_INDEPENDENT_INPUT","SVG":"REQUIRED_INDEPENDENT_INPUT","ARGB":"REQUIRED_INDEPENDENT_INPUT","availability":"NOT_VERIFIED","no_self_validation":True}
