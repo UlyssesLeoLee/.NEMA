@@ -1,0 +1,24 @@
+name: Ariadne V164 CC0 mirror
+on:
+  push:
+    branches: [feature/ariadne-v164-licensed-hair-prior]
+    paths: ['.github/workflows/ariadne-v164-mirror.yml']
+  workflow_dispatch:
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Fetch and verify published source geometry
+        run: |
+          mkdir -p assets
+          base=https://raw.githubusercontent.com/kblood/CharacterCreator/master
+          for f in output/hair_long01.glb output/hair_braid01.glb LICENSE-NOTES.md output/asset_licenses.json; do
+            curl -fLsS --connect-timeout 10 --max-time 30 "$base/$f" -o "assets/${f##*/}"
+          done
+          python -c "from pathlib import Path; assert Path('assets/hair_long01.glb').read_bytes()[:4]==b'glTF'"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: CC0-hair-priors-v164
+          path: assets/
+          retention-days: 7
