@@ -1,5 +1,5 @@
 project: ".NEMA Ariadne"
-revision: V165.3
+revision: V166
 status: ENGINEERING_CANDIDATE
 reference_contract:
   input_authority: independent_user_approved_art
@@ -31,41 +31,39 @@ reference_contract:
     comparison_renders: separate_qa_evidence_only
     diagnostic_rotation: never_reference_truth
 react_execution:
-  execution_host: github_actions
-  decision_host: multimodal_api
-  api_key_secret: ARIADNE_VISION_API_KEY
-  api_base_repository_variable: ARIADNE_VISION_API_BASE
-  model_repository_variable: ARIADNE_VISION_MODEL
+  execution_host: LOCAL_GEOMETRY_OR_GITHUB_BLENDER
+  decision_host: CHATGPT_SESSION
+  github_model_required: false
+  api_key_required: false
   required_rounds: 30
   max_attempts_per_round: 3
-  no_noop_rounds: true
-  mode: independent_visual_feedback_and_geometry_mutation
-  input_bundle: references/ariadne/react_input
-  mandatory_before_start:
-    - actual_approved_independent_gif_svg_argb_and_266_registered_views
-    - immutable_hash_manifest
-    - calibrated_camera_registry
-    - vision_api_credentials
-    - actual_base_glb
+  independent_input_required_for_art_round: true
+  engineering_trials_are_not_art_rounds: true
   each_round:
-    - render_all_266_views_from_current_glb
-    - compare_all_views_to_independent_inputs
-    - vision_review_ranked_defects_and_reference_render_pairs
-    - propose_allowlisted_mesh_material_operations
-    - mutate_real_shared_geometry
-    - export_reimport_and_render_all_266_views
-    - independent_vision_critique
-    - quantifiable_regression_test
-    - accept_or_rollback
-    - persist_hashes_proposals_metrics_and_review
-  accept_only:
-    - actual_geometry_change
-    - independent_critic_accepts
-    - reference_error_improves
-    - no_view_regression_above_tolerance
-  blocked_policy: stop_and_report_missing_input_or_api_no_fake_rounds
-  round_evidence: immutable_checkpoint_and_json
-  final_art_approval: separate_all_anchor_gate
+    - inspect_frozen_independent_art
+    - render_actual_glb_at_all_266_calibrated_views
+    - return_renders_and_mesh_evidence_to_assistant
+    - assistant_identifies_geometric_root_cause
+    - assistant_modifies_actual_geometry
+    - reimport_and_rerender_candidate
+    - assistant_adversarial_review
+    - numerical_regression_checks
+    - commit_or_rollback
+    - persist_hashes_and_evidence
+  missing_input_policy: engineering_repair_allowed_art_approval_blocked
+  protected:
+    - original_real_anatomical_mesh
+    - actual_pedestal_connection
+    - single_continuous_gold_thread
+  local_v166:
+    source_artifact: 15000027898
+    source_run: 45565601138
+    actual_local_spherical_renders: 266
+    scalp_fit_rays: 11200
+    numerical_trials: 30
+    independent_art_react_completed: 0
+    glb_sha256: 155cdd210d483ad9404f30bae6b96ecfcdd577eed8c99ed21ab5df607d13cf64
+    status: ENGINEERING_CANDIDATE_NOT_ART_APPROVED
 review:
   spherical:
     elevation_deg: [-75,-60,-45,-30,-15,0,15,30,45,60,75]
