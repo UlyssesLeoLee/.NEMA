@@ -1,0 +1,52 @@
+project: ".NEMA Ariadne"
+revision: V165.1
+status: ENGINEERING_CANDIDATE
+reference_contract:
+  input_authority: independent_user_approved_art
+  frozen_inputs:
+    rotation_gif:
+      role: pre_glb_art_reference
+      frames: 360
+      angle_step_deg: 1
+    svg:
+      role: pre_glb_vector_geometry_and_semantic_reference
+      anchors: 24
+      feature_ids: 256
+    argb:
+      role: pre_glb_semantic_color_and_shape_reference
+      channels:
+        A: landmark_diagnostic_id_1_to_255
+        R: garment_region
+        G: statue_silhouette
+        B: anatomical_understructure_when_verified
+      id_256_and_background: separate_uint16_map
+      depth_normals: separate_verified_maps
+      invalid_evidence: UNKNOWN
+  freeze_before_modeling: true
+  hash_required: true
+  forbid_output_as_input: true
+  missing_reference_blocks_art_approval: true
+  outputs:
+    glb: actual_shared_3d_geometry
+    comparison_renders: separate_qa_evidence_only
+    diagnostic_rotation: never_reference_truth
+review:
+  spherical:
+    elevation_deg: [-75,-60,-45,-30,-15,0,15,30,45,60,75]
+    azimuth_step_deg: 15
+    poles: [-90,90]
+    unique_views: 266
+    react_rounds: 30
+  horizontal:
+    unique_views: 360
+    rounds_per_view: 5
+  local_rounds_per_region: 30
+  require_independent_art_before_counting_react: true
+  no_self_certification: true
+repairs:
+  hair: actual_fine_geometry_following_existing_locks
+  eyes: verified_iris_and_recessed_pupil_geometry_required
+  palm: actual_mesh_contact_between_wrist_and_knuckles
+  gold_ball: continuous_metallic_wound_thread
+  thread_end: actual_pedestal_surface_attachment
+  release: blocked_until_all_gates_pass
